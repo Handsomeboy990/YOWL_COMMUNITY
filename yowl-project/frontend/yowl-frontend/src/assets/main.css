@@ -1,0 +1,118 @@
+@import '@fortawesome/fontawesome-free/css/all.min.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+}
+
+.font-poppins {
+    font-family: 'Poppins', sans-serif;
+}
+
+.font-roboto {
+    font-family: 'Roboto', sans-serif;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    /* text-body */
+    line-height: 20px;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 32px;
+    /* text-h1 */
+    line-height: 40px;
+}
+
+h2 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 28px;
+    /* text-h2 */
+    line-height: 36px;
+}
+
+h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 24px;
+    /* text-h3 */
+    line-height: 32px;
+}
+
+h4 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 20px;
+    /* text-h4 */
+    line-height: 28px;
+}
+
+h5 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 18px;
+    /* text-h5 */
+    line-height: 24px;
+}
+
+h6 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    /* text-h6 */
+    line-height: 22px;
+}
+
+small,
+.caption {
+    font-family: 'Roboto', sans-serif;
+    font-size: 12px;
+    /* text-caption */
+    line-height: 16px;
+}
+
+.bg-orange-primary {
+    background-color: #FF6B35;
+}
+
+.bg-blue-night {
+    background-color: #1E2A38;
+}
+
+.text-blue-night {
+    color: #1e2a38;
+}
+
+.border-orange-primary {
+    border-color: #ff6b35;
+}
+
+
+/* Animation du menu mobile */
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+
+
+/* Forcer les textes adaptatifs */
+
+h1 {
+    font-size: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    h1 {
+        font-size: 2rem;
+    }
+}

@@ -1,0 +1,37 @@
+{
+    "manifest_version": 3,
+    "name": "YOWL Comment Extension",
+    "version": "1.0",
+    "description": "Add and view comments from YOWL platform.",
+    
+    "permissions": [
+        "storage",
+        "activeTab",
+        "tabs",
+        "contextMenus",
+        "scripting"
+    ],
+      "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+    "host_permissions": [
+        "http://*/*",
+        "https://*/*"
+        
+    ],
+
+    "background": {
+        "service_worker": "background.js"
+    },
+   
+   "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png"
+    }
+  }
+}
