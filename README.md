@@ -348,7 +348,7 @@ Les contributions sont les bienvenues ! Veuillez suivre ces étapes :
 
 | Élément | Coût |
 |---------|------|
-| Développement logiciel | $7,000 |
+| Développement logiciel | $7,000 | 
 | Infrastructure (serveurs) | $100/mois |
 | Maintenance et support | $30/mois |
 | Hébergement évolutif | +$200/mois |
