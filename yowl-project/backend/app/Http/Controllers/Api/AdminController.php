@@ -12,13 +12,23 @@ class AdminController extends Controller
 {
     public function changeUserRole(Request $request, User $user)
     {
-        $role = $request->input('role');
-        if (!in_array($role, ['admin', 'client'])) {
-            return response()->json(['success'=>false,'message'=>'Invalid role'], 400);
+        $validated = $request->validate([
+            'role' => 'required|in:admin,client',
+        ]);
+        
+        // Empêcher un admin de se rétrograder lui-même
+        if ($user->id === $request->user()->id && $validated['role'] !== 'admin') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Vous ne pouvez pas modifier votre propre rôle'
+            ], 403);
         }
-        // Remove all roles and assign the new one
-        $user->syncRoles([$role]);
-        return response()->json(['success'=>true,'message'=>"Role updated to $role"]);
+        
+        $user->syncRoles([$validated['role']]);
+        return response()->json([
+            'success' => true,
+            'message' => "Rôle mis à jour : {$validated['role']}"
+        ]);
     }
     public function banUser(User $user)
     {
@@ -65,7 +75,11 @@ class AdminController extends Controller
     {
         $query = User::query();
         if ($search = $request->get('search')) {
-            $query->where('username','like',"%$search%")->orWhere('email','like',"%$search%");
+            $query->where(function($q) use ($search) {
+                $q->where('username', 'like', "%$search%")
+                  ->orWhere('email', 'like', "%$search%")
+                  ->orWhere('fullname', 'like', "%$search%");
+            });
         }
         $users = $query->orderByDesc('created_at')->paginate(20);
         // Ajoute les rôles à chaque utilisateur

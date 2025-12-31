@@ -228,7 +228,7 @@ const fetchUsers = async (page = 1) => {
   try {
     const res = await api.get(`/admin/users?page=${page}`);
     users.value = res.data.data;
-  } catch {
+  } catch (err) {
     users.value = null;
   }
 };
@@ -237,7 +237,7 @@ const fetchReviews = async (page = 1) => {
   try {
     const res = await api.get(`/admin/reviews?page=${page}`);
     reviews.value = res.data.data;
-  } catch {
+  } catch (err) {
     reviews.value = null;
   }
 };
@@ -246,7 +246,7 @@ const fetchComments = async (page = 1) => {
   try {
     const res = await api.get(`/admin/comments?page=${page}`);
     comments.value = res.data.data;
-  } catch {
+  } catch (err) {
     comments.value = null;
   }
 };
@@ -398,7 +398,7 @@ onMounted(async () => {
   try {
     const res = await api.get('/admin/stats');
     stats.value = res.data.data;
-  } catch {
+  } catch (err) {
     stats.value = null;
   }
   fetchUsers();

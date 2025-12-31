@@ -165,9 +165,8 @@ const fetchActivities = async () => {
         }
       });
     }
-  } catch (e) {
+  } catch {
     error.value = 'Impossible de charger les activités.';
-    console.error('Erreur fetch activity', e);
   } finally {
     loading.value = false;
   }

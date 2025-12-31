@@ -149,8 +149,7 @@ const EditModalSubmit = async () => {
 
 
     emit('close')
-  } catch (error) {
-    console.error("update failed", error.message)
+  } catch {
     Swal.fire({
       icon: "error",
       title: "Update failed",

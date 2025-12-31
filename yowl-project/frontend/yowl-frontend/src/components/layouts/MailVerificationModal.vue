@@ -3,7 +3,7 @@
     <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6 relative">
 
       <!-- close modal -->
-      <button @click="$emit('close')"
+      <button @click="emit('close')"
         class="cursor-pointer absolute top-3 right-3 text-gray-600 hover:text-gray-900 text-xl">
         <i class="fas fa-times"></i>
       </button>
@@ -35,7 +35,7 @@
           class="px-6 py-2 w-full cursor-pointer bg-[#FF6B35] text-white rounded-lg hover:bg-[#e75a27] transition">
           Resend email
         </button>
-        <button @click="$emit('close')"
+        <button @click="emit('close')"
           class="px-6 py-2 w-full cursor-pointer bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition">
           Close
         </button>
@@ -90,7 +90,7 @@ const verifyCode = () => {
 };
 
 const resendCode = () => {
-  $emit('resend');
+  emit('resend');
   Swal.fire({
     icon: 'success',
     title: 'Code resend successfully',

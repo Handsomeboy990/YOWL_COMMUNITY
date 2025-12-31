@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import { fetchToken } from '@/services/apiService';
+
 //import { useToast } from 'vue-toastification';
 import api from '@/services/apiService';
 
@@ -16,9 +16,9 @@ export const useCommentStore = defineStore(
         const response = await api.get('/comments');
         
         comments.value = response.data.data;
-      } catch (e) {
-        console.log(e.message);
-      }
+      } catch (err) {
+        // Silent error handling
+    }
     }
 
     async function addComment(comment) {
@@ -26,9 +26,8 @@ export const useCommentStore = defineStore(
       try {
         const response = await api.post('/comments', commentToAdd);
         comments.value.unshift(response.data.data);
-      } catch (e) {
+      } catch (err) {
         //toast.error('Cannot post your comment. Check your internet connexion...');
-        console.log(e.message);
       }
     }
 
@@ -55,9 +54,8 @@ export const useCommentStore = defineStore(
             }
           } */
         }
-      } catch (e) {
+      } catch (err) {
         //toast.error('Cannot update comment. Check your internet connexion...');
-        console.log(e.message);
       }
     }
 
@@ -79,17 +77,14 @@ export const useCommentStore = defineStore(
         } else {
           //toast.success('Comment deleted !');
         }
-      } catch (e) {
+      } catch (err) {
         //toast.error('Cannot delete comment. Check your internet connexion...');
-        console.log(e.message);
       }
     }
 
     async function reactToComment(commentId, reaction) {
       try {
-        await fetchToken();
         const response = await api.post(`/comments/${commentId}/react`, { reaction });
-        console.log(response)
         const index = comments.value.findIndex((comment) => comment.id === commentId);
         if (index !== -1) {
           comments.value[index].nb_like = response.data.nb_like;
@@ -98,9 +93,9 @@ export const useCommentStore = defineStore(
         }
 
         return response;
-      } catch (error) {
-        console.error(' Erreur lors de la réaction :', error);
-      }
+      } catch (err) {
+        // Silent error handling
+    }
     }
 
     return {

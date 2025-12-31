@@ -1,6 +1,6 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
-import api, { fetchToken } from '@/services/apiService';
+import api from '@/services/apiService';
 import Swal from 'sweetalert2';
 
 export const useReviewStore = defineStore(
@@ -34,18 +34,10 @@ export const useReviewStore = defineStore(
             maxRange.value['range'] = key;
           }
         }
-        /* ageRangeArray.forEach(element => {
 
-        });
-        ageRange.value = Math.max.apply(
-          Math,
-          ageRangeArray.map(function (event) {
-            return event.y;
-          })
-        ); */
-      } catch (error) {
-        console.log(error);
-      }
+      } catch (err) {
+        // Silent error handling
+    }
     }
 
     //  Récupérer les reviews
@@ -61,32 +53,29 @@ export const useReviewStore = defineStore(
         actualPage.value = page
         search.value = false
 
-      } catch (error) {
-        console.log(error);
-      }
+      } catch (err) {
+        // Silent error handling
+    }
       getKPI();
     }
 
     //  Récupérer une review
     async function getReview(id) {
       try {
-        await fetchToken();
         const response = await api.get(`/reviews/${id}`);
         const index = reviews.value.findIndex((element) => element.id == id);
         reviews.value[index].nb_views = response.data.data.nb_views
-        console.log(response.data.data.nb_views)
 
 
-      } catch (error) {
-        console.log(error);
-      }
+      } catch (err) {
+        // Silent error handling
+    }
       getKPI();
     }
 
     //  Créer une review
     async function createReviews(data) {
       try {
-        await fetchToken();
         const response = await api.post('/reviews', data, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
@@ -105,13 +94,13 @@ export const useReviewStore = defineStore(
           timer: 1500,
         })
         pagination.value.total ++
-      } catch (error) {
+      } catch (err) {
         let message = 'Review creation failed';
-        if (error.response?.data?.message) message = error.response.data.message;
+        if (err.response?.data?.message) message = err.response.data.message;
         Swal.fire({
             icon: 'error',
             title: 'Oops...',
-            text: 'Review creation failed',
+            text: message,
         });
         throw new Error(message);
       }
@@ -122,7 +111,6 @@ export const useReviewStore = defineStore(
     // 🟩 Modifier une review
     async function updateReviews(id, data) {
       try {
-        await fetchToken();
         const response = await api.post(`/reviews/${id}`, data, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
@@ -135,13 +123,13 @@ export const useReviewStore = defineStore(
           showConfirmButton: false,
           timer: 1500,
         })
-      } catch (error) {
+      } catch (err) {
         let message = 'Review update failed';
-        if (error.response?.data?.message) message = error.response.data.message;
+        if (err.response?.data?.message) message = err.response.data.message;
         Swal.fire({
             icon: 'error',
             title: 'Oops...',
-            text: 'Review update failed',
+            text: message,
         });
         throw new Error(message);
       }
@@ -150,7 +138,6 @@ export const useReviewStore = defineStore(
     //  Supprimer une review
     async function deleteReviews(id) {
       try {
-        await fetchToken();
         await api.delete(`/reviews/${id}`);
         reviews.value = reviews.value.filter((element) => element.id !== id);
         if (reviews.value.length < pagination.value.last_page * 10) {
@@ -161,9 +148,14 @@ export const useReviewStore = defineStore(
         }
         getReviews(pagination.value.current_page);
         // pagination.value.total --
-      } catch (error) {
+      } catch (err) {
         let message = 'Review deletion failed';
-        if (error.response?.data?.message) message = error.response.data.message;
+        if (err.response?.data?.message) message = err.response.data.message;
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: message,
+        });
         throw new Error(message);
       }
       getKPI();
@@ -171,7 +163,6 @@ export const useReviewStore = defineStore(
 
     async function reactToReview(reviewId, reaction) {
       try {
-        await fetchToken();
         const response = await api.post(`/reviews/${reviewId}/react`, { reaction });
 
         const index = reviews.value.findIndex((r) => r.id === reviewId);
@@ -182,8 +173,8 @@ export const useReviewStore = defineStore(
         }
 
         return response;
-      } catch (error) {
-        console.error(' Erreur lors de la réaction :', error);
+      } catch (_err) {
+        // Silent error handling
       }
     }
 
@@ -204,7 +195,6 @@ export const useReviewStore = defineStore(
           err,
           'Unable to retrieve reviews. Please try again later.'
         );
-        console.error(error.value);
       }
     }
 
@@ -228,7 +218,6 @@ export const useReviewStore = defineStore(
         error.value = null;
       } catch (err) {
         error.value = extractErrorMessage(err, 'Unable to filter reviews. Please try again later.');
-        console.error(error.value);
       }
     }
 

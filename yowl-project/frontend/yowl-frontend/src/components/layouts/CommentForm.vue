@@ -29,7 +29,6 @@ const emit = defineEmits(["submitComment", "editComment"]);
 
 
 const submit = () => {
-  let errorMessage
   //if user not loggedin
   if (!userStore.isAuthenticated) {
     Swal.fire({
@@ -46,8 +45,12 @@ const submit = () => {
   //if logged
 
   if (!newComment.value.trim()) {
-    errorMessage = "You can't publish an empty review";
-    console.log(errorMessage);
+    Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: "You can't publish an empty comment",
+      confirmButtonColor: '#FF6B35'
+    });
     return;
   }
 

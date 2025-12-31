@@ -271,7 +271,7 @@ const submitForm = async () => {
     };
     isMailModalOpen.value = true;
     // router.push("/login");
-  } catch (error) {
+  } catch {
     // Swal.fire({
     //   icon: 'error',
     //   title: 'Oooops',
@@ -279,7 +279,6 @@ const submitForm = async () => {
     //   showConfirmButton: false,
     //   timer: 1500,
     // });
-    console.log('Registration fail', error);
     errorMessage.value = 'The email has already been taken.';
   }
 };
@@ -301,8 +300,8 @@ const submitVerifyCode = async (code) => {
       verificationSuccess.value = false;
       // router.push('/login?verified=1');
     }, 2000);
-  } catch (e) {
-    verificationError.value = e.message || 'Verification failed';
+  } catch (err) {
+    verificationError.value = err.message || 'Verification failed';
   } finally {
     verifying.value = false;
   }
@@ -311,8 +310,8 @@ const submitVerifyCode = async (code) => {
 const handleResendCode = async () => {
   try {
     await userStore.resendVerificationCode(registeredEmail.value);
-  } catch (e) {
-    console.error('Resend failed', e.message);
-  }
+  } catch {
+        // Silent error handling
+    }
 };
 </script>

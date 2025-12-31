@@ -75,7 +75,7 @@ class ReviewController extends Controller
                 $query->orderByDesc('created_at'); // défaut
             }
 
-            $reviews = $query->orderByDesc('created_at')->paginate(10);
+            $reviews = $query->paginate(10);
 
             return response()->json(
                 [
@@ -125,17 +125,11 @@ class ReviewController extends Controller
             // Lier les tags à la review créée
             $tags = $request->input('tags');
             if ($tags) {
-                // if (!is_array($tags)) {
-                //     $decoded = json_decode($tagsInput, true);
-                //     if (is_array($decoded)) $tagsArray = $decoded;
-                //     else $tagsArray = array_filter(array_map('trim', explode(',', $tagsInput)));
-                // } else {
-                //     $tagsArray = $tagsInput;
-                // }
                 $tagIds = [];
                 foreach ($tags as $tag) {
                     if (!strlen(trim($tag))) continue;
-                    $createdTag = Tag::firstOrCreate(['name' => $tag]);
+                    $tagName = trim($tag);
+                    $createdTag = Tag::firstOrCreate(['name' => strtolower($tagName)]);
                     $tagIds[] = $createdTag->id;
                 }
                 if (count($tagIds)) {
@@ -242,17 +236,11 @@ class ReviewController extends Controller
             // Modifier les tags
             $tags = $request->input('tags');
             if ($tags !== null) {
-                // if (!is_array($tags)) {
-                //     $decoded = json_decode($tags, true);
-                //     if (is_array($decoded)) $tagsArray = $decoded;
-                //     else $tagsArray = array_filter(array_map('trim', explode(',', $tags)));
-                // } else {
-                //     $tagsArray = $tagsInput;
-                // }
                 $tagIds = [];
                 foreach ($tags as $tag) {
                     if (!strlen(trim($tag))) continue;
-                    $createdTag = Tag::firstOrCreate(['name' => $tag]);
+                    $tagName = trim($tag);
+                    $createdTag = Tag::firstOrCreate(['name' => strtolower($tagName)]);
                     $tagIds[] = $createdTag->id;
                 }
                 $review->tags()->sync($tagIds);

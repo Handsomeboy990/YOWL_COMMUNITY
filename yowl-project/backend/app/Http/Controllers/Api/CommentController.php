@@ -24,23 +24,19 @@ class CommentController extends Controller
      */
     public function store(Request $request)
     {
-        //
         $validated = $request->validate([
-            'review_id' => 'required',
-            'parent_id' => 'nullable',
-            'content' => 'required|string',
-            /*  'review_id' => 'required|exists:reviews.id',
-            'parent_id' => 'nullable|exists:comments.id',
-            'content' => 'required|string', */
+            'review_id' => 'required|exists:reviews,id',
+            'parent_id' => 'nullable|exists:comments,id',
+            'content' => 'required|string|min:1|max:1000',
         ]);
+        
         $validated['user_id'] = $request->user()->id;
-        // $validated['user_id'] = 4;
         $comment = Comment::create($validated);
 
         return response()->json([
             'success' => true,
             'data' => $comment->load(['user', 'children']),
-            'message' => 'Commentaire cree avec succes',
+            'message' => 'Commentaire créé avec succès',
         ], 201);
     }
 

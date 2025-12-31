@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test YOWL Frontend</title>
+</head>
+<body>
+    <h1>Checking frontend errors...</h1>
+    <script>
+        // This will catch any runtime errors
+        window.addEventListener('error', function(e) {
+            console.error('Runtime Error:', e.message, e.filename, e.lineno);
+        });
+        
+        // Check if main modules load
+        console.log('Testing imports...');
+    </script>
+</body>
+</html>

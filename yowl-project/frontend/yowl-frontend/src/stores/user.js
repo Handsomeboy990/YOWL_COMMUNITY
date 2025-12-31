@@ -1,14 +1,19 @@
 import { defineStore } from 'pinia';
-import api, { fetchToken } from '@/services/apiService';
+import api from '@/services/apiService';
 
 export const useUserStore = defineStore('user', {
   state: () => ({
     user: null,
-    token: localStorage.getItem('token') || null,
+    token: null,
   }),
   getters: {
     isAuthenticated: (state) => !!state.token && !!state.user,
-    isAdmin: (state) => state.user && state.user.roles && state.user.roles.includes('admin'),
+    isAdmin: (state) => {
+      if (!state.user?.roles) return false;
+      return state.user.roles.some(role => 
+        typeof role === 'string' ? role === 'admin' : role.name === 'admin'
+      );
+    },
   },
   actions: {
     //user resgitration
@@ -25,10 +30,10 @@ export const useUserStore = defineStore('user', {
         });
         
         return result.data;
-      } catch (error) {
+      } catch (err) {
         let message = 'Registration failed';
-        if (error.response && error.response.data) {
-          message = error.response.data.message || JSON.stringify(error.response.data.error);
+        if (err.response && err.response.data) {
+          message = err.response.data.message || JSON.stringify(err.response.data.error);
         }
         throw new Error(message);
       }
@@ -39,8 +44,8 @@ export const useUserStore = defineStore('user', {
       try {
         const res = await api.post('/email/otp/resend', { email });
         return res.data;
-      } catch (error) {
-        throw new Error(error.response?.data?.message || 'Cannot resend code');
+      } catch (err) {
+        throw new Error(err.response?.data?.message || 'Cannot resend code');
       }
     },
     // verify OTP code
@@ -49,8 +54,8 @@ export const useUserStore = defineStore('user', {
       try {
         const res = await api.post('/email/otp/verify', payload);
         return res.data;
-      } catch (error) {
-        throw new Error(error.response?.data?.message || 'Verification failed');
+      } catch (err) {
+        throw new Error(err.response?.data?.message || 'Verification failed');
       }
     },
 
@@ -65,18 +70,11 @@ export const useUserStore = defineStore('user', {
         this.user = result.data.user;
         this.token = result.data.token;
 
-        // if remember me, stock  token in localStorage
-        if (data.rememberMe && this.token) {
-          // use cookie instead of localStorage
-          localStorage.setItem('token', this.token);
-          
-        }
-
         return result.data;
-      } catch (error) {
+      } catch (err) {
         throw new Error(
-          error.response && error.response.data && error.response.data.message
-            ? error.response.data.message
+          err.response && err.response.data && err.response.data.message
+            ? err.response.data.message
             : 'Login failed'
         );
       }
@@ -95,8 +93,8 @@ export const useUserStore = defineStore('user', {
         this.user = result.data;
         
         return result.data;
-      } catch (error) {
-        console.log(error);
+      } catch (err) {
+        // Silent error;
         this.logoutUser();
         return null;
       }
@@ -108,7 +106,7 @@ export const useUserStore = defineStore('user', {
       if (!this.user) throw new Error('No user loaded');
 
       try {
-        await fetchToken();
+        
         
         const result = await api.post(
           `/users/${this.user.id}`,
@@ -131,11 +129,10 @@ export const useUserStore = defineStore('user', {
         
 
         return result.data;
-      } catch (error) {
-        console.error('Update failed', error);
+      } catch (err) {
         let message = 'Update failed';
-        if (error.response && error.response.data) {
-          message = error.response.data.message || JSON.stringify(error.response.data.error);
+        if (err.response && err.response.data) {
+          message = err.response.data.message || JSON.stringify(err.response.data.error);
         }
         throw new Error(message);
       }
@@ -144,41 +141,24 @@ export const useUserStore = defineStore('user', {
     //user logout
     async logoutUser() {
       try {
-        await api.post(
-          '/logout',
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${this.token}`,
-            },
-          }
-        );
-      } catch (error) {
-        console.log('Error : ', error);
+        await api.post('/logout');
+      } catch {
+        // Silent error handling
       }
       this.user = null;
       this.token = null;
-      localStorage.removeItem('token');
     },
 
     async leaveCommunity() {
       try {
-        await api.delete(
-          `/users/${this.user.id}`,
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${this.token}`,
-            },
-          }
-        );
-      } catch (error) {
-        console.log('Error : ', error);
+        await api.delete(`/users/${this.user.id}`);
+      } catch (err) {
+        throw new Error('Failed to delete account');
       }
       this.user = null;
       this.token = null;
-      localStorage.removeItem('token');
     },
+    
     //init store on mounted
     async initUser() {
       if (this.token && !this.user) {

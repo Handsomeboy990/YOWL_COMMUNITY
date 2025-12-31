@@ -120,7 +120,7 @@ const submitForm = async () => {
     //   timer: 1500,
     // });
     router.push("/") // redirection to homepage after login
-  } catch (error) {
+  } catch (err) {
 
     // Swal.fire({
     //   icon: 'error',
@@ -128,7 +128,7 @@ const submitForm = async () => {
     //   text: 'Something went wrong. Please try again',
     //   showConfirmButton: false,
     // });
-    errorMessage.value = error.message || "Login failed";
+    errorMessage.value = err.message || "Login failed";
     if(errorMessage.value == "This account has not been verified yet.") {
       isMailModalOpen.value = true;
     }
@@ -154,8 +154,8 @@ const submitVerifyCode = async (code) => {
       verificationSuccess.value = false;
       // router.push('/login?verified=1');
     }, 2000);
-  } catch (e) {
-    verificationError.value = e.message || 'Verification failed';
+  } catch (err) {
+    verificationError.value = err.message || 'Verification failed';
   } finally {
     verifying.value = false;
   }
@@ -165,8 +165,8 @@ const handleResendCode = async () => {
   try {
     await userStore.resendVerificationCode(identifier.value);
 
-  } catch (e) {
-    console.error('Resend failed', e.message);
-  }
+  } catch {
+        // Silent error handling
+    }
 };
 </script>

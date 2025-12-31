@@ -3,45 +3,56 @@
     <Header />
 
     <!-- main -->
-    <div class="max-w-mobile mx-10 max-w-full py-15 ">
-        <div class="flex lg:flex-row gap-6 p-4 lg:p-6">
+    <div class="min-h-screen bg-gray-50 pt-20 pb-8">
+        <div class="container mx-auto px-4 max-w-7xl">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-            <!-- Sidebar -->
-            <div class="w-2/12 fixed bg-gray-100 rounded-lg border-2 mx-4 border-[#1E2A38] h-140  p-6 ">
-                <Sidebar />
-            </div>
+                <!-- Left Sidebar - Hidden on mobile/tablet -->
+                <aside class="hidden lg:block lg:col-span-3">
+                    <div class="sticky top-24 bg-white rounded-lg border border-gray-200 shadow-sm p-6 animate-fade-in-up">
+                        <Sidebar />
+                    </div>
+                </aside>
 
-            <div v-if="reviews.length === 0 && reviewStore.search == false"
-                class="flex flex-col items-center justify-center text-center py-20 ml-95 px-50">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-24 h-24 mb-6 text-gray-400" viewBox="0 0 24 24"
-                    fill="none" stroke="currentColor" stroke-width="1.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 7h18M3 12h18M3 17h18M8 3v18M16 3v18" />
-                </svg>
-                <h2 class="text-2xl font-semibold text-gray-800">Aucun post pour le moment</h2>
-                <p class="mt-2 text-gray-700 text-md max-w-md">
-                    Il n'y a encore aucun post à afficher. Dès qu'un utilisateur publiera, vous le verrez ici.
-                </p>
-            </div>
+                <!-- Main Content -->
+                <main class="col-span-1 lg:col-span-6">
+                    <!-- Empty State -->
+                    <div v-if="reviews.length === 0 && reviewStore.search == false"
+                        class="flex flex-col items-center justify-center text-center py-20 px-4 animate-fade-in">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-20 h-20 md:w-24 md:h-24 mb-6 text-gray-300 animate-bounce-slow" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7h18M3 12h18M3 17h18M8 3v18M16 3v18" />
+                        </svg>
+                        <h2 class="text-xl md:text-2xl font-semibold text-gray-800 mb-2">Aucun post pour le moment</h2>
+                        <p class="mt-2 text-gray-600 text-sm md:text-base max-w-md">
+                            Il n'y a encore aucun post à afficher. Dès qu'un utilisateur publiera, vous le verrez ici.
+                        </p>
+                    </div>
 
-            <!-- ReviewCard + Pagination -->
-            <div class="w-6/12 m-auto pr-26  ">
-                <div class="space-y-6 space-x-3">
-                    <ReviewCard v-for="review in reviews.slice(0, reviews.length > 10 ? 9 : reviews.length)"
-                        :key="review.id" :review="review" />
-                </div>
+                    <!-- Reviews Feed -->
+                    <div class="space-y-4 md:space-y-6">
+                        <TransitionGroup name="feed" mode="out-in">
+                            <ReviewCard v-for="review in reviews.slice(0, reviews.length > 10 ? 9 : reviews.length)"
+                                :key="review.id" :review="review" class="animate-fade-in-up" />
+                        </TransitionGroup>
+                    </div>
 
-                <!-- pagination -->
-                <Pagination v-if="reviewStore.pagination.total > 10" :pagination="reviewStore.pagination"
-                    @changePage="handlePageChange" />
-            </div>
+                    <!-- Pagination -->
+                    <div class="mt-8">
+                        <Pagination v-if="reviewStore.pagination.total > 10" :pagination="reviewStore.pagination"
+                            @changePage="handlePageChange" />
+                    </div>
+                </main>
 
-            <!-- Signup button -->
-            <div
-                class="w-3/12 bg-gray-100 fixed right-15 rounded-lg border-2 border-[#1E2A38] h-140 p-6 flex flex-col items-center justify-center">
-                <h2 class="text-[26px] font-poppins font-bold mb-4">
-                    Welcome into the community
-                </h2>
-                <KpiSideBar />
+                <!-- Right Sidebar - Hidden on mobile/tablet -->
+                <aside class="hidden lg:block lg:col-span-3">
+                    <div class="sticky top-24 bg-gradient-to-br from-orange-50 to-white rounded-lg border border-orange-200 shadow-sm p-6 animate-fade-in-up animation-delay-200">
+                        <h2 class="text-xl md:text-2xl font-poppins font-bold mb-4 text-gray-800">
+                            Welcome to the community
+                        </h2>
+                        <KpiSideBar />
+                    </div>
+                </aside>
             </div>
         </div>
     </div>

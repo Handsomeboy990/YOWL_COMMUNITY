@@ -1,115 +1,117 @@
 <template>
-  <div class="bg-gray-100 rounded-lg border-2 border-[#FF6B35] p-6">
+  <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 md:p-6 transition-all duration-300 hover:shadow-lg hover:scale-[1.01] animate-fade-in-up">
     <!-- review Header -->
     <header class="flex items-center justify-between mb-4">
       <div class="flex items-center space-x-3">
-        <div v-if="review.user.picture">
-          <img class="w-10 h-10 rounded-full flex items-center justify-center"
-            :src="`http://localhost:8000/storage/${review.user.picture}`" alt="profile picture">
-
+        <div v-if="review.user.picture" class="relative group">
+          <img class="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover ring-2 ring-transparent group-hover:ring-[#FF6B35] transition-all duration-300"
+            :src="getStorageUrl(review.user.picture)" alt="profile picture">
+          <div class="absolute inset-0 rounded-full bg-black opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
         </div>
-        <div v-else class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
-          <i fill-rule="evenodd" class="fa-solid fa-user w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20"
-            clip-rule="evenodd"></i>
-
+        <div v-else class="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-gray-200 to-gray-300 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+          <i class="fa-solid fa-user w-5 h-5 text-gray-600"></i>
         </div>
         <div>
-          <p class="font-roboto font-medium text-gray-900">{{ review.user.username }}</p>
-          <p class="font-roboto text-caption text-[12px] text-gray-500">{{ dateFormatted }}</p>
+          <p class="font-roboto font-semibold text-gray-900 text-sm md:text-base hover:text-[#FF6B35] transition-colors cursor-pointer">{{ review.user.username }}</p>
+          <p class="font-roboto text-xs text-gray-500">{{ dateFormatted }}</p>
         </div>
       </div>
-      <p class="font-roboto text-caption text-gray-500">{{ review.nb_views }} views</p>
+      <div class="flex items-center gap-1 text-gray-500 text-xs md:text-sm">
+        <i class="fa-regular fa-eye"></i>
+        <span>{{ review.nb_views }}</span>
+      </div>
     </header>
 
     <!-- review Content -->
-    <p class="font-roboto text-body text-gray-700 mb-4 line-clamp-3">
+    <p class="font-roboto text-sm md:text-base text-gray-700 mb-3 line-clamp-3">
       {{ review.content }}
-
     </p>
     <router-link :to="{ name: 'review-detail', params: { id: review.id } }"
-      class="text-[#FF6B35] hover:underline ml-1">See
-      more</router-link>
+      class="text-[#FF6B35] hover:text-[#ff5522] font-medium text-sm transition-colors duration-200 inline-flex items-center gap-1">
+      See more
+      <i class="fa-solid fa-arrow-right text-xs"></i>
+    </router-link>
 
     <!-- review Image -->
-    <div class="mb-4">
+    <div class="my-4">
       <ImageCarousel v-if="mediasArray.length && !review.link" :images="mediasArray" />
 
       <!-- Link Preview -->
-      <div v-if="review.link && !mediasArray.length" class="w-full h-100 object-cover rounded-lg">
-        <div class="border rounded-lg overflow-hidden">
-          <iframe :src="review.link" class="w-full h-100 border-0" referrerpolicy="no-referrer"></iframe>
+      <div v-if="review.link && !mediasArray.length" class="w-full rounded-lg overflow-hidden">
+        <div class="border border-gray-200 rounded-lg overflow-hidden hover:border-[#FF6B35] transition-colors duration-300">
+          <iframe :src="review.link" class="w-full h-64 md:h-80 border-0" referrerpolicy="no-referrer"></iframe>
           <a :href="review.link" target="_blank"
-            class="text-[#FF6B35] text-[17px] flex items-center justify-center hover:underline ml-1">click here to see
-            what i'm telling
+            class="text-[#FF6B35] text-sm md:text-base flex items-center justify-center gap-2 py-3 bg-gray-50 hover:bg-orange-50 transition-colors duration-200">
+            <i class="fa-solid fa-external-link"></i>
+            Click here to see what I'm telling
           </a>
         </div>
       </div>
 
-      <div v-if="mediasArray.length && review.link" :images="mediasArray">
-        <ImageCarousel  :images="mediasArray" />
+      <div v-if="mediasArray.length && review.link">
+        <ImageCarousel :images="mediasArray" />
         <a :href="review.link" target="_blank"
-          class="text-[#FF6B35] text-[17px] flex items-center justify-center hover:underline ml-1">click here to see
-          what i'm telling
+          class="text-[#FF6B35] text-sm md:text-base flex items-center justify-center gap-2 py-3 hover:underline mt-2">
+          <i class="fa-solid fa-external-link"></i>
+          Click here to see what I'm telling
         </a>
       </div>
     </div>
 
     <!-- review Actions -->
-    <footer class="flex items-center justify-between pt-4 border-t border-gray-200">
-      <div class="flex items-center space-x-4">
+    <footer class="flex items-center justify-between pt-4 border-t border-gray-100">
+      <div class="flex items-center space-x-3 md:space-x-4">
         <!-- Like -->
         <button @click="toggleReaction('like')" :class="[
-          'cursor-pointer hover:translate-y-[-3px] flex items-center space-x-1 transition-colors duration-200',
-          reviewStore.reviews[index].nb_like
+          'group flex items-center gap-2 transition-all duration-300 hover:scale-110',
+          reviewStore.reviews[index]?.user_reaction === 'like'
             ? 'text-[#FF6B35]'
-            : 'text-gray-500 hover:text-[#FF6B35]'
+            : 'text-gray-600 hover:text-[#FF6B35]'
         ]">
-          <div class="w-8 h-8 bg-orange-primary mr-2 rounded-full flex items-center justify-center">
+          <div class="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-[#FF6B35] to-[#ff8c5a] rounded-full flex items-center justify-center shadow-sm group-hover:shadow-md transition-all duration-300 group-active:scale-95">
             <i :class="[
-              reviewStore.reviews[index].nb_like
+              reviewStore.reviews[index]?.user_reaction === 'like'
                 ? 'fa-solid fa-thumbs-up'
                 : 'fa-regular fa-thumbs-up',
               'w-4 h-4 text-white'
             ]"></i>
           </div>
-
-          {{ review.nb_like }}
+          <span class="font-medium text-sm md:text-base">{{ review.nb_like }}</span>
         </button>
 
         <!-- Dislike -->
         <button @click="toggleReaction('dislike')" :class="[
-          'cursor-pointer hover:translate-y-[3px] flex items-center space-x-1 transition-colors duration-200',
-          reviewStore.reviews[index].nb_dislike
-            ? 'text-blue-700'
-            : 'text-gray-500 hover:text-blue-500'
+          'group flex items-center gap-2 transition-all duration-300 hover:scale-110',
+          reviewStore.reviews[index]?.user_reaction === 'dislike'
+            ? 'text-blue-600'
+            : 'text-gray-600 hover:text-blue-600'
         ]">
-          <div class="w-8 h-8 bg-[#1E2A38] mr-2 rounded-full flex items-center justify-center">
+          <div class="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-[#1E2A38] to-[#344155] rounded-full flex items-center justify-center shadow-sm group-hover:shadow-md transition-all duration-300 group-active:scale-95">
             <i :class="[
-              reviewStore.reviews[index].nb_dislike
+              reviewStore.reviews[index]?.user_reaction === 'dislike'
                 ? 'fa-solid fa-thumbs-down'
                 : 'fa-regular fa-thumbs-down',
               'w-4 h-4 text-white'
             ]"></i>
           </div>
-          {{ review.nb_dislike }}
+          <span class="font-medium text-sm md:text-base">{{ review.nb_dislike }}</span>
         </button>
 
-        <!-- Reply .-->
+        <!-- Reply -->
         <router-link :to="{ name: 'review-detail', params: { id: review.id } }"
-          class="cursor-pointer flex items-center space-x-1 text-gray-500 hover:translate-y-[2px] transition-colors">
-          <span class="font-roboto text-caption">Reply</span>
-          <i fill-rule="evenodd" class="fa-solid fa-reply w-4 h-4" fill="currentColor" viewBox="0 0 20 20"
-            clip-rule="evenodd"></i>
+          class="group flex items-center gap-2 text-gray-600 hover:text-[#FF6B35] transition-all duration-300">
+          <div class="w-8 h-8 md:w-10 md:h-10 bg-gray-100 group-hover:bg-orange-50 rounded-full flex items-center justify-center transition-all duration-300">
+            <i class="fa-solid fa-reply w-4 h-4"></i>
+          </div>
+          <span class="font-medium text-sm md:text-base hidden sm:inline">Reply</span>
         </router-link>
       </div>
 
-      <div class="flex items-center space-x-4">
-        <router-link :to="{ name: 'review-detail', params: { id: review.id } }"
-          class="cursor-pointer font-roboto text-caption text-blue-night hover:underline">
-          <span class="font-roboto text-caption text-gray-500">Show </span>{{ review.comments?.length }}
-          Comments
-        </router-link>
-      </div>
+      <router-link :to="{ name: 'review-detail', params: { id: review.id } }"
+        class="flex items-center gap-2 text-gray-600 hover:text-[#FF6B35] transition-colors duration-200 text-sm md:text-base">
+        <i class="fa-regular fa-comment"></i>
+        <span class="font-medium">{{ review.comments?.length || 0 }}</span>
+      </router-link>
     </footer>
   </div>
 </template>
@@ -120,6 +122,7 @@ import { useUserStore } from '@/stores/user'
 import { useReviewStore } from '@/stores/review'
 import Swal from 'sweetalert2';
 import ImageCarousel from '../layouts/ImageCarousel.vue'
+import { getStorageUrl } from '@/config'
 
 const dateFormatted = ref("")
 
@@ -201,8 +204,13 @@ const toggleReaction = async (reaction) => {
       nb_dislike: response.data.nb_dislike,
       user_reaction: response.data.user_reaction
     } */
-  } catch (error) {
-    console.error("Erreur lors de la réaction :", error)
+  } catch {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Failed to react to this review. Please try again.',
+      confirmButtonColor: "#FF6B35"
+    });
   }
 }
 </script>

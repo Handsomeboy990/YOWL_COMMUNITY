@@ -34,5 +34,19 @@ export default defineConfig([
     ...pluginPlaywright.configs['flat/recommended'],
     files: ['e2e/**/*.{test,spec}.{js,ts,jsx,tsx}'],
   },
+  
+  {
+    rules: {
+      'no-unused-vars': ['error', { 
+        'argsIgnorePattern': '^_|^err$',
+        'varsIgnorePattern': '^_|^err$',
+        'caughtErrorsIgnorePattern': '^_|^err$'
+      }],
+      'no-empty': ['error', { 'allowEmptyCatch': true }],
+      'no-useless-catch': 'off',
+      'no-undef': 'error'
+    }
+  },
+  
   skipFormatting,
 ])

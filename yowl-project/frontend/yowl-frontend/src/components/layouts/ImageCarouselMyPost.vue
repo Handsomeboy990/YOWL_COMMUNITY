@@ -1,7 +1,7 @@
 <template>
   <div v-if="images.length" class="relative w-full">
     <!-- Image  -->
-    <img :src="`http://localhost:8000/storage/${images[currentIndex]}`" alt="carousel image"
+    <img :src="getStorageUrl(images[currentIndex])" alt="carousel image"
       class="w-full h-50 object-cover rounded-lg cursor-pointer" @click= "openModal = true"/>
 
     <!-- left button -->
@@ -31,7 +31,7 @@
       </button>
 
       <div class=" w-3/12 md:w-3/4 lg:w-1/2">
-        <img :src="`http://localhost:8000/storage/${images[currentIndex]}`" class="w-full h-auto rounded-lg" />
+        <img :src="getStorageUrl(images[currentIndex])" class="w-full h-auto rounded-lg" />
 
         <!-- buttons -->
         <button v-if="images.length > 1" @click="prev"
@@ -47,6 +47,7 @@
 </template>
 
 <script setup>
+import { getStorageUrl } from '@/config';
 import { ref } from "vue";
 
 const openModal = ref(false);

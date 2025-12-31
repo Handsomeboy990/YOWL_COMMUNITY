@@ -3,7 +3,7 @@
         <!-- Avatar -->
         <div v-if="userStore.user.picture">
             <img class="w-20 h-20 rounded-full flex items-center justify-center cursor-pointer"
-                :src="`http://localhost:8000/storage/${userStore.user.picture}`" alt="profile picture">
+                :src="getStorageUrl(userStore.user.picture)" alt="profile picture">
 
         </div>
         <div v-else class="items-center gap-4 mr-4 rounded-full">
@@ -32,6 +32,7 @@
 </template>
 
 <script setup>
+import { getStorageUrl } from '@/config';
 import EditProfilModal from '../pages/profil/EditProfilModal.vue';
 import defaultAvatar from '@/assets/logo.png';
 import { ref, computed } from 'vue';

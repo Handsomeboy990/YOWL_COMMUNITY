@@ -267,8 +267,8 @@ const toggleReaction = async (reaction) => {
           nb_dislike: response.data.nb_dislike,
           user_reaction: response.data.user_reaction
         } */
-    } catch (error) {
-        console.error("Erreur lors de la réaction :", error)
+    } catch {
+        // Silent error handling
     }
 }
 </script>

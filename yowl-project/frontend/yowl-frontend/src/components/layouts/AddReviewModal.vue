@@ -54,7 +54,7 @@
                     <!-- Previews des images existantes -->
                     <div v-if="form.existingMedias && form.existingMedias.length" class="mt-2 flex flex-wrap gap-3">
                         <div v-for="(media, idx) in form.existingMedias" :key="'existing-' + idx" class="relative">
-                            <img :src="'http://localhost:8000/storage/' + media" alt="Existing"
+                            <img :src="getStorageUrl(media)" alt="Existing"
                                 class="w-32 h-32 object-cover rounded-lg border" />
                             <button type="button" @click="removeExistingMedia(idx)"
                                 class="cursor-pointer absolute top-1 right-1 bg-white rounded-full p-1 shadow text-red-600 hover:bg-gray-100">
@@ -111,6 +111,7 @@
 </template>
 
 <script setup>
+import { getStorageUrl } from '@/config';
 import { ref, watch } from 'vue';
 import { useUserStore } from '@/stores/user';
 import { useRouter } from 'vue-router';
@@ -153,8 +154,7 @@ const fetchTagSuggestions = async (query) => {
         const res = await api.get(`/tags?search=${encodeURIComponent(query)}`);
         const data = res.data?.data || res.data || [];
         suggestions.value = data.map(tag => (typeof tag === 'string' ? tag : (tag.name || ''))).filter(Boolean);
-    } catch (e) {
-        console.error('fetchTagSuggestions error', e);
+    } catch {
         suggestions.value = [];
     }
 };

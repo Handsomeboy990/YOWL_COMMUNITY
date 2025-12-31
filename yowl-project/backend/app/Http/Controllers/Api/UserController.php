@@ -41,13 +41,21 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
+        // Vérifier que l'utilisateur modifie bien son propre profil
+        if ($user->id !== $request->user()->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Action non autorisée',
+            ], 403);
+        }
+
         try {
             $validated = $request->validate([
                 'username' => ['string', 'max:255', 'min:3'],
                 'fullname' => ['string', 'max:255', 'min:5'],
-                'email' => ['string', 'lowercase', 'email', 'max:255'],
-                'picture' => ['nullable', 'file', 'image'],
-                'password' => [Rules\Password::defaults()],
+                'email' => ['string', 'lowercase', 'email', 'max:255', 'unique:users,email,' . $user->id],
+                'picture' => ['nullable', 'file', 'image', 'max:2048'],
+                'password' => ['nullable', Rules\Password::defaults()],
             ]);
 
             if ($request->hasFile('picture')) {
@@ -60,14 +68,18 @@ class UserController extends Controller
             }
            $user->update($validated);
            $user["roles"] = $user->getRoleNames();
-            return $user;
+            return response()->json([
+                'success' => true,
+                'data' => $user,
+                'message' => 'Profil mis à jour avec succès',
+            ]);
         } catch (ValidationException $e) {
             return response()->json(
                 [
                     'success' => false,
                     'error' => $e->errors(),
                 ],
-                401,
+                422,
             );
         } catch (Exception $e) {
             return response()->json(
@@ -75,7 +87,7 @@ class UserController extends Controller
                     'success' => false,
                     'error' => $e->getMessage(),
                 ],
-                502,
+                500,
             );
         }
     }
@@ -85,11 +97,24 @@ class UserController extends Controller
      */
     public function destroy(Request $request, User $user)
     {
+        // Vérifier que l'utilisateur supprime bien son propre compte
+        if ($user->id !== $request->user()->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Action non autorisée',
+            ], 403);
+        }
+
         $user->is_active = false;
         $user->save();
-        $request->user()->currentAccessToken()->delete();
+        
+        // Supprimer le token seulement s'il existe
+        $token = $request->user()->currentAccessToken();
+        if ($token) {
+            $token->delete();
+        }
 
-        return response()->json(['success'=>true,'message'=>'User banned']);
+        return response()->json(['success'=>true,'message'=>'Compte désactivé avec succès']);
     }
 
     /**
