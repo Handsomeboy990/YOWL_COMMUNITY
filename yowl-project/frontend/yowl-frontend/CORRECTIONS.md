@@ -76,7 +76,7 @@
 
 ---
 
-## 📋 Historique des Corrections
+##  Historique des Corrections
 
 ### 2025-12-30 (Corrections précédentes)
 - URLs hardcodées → Configuration centralisée

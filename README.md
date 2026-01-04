@@ -5,7 +5,7 @@
 [![Laravel](https://img.shields.io/badge/Laravel-10.x-red.svg)](https://laravel.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.x-38B2AC.svg)](https://tailwindcss.com/)
 
-## 📋 Table des matières
+##  Table des matières
 
 - [À propos](#à-propos)
 - [Fonctionnalités](#fonctionnalités)
@@ -23,16 +23,16 @@
 - [Équipe](#équipe)
 - [License](#license)
 
-## 🎯 À propos
+##  À propos
 
 **YOWL Community** est une plateforme web communautaire permettant aux utilisateurs de partager, commenter et réagir sur n'importe quel contenu trouvé sur internet. L'objectif est de créer un espace digital simple, moderne et interactif où chaque membre peut donner son avis, échanger avec les autres et suivre des tendances.
 
 ### Objectifs du projet
 
-- ✅ Créer une plateforme intuitive pour publier et interagir autour de contenus web
-- ✅ Favoriser la création d'une communauté active et engagée
-- ✅ Mettre en place des outils de suivi et d'analyse (KPI, dashboard)
-- ✅ Garantir la compatibilité multi-supports (desktop, mobile, tablette)
+-  Créer une plateforme intuitive pour publier et interagir autour de contenus web
+-  Favoriser la création d'une communauté active et engagée
+-  Mettre en place des outils de suivi et d'analyse (KPI, dashboard)
+-  Garantir la compatibilité multi-supports (desktop, mobile, tablette)
 
 ## ⚡ Fonctionnalités
 
@@ -48,17 +48,17 @@
 
 ### V1 (Prochainement)
 
-- 🔗 **Partage externe enrichi** : Intégration réseaux sociaux
+-  **Partage externe enrichi** : Intégration réseaux sociaux
 - 🛡️ **Modération basique** : Signalement et gestion des contenus inappropriés
-- 📊 **Dashboard personnel amélioré** : Statistiques individuelles d'engagement
+-  **Dashboard personnel amélioré** : Statistiques individuelles d'engagement
 - 🌍 **Multilingue** : Support FR/EN
 - 🔔 **Notifications temps réel** : WebSocket pour notifications instantanées
 
 ### V2 (Futur)
 
-- 🎯 **Recommandations personnalisées** : Algorithme de suggestions basé sur les préférences
+-  **Recommandations personnalisées** : Algorithme de suggestions basé sur les préférences
 - 🎮 **Gamification** : Badges, points et classements
-- 🔗 **Partage multi-réseaux** : X (Twitter), LinkedIn, WhatsApp, etc.
+-  **Partage multi-réseaux** : X (Twitter), LinkedIn, WhatsApp, etc.
 - 🔌 **API tierces** : Intégration actualités et tendances sociales
 
 ## 🛠️ Technologies
@@ -84,7 +84,7 @@
 - **CI/CD** : GitHub Actions
 - **Monitoring** : CloudWatch
 
-## 📦 Prérequis
+##  Prérequis
 
 - **PHP** >= 8.2
 - **Composer** >= 2.5
@@ -93,7 +93,7 @@
 - **MySQL** >= 8.0
 - **Redis** (optionnel, recommandé pour la mise en cache)
 
-## 🚀 Installation
+##  Installation
 
 ### 1. Cloner le repository
 
@@ -293,7 +293,7 @@ php artisan view:cache
 npm run build
 ```
 
-## 📊 KPI & Analytics
+##  KPI & Analytics
 
 ### Dashboard KPI
 
@@ -363,7 +363,7 @@ Les contributions sont les bienvenues ! Veuillez suivre ces étapes :
 
 Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
 
-## 🔗 Liens utiles
+##  Liens utiles
 
 - [Documentation complète](https://github.com/EpitechCodingAcademyPromo2025/C-DEV-160-COT-1-1-yowl-lauret.chacha/new/main?filename=README.md#%C3%A0-propos)
 - [API Documentation](https://laravel.com/docs/12.x/eloquent-resources)
