@@ -8,20 +8,19 @@ could not find driver (Connection: pgsql, SQL: select exists...)
 
 Cette erreur signifie que PHP n'a pas les extensions PostgreSQL installées.
 
-## ✅ Solution appliquée
+## ✅ Solution appliquée (VERSION 2 - Dockerfile)
 
-Le fichier `nixpacks.toml` a été mis à jour pour inclure les extensions PostgreSQL :
+Le Dockerfile a été complètement réécrit pour :
+1. Utiliser **PHP 8.2-CLI** (au lieu de FPM)
+2. Installer **libpq-dev** (librairies PostgreSQL)
+3. Installer les extensions PHP : **pdo**, **pdo_pgsql**, **pgsql**
+4. Utiliser `php artisan serve` directement (pas besoin de nginx)
 
-```toml
-[phases.setup]
-nixPkgs = [
-  "php82",
-  "php82Extensions.pdo",           # Extension PDO
-  "php82Extensions.pdo_pgsql",     # Driver PDO PostgreSQL
-  "php82Extensions.pgsql",         # Extension PostgreSQL
-  "php82Packages.composer"
-]
-```
+### Fichiers supprimés :
+- `railway.json` (conflictuel)
+- `Procfile` (conflictuel)
+
+Railway utilisera maintenant automatiquement le **Dockerfile**.
 
 ## 📝 Prochaines étapes
 
