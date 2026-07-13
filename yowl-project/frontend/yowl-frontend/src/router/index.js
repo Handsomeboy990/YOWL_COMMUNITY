@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useUserStore } from '@/stores/user';
+import LandingView from '@/views/LandingView.vue'
 import HomeView from '../views/HomeView.vue'
 import SignUp from '@/components/pages/Auth/SignUp.vue'
 import Login from '@/components/pages/Auth/Login.vue'
@@ -11,13 +12,19 @@ import About from '@/components/pages/About.vue'
 import Faq from '@/components/pages/Faq.vue'
 import Suggestion from '@/components/pages/Suggestion.vue'
 import Policy from '@/components/pages/Policy.vue'
+import NotFound from '@/views/NotFound.vue'
 import DashboardAdmin from '@/views/DashboardAdmin.vue';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
-            path: '/:page?',
+            path: '/',
+            name: 'landing',
+            component: LandingView,
+        },
+        {
+            path: '/feed/:page?',
             name: 'home',
             component: HomeView,
         },
@@ -82,33 +89,42 @@ const router = createRouter({
             component: DashboardAdmin,
             meta: { requiresAuth: true, requiresAdmin: true }
         },
+        {
+            path: '/:pathMatch(.*)*',
+            name: 'not-found',
+            component: NotFound,
+        },
     ],
+    scrollBehavior(to, from, savedPosition) {
+        if (savedPosition) return savedPosition;
+        if (to.hash) return { el: to.hash, behavior: 'smooth' };
+        return { top: 0 };
+    },
 })
 
 router.beforeEach((to, from, next) => {
     const userStore = useUserStore();
-    
-    // Check if route requires authentication
+
+    // Un utilisateur connecté arrive directement sur le fil d'actualité
+    if (to.name === 'landing' && userStore.isAuthenticated) {
+        return next({ name: 'home' });
+    }
+
+    // Routes protégées : redirection vers la connexion
     if (to.meta.requiresAuth && !userStore.isAuthenticated) {
         return next({ name: 'login', query: { redirect: to.fullPath } });
     }
-    
-    // Check if route requires guest (already logged in users shouldn't access)
+
+    // Routes réservées aux visiteurs (login/signup)
     if (to.meta.requiresGuest && userStore.isAuthenticated) {
         return next({ name: 'home' });
     }
-    
-    // Check if route requires admin
-    if (to.meta.requiresAdmin) {
-        const isAdmin = userStore.user?.roles?.some(role => 
-            typeof role === 'string' ? role === 'admin' : role.name === 'admin'
-        );
-        
-        if (!isAdmin) {
-            return next({ name: 'home' });
-        }
+
+    // Routes réservées aux administrateurs
+    if (to.meta.requiresAdmin && !userStore.isAdmin) {
+        return next({ name: 'home' });
     }
-    
+
     next();
 });
 

@@ -115,7 +115,7 @@ export const useUserStore = defineStore('user', {
             fullname: data.fullname,
             email: data.email,
             password: data.newPassword ? data.newPassword : undefined,
-            picture: data.picture ? data.picture : null,
+            picture: data.picture ? data.picture : undefined,
           },
           {
             headers: {
@@ -125,8 +125,8 @@ export const useUserStore = defineStore('user', {
           }
         );
 
-        this.user = result.data;
-        
+        // La réponse est enveloppée : { success, data, message }
+        this.user = result.data.data ?? result.data;
 
         return result.data;
       } catch (err) {

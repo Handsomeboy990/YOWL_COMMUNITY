@@ -1,102 +1,141 @@
 <template>
-  <div v-if="isOpen" class="fixed inset-0 flex items-center justify-center z-50 bg-gray-500/30">
-    <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6 relative">
+  <BaseModal :isOpen="isOpen" size="sm" @close="emit('close')">
+    <div class="text-center">
+      <div
+        class="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-primary to-[#ff8c5a] grid place-items-center text-white text-2xl shadow-lg shadow-orange-primary/30 mb-5"
+      >
+        <i class="fa-regular fa-envelope-open"></i>
+      </div>
 
-      <!-- close modal -->
-      <button @click="emit('close')"
-        class="cursor-pointer absolute top-3 right-3 text-gray-600 hover:text-gray-900 text-xl">
-        <i class="fas fa-times"></i>
-      </button>
+      <h2 class="text-2xl font-poppins font-bold text-blue-night mb-2">Vérifie ton email</h2>
 
-      <h2 class="text-2xl font-poppins font-bold text-center mb-4 text-[#1E2A38]">
-        Verify your email
-      </h2>
-
-      <p class="text-gray-600 text-center mb-6">
-        Enter the <span class="font-semibold">6-digit code</span> sent to
-        <span class="font-semibold text-[#FF6B35]">{{ email }}</span>.
+      <p class="text-gray-500 mb-6 text-sm leading-relaxed">
+        Saisis le <span class="font-semibold text-blue-night">code à 6 chiffres</span> envoyé à
+        <span class="font-semibold text-orange-primary break-all">{{ email }}</span>
       </p>
 
-      <!-- number fields -->
-      <div class="flex justify-center gap-2 mb-6">
-        <input v-for="(digit, index) in codeInputs" :key="index" ref="otpInputs" type="text" maxlength="1"
-          class="w-12 h-12 text-center text-xl border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1E2A38]"
-          v-model="codeInputs[index]" @input="moveToNext(index, $event)"
-          @keydown.backspace="moveToPrev(index, $event)" />
+      <!-- Champs du code -->
+      <div class="flex justify-center gap-2 mb-2" @paste.prevent="onPaste">
+        <input
+          v-for="(digit, index) in codeInputs"
+          :key="index"
+          ref="otpInputs"
+          v-model="codeInputs[index]"
+          type="text"
+          inputmode="numeric"
+          maxlength="1"
+          class="w-11 h-13 sm:w-12 sm:h-14 text-center text-xl font-poppins font-bold text-blue-night border-2 border-gray-200 rounded-xl transition-all duration-200 focus:outline-none focus:border-orange-primary focus:shadow-md focus:shadow-orange-primary/10"
+          :class="error ? 'border-red-300' : ''"
+          @input="moveToNext(index, $event)"
+          @keydown.backspace="moveToPrev(index, $event)"
+        />
       </div>
 
-      <!-- Actions -->
-      <div class="flex flex-col gap-3 items-center">
-        <button @click="verifyCode"
-          class="px-6 py-2 w-full bg-[#1E2A38] cursor-pointer text-white rounded-lg hover:bg-gray-800 transition">
-          Verify
-        </button>
-        <button @click="resendCode"
-          class="px-6 py-2 w-full cursor-pointer bg-[#FF6B35] text-white rounded-lg hover:bg-[#e75a27] transition">
-          Resend email
-        </button>
-        <button @click="emit('close')"
-          class="px-6 py-2 w-full cursor-pointer bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition">
-          Close
-        </button>
+      <p v-if="error" class="text-sm text-red-500 mb-2 flex items-center justify-center gap-1.5">
+        <i class="fa-solid fa-circle-exclamation text-xs" aria-hidden="true"></i>
+        {{ error }}
+      </p>
+
+      <div class="flex flex-col gap-3 mt-5">
+        <BaseButton variant="night" block :loading="loading" @click="verifyCode">
+          Vérifier mon compte
+        </BaseButton>
+        <BaseButton variant="primary" block :disabled="resendCooldown > 0" :shine="false" @click="resendCode">
+          {{ resendCooldown > 0 ? `Renvoyer le code (${resendCooldown}s)` : 'Renvoyer le code' }}
+        </BaseButton>
       </div>
+
+      <p class="mt-4 text-xs text-gray-400">
+        Le code est valable 15 minutes. Pense à vérifier tes spams.
+      </p>
     </div>
-  </div>
+  </BaseModal>
 </template>
 
 <script setup>
-import { ref, nextTick } from "vue";
-import Swal from "sweetalert2";
+import { nextTick, onBeforeUnmount, ref, watch } from 'vue';
+import Swal from 'sweetalert2';
+import BaseModal from '@/components/ui/BaseModal.vue';
+import BaseButton from '@/components/ui/BaseButton.vue';
 
-defineProps({
+const props = defineProps({
   isOpen: Boolean,
   email: String,
+  error: { type: String, default: '' },
+  loading: { type: Boolean, default: false },
 });
 
-const emit = defineEmits(["close", "resend", "verify"]);
+const emit = defineEmits(['close', 'resend', 'verify']);
 
-// array to stock number
-const codeInputs = ref(["", "", "", "", "", ""]);
+const codeInputs = ref(['', '', '', '', '', '']);
 const otpInputs = ref([]);
+const resendCooldown = ref(0);
+let cooldownTimer = null;
 
-// next field dynamism
+watch(
+  () => props.isOpen,
+  (open) => {
+    if (open) {
+      codeInputs.value = ['', '', '', '', '', ''];
+      nextTick(() => otpInputs.value[0]?.focus());
+    }
+  }
+);
+
 const moveToNext = (index, event) => {
-  if (event.target.value && index < 5) {
-    nextTick(() => otpInputs.value[index + 1].focus());
+  // Ne garder que les chiffres
+  const value = event.target.value.replace(/\D/g, '');
+  codeInputs.value[index] = value;
+  if (value && index < 5) {
+    nextTick(() => otpInputs.value[index + 1]?.focus());
   }
 };
 
-// get back to previous field
 const moveToPrev = (index, event) => {
   if (!event.target.value && index > 0) {
-    nextTick(() => otpInputs.value[index - 1].focus());
+    nextTick(() => otpInputs.value[index - 1]?.focus());
   }
 };
 
-// code verification
+// Permettre de coller le code complet d'un coup
+const onPaste = (event) => {
+  const pasted = (event.clipboardData?.getData('text') || '').replace(/\D/g, '').slice(0, 6);
+  if (!pasted) return;
+  pasted.split('').forEach((digit, i) => {
+    codeInputs.value[i] = digit;
+  });
+  nextTick(() => otpInputs.value[Math.min(pasted.length, 5)]?.focus());
+};
+
 const verifyCode = () => {
-  const code = codeInputs.value.join("");
+  const code = codeInputs.value.join('');
   if (code.length === 6) {
-    emit("verify", code);
+    emit('verify', code);
   } else {
     Swal.fire({
       icon: 'warning',
-      title: 'Wrong submit',
-      text: 'Please fill all the fields with the right code you receive in your box mail',
-      showConfirmButton: true,
-      confirmButtonColor: '#FF6B35'
+      title: 'Code incomplet',
+      text: 'Merci de saisir les 6 chiffres du code reçu par email.',
+      confirmButtonColor: '#FF6B35',
     });
   }
 };
 
 const resendCode = () => {
   emit('resend');
+  resendCooldown.value = 60;
+  cooldownTimer = setInterval(() => {
+    resendCooldown.value--;
+    if (resendCooldown.value <= 0) clearInterval(cooldownTimer);
+  }, 1000);
   Swal.fire({
     icon: 'success',
-    title: 'Code resend successfully',
-    text: 'The code ha been resend successfully. Please check your mail box.',
-    showConfirmButton: true,
-    confirmButtonColor: '#FF6B35'
+    title: 'Code renvoyé',
+    text: 'Un nouveau code vient de partir. Vérifie ta boîte mail.',
+    timer: 2500,
+    showConfirmButton: false,
   });
-}
+};
+
+onBeforeUnmount(() => clearInterval(cooldownTimer));
 </script>

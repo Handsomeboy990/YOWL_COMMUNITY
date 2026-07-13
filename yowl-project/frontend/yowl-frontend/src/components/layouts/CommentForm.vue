@@ -1,9 +1,23 @@
 <template>
-  <div class="mt-4 border rounded-md p-1 flex items-center gap-2 scale-[.9]">
-    <input v-model="newComment" type="text" placeholder="Something to say?" class="flex-1 outline-none p-3" />
-    <button @click="submit"
-      class="cursor-pointer bg-orange-500 text-white p-2 rounded-full hover:translate-y-[-4px] duration-200">
-      <i class="fa-solid fa-paper-plane "></i>
+  <div
+    class="mt-4 flex items-center gap-2 rounded-xl border-2 bg-white p-1 transition-all duration-300"
+    :class="focused ? 'border-orange-primary shadow-md shadow-orange-primary/10' : 'border-gray-200'"
+  >
+    <input
+      v-model="newComment"
+      type="text"
+      placeholder="Quelque chose à dire ?"
+      class="flex-1 outline-none px-3 py-2.5 text-blue-night placeholder-gray-400 bg-transparent"
+      @focus="focused = true"
+      @blur="focused = false"
+      @keyup.enter="submit"
+    />
+    <button
+      class="cursor-pointer bg-orange-primary text-white w-10 h-10 grid place-items-center rounded-lg hover:bg-orange-primary-dark hover:-translate-y-0.5 transition-all duration-200"
+      aria-label="Envoyer le commentaire"
+      @click="submit"
+    >
+      <i class="fa-solid fa-paper-plane"></i>
     </button>
   </div>
 </template>
@@ -19,64 +33,40 @@ const props = defineProps({
   id: Number
 })
 
-const newComment = ref("");
-newComment.value = props.content
+const newComment = ref(props.content || "");
+const focused = ref(false);
 
 const userStore = useUserStore()
-// event to parent
 const emit = defineEmits(["submitComment", "editComment"]);
 
-
-
 const submit = () => {
-  //if user not loggedin
+  // Connexion obligatoire
   if (!userStore.isAuthenticated) {
     Swal.fire({
       icon: 'error',
-      title: 'Oops...',
-      text: "You need to be logged before to do this",
-      showConfirmButton: true,
+      title: 'Connexion requise',
+      text: "Tu dois être connecté pour commenter.",
       confirmButtonColor: "#FF6B35"
     });
     router.push('/login')
     return;
   }
 
-  //if logged
-
   if (!newComment.value.trim()) {
     Swal.fire({
       icon: 'error',
-      title: 'Oops...',
-      text: "You can't publish an empty comment",
+      title: 'Commentaire vide',
+      text: "Impossible de publier un commentaire vide.",
       confirmButtonColor: '#FF6B35'
     });
     return;
   }
 
-  if (newComment.value.trim() !== "") {
-
-    if (!props.content) {
-      emit("submitComment", newComment.value.trim());
-      Swal.fire({
-  icon: "success",
-  title: "Comment added!",
-  timer: 1500,
-  showConfirmButton: false
-})
-
-      newComment.value = "";      
-    } else {
-      emit("editComment", { content: newComment.value.trim(), id: props.id });
-      Swal.fire({
-  icon: "success",
-  title: "Comment updated!",
-  timer: 1500,
-  showConfirmButton: false
-})
-
-      newComment.value = "";
-    }
+  if (!props.content) {
+    emit("submitComment", newComment.value.trim());
+  } else {
+    emit("editComment", { content: newComment.value.trim(), id: props.id });
   }
+  newComment.value = "";
 };
 </script>

@@ -1,161 +1,193 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <div class="flex min-h-screen container mx-auto">
-    <!-- Partie gauche : Formulaire -->
-    <div class="w-1/2 p-12 bg-white">
-      <div class="mb-6">
-        <img src="../../../assets/logo.png" alt="YOWL Logo" class="h-20 mb-8">
-        <h1 class="text-3xl font-bold mb-4">Welcome Back</h1>
-        <p class="text-gray-500 mb-6">
-          Don’t have an account?
-          <router-link to="/signup" class="text-[#FF6B35] underline hover:underline">Signup now</router-link>
+  <div class="min-h-screen w-full flex bg-white">
+    <!-- Panneau formulaire -->
+    <div class="w-full lg:w-1/2 flex flex-col justify-center px-6 sm:px-12 xl:px-24 py-10">
+      <router-link to="/" class="inline-flex items-center gap-2.5 mb-10 w-max">
+        <img src="@/assets/logo.png" alt="Logo YOWL" class="h-12" />
+        <span class="font-poppins font-extrabold text-2xl text-blue-night">YOWL</span>
+      </router-link>
+
+      <div class="max-w-md w-full mx-auto lg:mx-0 animate-fade-in-up">
+        <h1 class="font-poppins font-extrabold text-3xl md:text-4xl text-blue-night">
+          Bon retour parmi nous
+        </h1>
+        <p class="text-gray-500 mt-3 mb-8">
+          Pas encore de compte ?
+          <router-link to="/signup" class="text-orange-primary font-semibold hover:underline">
+            Inscris-toi maintenant
+          </router-link>
         </p>
+
+        <form class="space-y-5" @submit.prevent="submitForm">
+          <Transition name="shake">
+            <div
+              v-if="errorMessage"
+              class="flex items-start gap-3 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600"
+              role="alert"
+            >
+              <i class="fa-solid fa-circle-exclamation mt-0.5" aria-hidden="true"></i>
+              <span>{{ errorMessage }}</span>
+            </div>
+          </Transition>
+
+          <BaseInput
+            v-model="identifier"
+            label="Adresse email"
+            type="email"
+            placeholder="toi@exemple.com"
+            icon="fa-regular fa-envelope"
+            autocomplete="email"
+            required
+            @enter="submitForm"
+          />
+
+          <BaseInput
+            v-model="password"
+            label="Mot de passe"
+            type="password"
+            placeholder="Ton mot de passe"
+            icon="fa-solid fa-lock"
+            autocomplete="current-password"
+            required
+            @enter="submitForm"
+          />
+
+          <div class="flex items-center justify-between">
+            <BaseCheckbox v-model="rememberMe" label="Se souvenir de moi" />
+          </div>
+
+          <BaseButton type="submit" variant="primary" size="lg" block :loading="loading">
+            Se connecter
+          </BaseButton>
+        </form>
       </div>
-
-      <form @submit.prevent="submitForm" class="space-y-4">
-        <!-- error message -->
-        <p v-if="errorMessage" class="text-red-500 text-sm">{{ errorMessage }}</p>
-
-        <!-- email or username -->
-        <div>
-          <label>Email</label>
-          <input type="text" v-model="identifier" placeholder="Enter your email"
-            class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yowl-orange">
-        </div>
-
-        <!-- password -->
-        <div class="relative">
-          <label>Password</label>
-          <input :type="showPassword ? 'text' : 'password'" v-model="password" placeholder="********"
-            class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#1E2A38]">
-          <button type="button" @click="togglePasswordVisibility" class="absolute right-3 inset-y-0 flex items-center">
-            <i :class="showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'" class="mt-5"></i>
-          </button>
-        </div>
-
-        <!-- remember me -->
-        <div class="flex items-center space-x-2">
-          <input type="checkbox" class="cursor-pointer" v-model="rememberMe">
-          <label>Remember me</label>
-        </div>
-
-        <!-- submit -->
-        <button type="submit"
-          class="cursor-pointer w-full bg-[#FF6B35] text-white py-3 rounded-md hover:bg-[#FF6B35] transition duration-300">
-          Sign in
-        </button>
-      </form>
     </div>
 
-    <!-- Right section -->
-    <div class="w-1/2 bg-[#FF6B35] flex items-center justify-center">
-      <div class="bg-white bg-opacity-20 p-8 rounded-lg text-center">
-        <h3 class="text-2xl font-bold mb-4">Reconnect with your community</h3>
-        <p class="mb-6">Your opinions, your voice — join the YOWL community today.</p>
-        <button class="cursor-pointer bg-[#1E2A38] text-white px-6 py-2 rounded-md hover:bg-black hover:text-white">
-          Learn more
-        </button>
+    <!-- Panneau marque -->
+    <div class="hidden lg:flex w-1/2 relative bg-blue-night items-center justify-center overflow-hidden">
+      <div class="auth-blob auth-blob-1" aria-hidden="true"></div>
+      <div class="auth-blob auth-blob-2" aria-hidden="true"></div>
+
+      <div class="relative z-10 max-w-md px-12 text-center">
+        <div
+          class="mx-auto w-20 h-20 rounded-3xl bg-gradient-to-br from-orange-primary to-[#ff8c5a] grid place-items-center text-white text-3xl shadow-2xl shadow-orange-primary/40 rotate-3 animate-fade-in-up"
+        >
+          <i class="fa-solid fa-comments"></i>
+        </div>
+        <h2 class="mt-8 font-poppins font-extrabold text-3xl text-white leading-snug animate-fade-in-up animation-delay-200">
+          Retrouve ta communauté
+        </h2>
+        <p class="mt-4 text-white/70 leading-relaxed animate-fade-in-up animation-delay-400">
+          Tes avis, ta voix. Reprends la conversation là où tu l'avais laissée et découvre
+          ce que la communauté a partagé pendant ton absence.
+        </p>
+
+        <blockquote class="mt-10 bg-white/5 border border-white/10 backdrop-blur-sm rounded-2xl p-6 text-left animate-fade-in-up animation-delay-400">
+          <div class="flex gap-1 text-orange-primary mb-3 text-xs" aria-hidden="true">
+            <i v-for="s in 5" :key="s" class="fa-solid fa-star"></i>
+          </div>
+          <p class="text-white/80 text-sm italic leading-relaxed">
+            « La communauté YOWL est devenue mon réflexe avant chaque découverte sur le web. »
+          </p>
+          <footer class="mt-4 flex items-center gap-3">
+            <span class="w-9 h-9 rounded-full bg-[#7C5CFC] grid place-items-center text-white text-xs font-poppins font-bold">SA</span>
+            <span class="text-white/60 text-xs">Sarah, membre depuis 6 mois</span>
+          </footer>
+        </blockquote>
       </div>
     </div>
   </div>
+
   <MailVerificationModal
     :isOpen="isMailModalOpen"
-    :email="registeredEmail"
+    :email="identifier"
+    :error="verificationError"
+    :loading="verifying"
     @close="isMailModalOpen = false"
     @resend="handleResendCode"
     @verify="submitVerifyCode"
   />
 
-  <div v-if="verificationSuccess" class="fixed top-8 left-1/2 -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded shadow-lg z-50">
-    Email vérifié avec succès ! Vous pouvez maintenant vous connecter.
-  </div>
+  <Transition name="toast">
+    <div
+      v-if="verificationSuccess"
+      class="fixed top-8 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-emerald-500 text-white px-6 py-3 rounded-xl shadow-xl z-[110]"
+    >
+      <i class="fa-solid fa-circle-check"></i>
+      Email vérifié avec succès ! Vous pouvez maintenant vous connecter.
+    </div>
+  </Transition>
 </template>
 
 <script setup>
-import { ref } from "vue"
-import { useRouter } from "vue-router"
-import { useUserStore } from "@/stores/user"
-// import Swal from "sweetalert2"
-import MailVerificationModal from "@/components/layouts/MailVerificationModal.vue"
+import { ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/user';
+import MailVerificationModal from '@/components/layouts/MailVerificationModal.vue';
+import BaseInput from '@/components/ui/BaseInput.vue';
+import BaseButton from '@/components/ui/BaseButton.vue';
+import BaseCheckbox from '@/components/ui/BaseCheckbox.vue';
 
-const router = useRouter()
-const userStore = useUserStore()
+const router = useRouter();
+const route = useRoute();
+const userStore = useUserStore();
 
-// form fielsd
-const identifier = ref("")
-const password = ref("")
-const rememberMe = ref(false)
-const showPassword = ref(false)
+const identifier = ref('');
+const password = ref('');
+const rememberMe = ref(false);
+const errorMessage = ref('');
+const loading = ref(false);
 
-// error message
-const errorMessage = ref("")
-
-// toggle password visibilityt
-const togglePasswordVisibility = () => {
-  showPassword.value = !showPassword.value
-}
-
-// submit form
 const submitForm = async () => {
-
   if (!identifier.value.trim()) {
-    errorMessage.value = "You need to enter your email or your username to continue";
+    errorMessage.value = 'Renseigne ton adresse email pour continuer.';
     return;
   }
   if (!password.value.trim()) {
-    errorMessage.value = "You need to enter your password to continue ";
+    errorMessage.value = 'Renseigne ton mot de passe pour continuer.';
     return;
   }
+
+  loading.value = true;
+  errorMessage.value = '';
   try {
     await userStore.loginUser({
       identifier: identifier.value,
       password: password.value,
-      rememberMe: rememberMe.value
-    })
-    // Swal.fire({
-    //   icon: 'success',
-    //   title: 'Logged successfull',
-    //   text: 'Welcome back ',
-    //   showConfirmButton: false,
-    //   timer: 1500,
-    // });
-    router.push("/") // redirection to homepage after login
+      rememberMe: rememberMe.value,
+    });
+    router.push(route.query.redirect || '/feed');
   } catch (err) {
-
-    // Swal.fire({
-    //   icon: 'error',
-    //   title: 'Ooooops',
-    //   text: 'Something went wrong. Please try again',
-    //   showConfirmButton: false,
-    // });
-    errorMessage.value = err.message || "Login failed";
-    if(errorMessage.value == "This account has not been verified yet.") {
+    errorMessage.value = err.message || 'Connexion impossible. Réessaie.';
+    if (err.message === 'This account has not been verified yet.') {
+      errorMessage.value = "Ton compte n'est pas encore vérifié. Saisis le code reçu par email.";
       isMailModalOpen.value = true;
     }
+  } finally {
+    loading.value = false;
   }
-}
+};
 
-// Logique pour le modal de vérification
+// Vérification de l'email par code OTP
 const verifying = ref(false);
-const verificationError = ref("");
+const verificationError = ref('');
 const verificationSuccess = ref(false);
 const isMailModalOpen = ref(false);
 
 const submitVerifyCode = async (code) => {
-  verificationError.value = "";
+  verificationError.value = '';
   verifying.value = true;
   try {
     await userStore.verifyEmailCode({ email: identifier.value, code });
-
     verificationSuccess.value = true;
     isMailModalOpen.value = false;
-    // Option: redirect to login après 2s
+    errorMessage.value = '';
     setTimeout(() => {
       verificationSuccess.value = false;
-      // router.push('/login?verified=1');
-    }, 2000);
+    }, 2500);
   } catch (err) {
-    verificationError.value = err.message || 'Verification failed';
+    verificationError.value = err.message || 'La vérification a échoué.';
   } finally {
     verifying.value = false;
   }
@@ -164,9 +196,61 @@ const submitVerifyCode = async (code) => {
 const handleResendCode = async () => {
   try {
     await userStore.resendVerificationCode(identifier.value);
-
   } catch {
-        // Silent error handling
-    }
+    // Erreur silencieuse : la modale affiche déjà un feedback générique
+  }
 };
 </script>
+
+<style scoped>
+.auth-blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  animation: authBlobFloat 12s ease-in-out infinite alternate;
+}
+.auth-blob-1 {
+  width: 420px;
+  height: 420px;
+  top: -120px;
+  right: -100px;
+  background: rgba(255, 107, 53, 0.3);
+}
+.auth-blob-2 {
+  width: 360px;
+  height: 360px;
+  bottom: -100px;
+  left: -110px;
+  background: rgba(124, 92, 252, 0.28);
+  animation-delay: 4s;
+}
+
+@keyframes authBlobFloat {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+  to {
+    transform: translate(30px, -25px) scale(1.1);
+  }
+}
+
+.shake-enter-active {
+  animation: shakeIn 0.4s ease;
+}
+@keyframes shakeIn {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-3px); }
+}
+
+.toast-enter-active,
+.toast-leave-active {
+  transition: all 0.4s ease;
+}
+.toast-enter-from,
+.toast-leave-to {
+  opacity: 0;
+  transform: translate(-50%, -16px);
+}
+</style>

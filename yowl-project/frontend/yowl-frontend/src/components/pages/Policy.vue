@@ -1,60 +1,65 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <Header />
-  <div class="max-w-4xl mx-auto py-10 pb-25 px-6">
-    <h1 class="text-3xl font-bold text-[#1E2A38] mb-6">Community Policy</h1>
+  <div class="max-w-4xl mx-auto py-10 px-6 pt-24 min-h-screen">
+    <h1 class="text-3xl font-bold text-blue-night mb-6">Charte de la communauté</h1>
 
     <p class="mb-4 text-gray-700">
-      YOWL Community is a safe digital space designed exclusively for users between the ages of <strong>13 and 35</strong>.
-      By joining our platform, you <strong>agree</strong>  to follow the rules outlined below. Failure to comply may result in <strong>account suspension or permanent removal</strong>.
+      YOWL Community est un espace numérique sûr, réservé aux personnes de <strong>13 à 35 ans</strong>.
+      En rejoignant la plateforme, tu <strong>t'engages</strong> à respecter les règles ci-dessous.
+      Tout manquement peut entraîner une <strong>suspension ou une suppression définitive du compte</strong>.
     </p>
 
-    <h2 class="font-semibold text-lg text-[#FF6B35] mt-6">1. Age Restriction</h2>
+    <h2 class="font-semibold text-lg text-orange-primary mt-6">1. Limite d'âge</h2>
     <p class="text-gray-700 mb-4">
-      Our platform is strictly reserved for individuals between the ages of 13 and 35. Users who misrepresent their age or exceed the age limit will be removed without notice. This policy ensures that conversations remain relevant and engaging for our target demographic.
+      La plateforme est strictement réservée aux 13-35 ans. Les membres qui mentent sur leur âge ou
+      dépassent la limite seront retirés sans préavis. Cette règle garantit des conversations pertinentes
+      pour notre public.
     </p>
 
-    <h2 class="font-semibold text-lg text-[#FF6B35] mt-6">2. Respectful Communication</h2>
+    <h2 class="font-semibold text-lg text-orange-primary mt-6">2. Communication respectueuse</h2>
     <p class="text-gray-700 mb-4">
-      Hate speech, harassment, discrimination, or offensive content of any kind is not tolerated. We expect all members to engage respectfully and maintain a welcoming environment.
+      Les discours haineux, le harcèlement, la discrimination et tout contenu offensant sont interdits.
+      Chaque membre doit échanger avec respect et contribuer à un environnement accueillant.
     </p>
 
-    <h2 class="font-semibold text-lg text-[#FF6B35] mt-6">3. Content Sharing</h2>
-    <p class="text-gray-700 mb-4">
-      Members may post reviews, images, videos, and external links. However, all content must:
+    <h2 class="font-semibold text-lg text-orange-primary mt-6">3. Partage de contenu</h2>
+    <div class="text-gray-700 mb-4">
+      Les membres peuvent publier des reviews, images, vidéos et liens externes. Tout contenu doit :
       <ul class="list-disc ml-6 mt-2">
-        <li>Respect copyright laws.</li>
-        <li>Be safe for a community of young users (no nudity, explicit, or violent material).</li>
-        <li>Stay relevant to constructive discussion and knowledge sharing.</li>
+        <li>Respecter le droit d'auteur.</li>
+        <li>Convenir à une communauté jeune (pas de nudité, de contenu explicite ou violent).</li>
+        <li>Rester pertinent pour une discussion constructive et le partage de connaissances.</li>
       </ul>
+    </div>
+
+    <h2 class="font-semibold text-lg text-orange-primary mt-6">4. Vie privée et sécurité</h2>
+    <p class="text-gray-700 mb-4">
+      Chaque membre doit protéger ses informations personnelles. Le partage de données sensibles
+      (adresse, numéro de téléphone, coordonnées bancaires) est strictement interdit. YOWL ne te
+      demandera jamais ce type d'informations via les reviews ou les publications.
     </p>
 
-    <h2 class="font-semibold text-lg text-[#FF6B35] mt-6">4. Privacy & Security</h2>
-    <p class="text-gray-700 mb-4">
-      Members must protect their personal information. Sharing sensitive data such as addresses, phone numbers, or banking details is strictly prohibited. YOWL will never request such information from you directly through reviews or posts.
-    </p>
-
-    <h2 class="font-semibold text-lg text-[#FF6B35] mt-6">5. Moderation & Enforcement</h2>
-    <p class="text-gray-700 mb-4">
-      YOWL reserves the right to:
+    <h2 class="font-semibold text-lg text-orange-primary mt-6">5. Modération</h2>
+    <div class="text-gray-700 mb-4">
+      YOWL se réserve le droit de :
       <ul class="list-disc ml-6 mt-2">
-        <li>Remove any content that violates these policies.</li>
-        <li>Issue warnings to offending members.</li>
-        <li>Expel members permanently if rules are repeatedly violated.</li>
+        <li>Supprimer tout contenu qui enfreint cette charte.</li>
+        <li>Adresser des avertissements aux membres concernés.</li>
+        <li>Exclure définitivement les membres en cas de récidive.</li>
       </ul>
-    </p>
+    </div>
 
-    <h2 class="font-semibold text-lg text-[#FF6B35] mt-6">6. Final Note</h2>
+    <h2 class="font-semibold text-lg text-orange-primary mt-6">6. Le mot de la fin</h2>
     <p class="text-gray-700">
-      By participating in YOWL Community, you commit to maintaining a safe and inspiring environment for everyone. Our goal is to create a dynamic, respectful, and enriching platform for young people.
+      En participant à YOWL Community, tu t'engages à maintenir un environnement sûr et inspirant pour
+      tout le monde. Notre objectif : une plateforme dynamique, respectueuse et enrichissante pour les jeunes.
     </p>
   </div>
   <Footer />
 </template>
 
-
 <script setup>
-import Footer from '../layouts/Footer.vue';
 import Header from '../layouts/Header.vue';
-
+import Footer from '../layouts/Footer.vue';
 </script>

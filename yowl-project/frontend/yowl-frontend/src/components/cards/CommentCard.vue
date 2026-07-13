@@ -1,112 +1,114 @@
 <template>
-    <div class="mt-6 space-y-6 ">
-        <div class="border-t pt-4">
-            <!-- Header -->
+    <div class="mt-6 space-y-6">
+        <div class="border-t border-gray-200 pt-4">
+            <!-- En-tête -->
             <div class="flex justify-between items-center mb-2">
                 <p class="text-[12px] text-gray-500">
-                    Commented by <span class="font-semibold">{{ comment.user.username }}</span> on {{ (new
-                        Date(comment.created_at)).toString() }}
+                    Commenté par <span class="font-semibold">{{ comment.user?.username }}</span>
+                    le {{ dateFormatted }}
                 </p>
-                <div v-if="comment.user.id == user?.id" class="flex gap-x-2">
-                    <button @click="toggleEdit"
-                        class="cursor-pointer text-white text-[12px] p-2 rounded-full bg-[#1E2A38] hover:translate-y-[-4px] duration-200"><i
-                            class="fa-solid fa-pen-to-square"></i></button>
-                    <button @click="deleteComment"
-                        class="cursor-pointer text-white text-[12px] rounded-full p-2 bg-red-500 hover:translate-y-[-4px] duration-200"><i
-                            class="fa-solid fa-trash"></i></button>
+                <div v-if="comment.user?.id === user?.id" class="flex gap-x-2">
+                    <button
+                        class="cursor-pointer text-white text-[12px] p-2 rounded-full bg-blue-night hover:-translate-y-1 duration-200"
+                        aria-label="Modifier le commentaire"
+                        @click="toggleEdit">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </button>
+                    <button
+                        class="cursor-pointer text-white text-[12px] rounded-full p-2 bg-red-500 hover:-translate-y-1 duration-200"
+                        aria-label="Supprimer le commentaire"
+                        @click="deleteComment">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
                 </div>
             </div>
 
-            <p class="mt-2 text-lg">{{ comment.content }}</p>
-
+            <p class="mt-2 text-base text-gray-800">{{ comment.content }}</p>
 
             <!-- Actions -->
-            <footer class="flex items-center justify-between pt-4 border-t border-gray-200">
+            <footer class="flex items-center justify-between pt-4">
                 <div class="flex items-center space-x-4">
-                    <!-- Like -->
-                    <button @click="toggleReaction('like')" :class="[
-                        'cursor-pointer hover:translate-y-[-3px] flex items-center space-x-1 transition-colors duration-200',
-                        store.comments[index].nb_like
-                            ? 'text-[#FF6B35]'
-                            : 'text-gray-500 hover:text-[#FF6B35]'
-                    ]">
-                        <div class="w-8 h-8 bg-orange-primary mr-2 rounded-full flex items-center justify-center">
+                    <!-- J'aime -->
+                    <button :class="[
+                        'cursor-pointer hover:-translate-y-0.5 flex items-center space-x-1 transition-all duration-200',
+                        currentComment?.user_reaction === 'like'
+                            ? 'text-orange-primary font-semibold'
+                            : 'text-gray-500 hover:text-orange-primary'
+                    ]" @click="toggleReaction('like')">
+                        <span class="w-8 h-8 bg-orange-primary mr-2 rounded-full grid place-items-center">
                             <i :class="[
-                                store.comments[index].nb_like
+                                currentComment?.user_reaction === 'like'
                                     ? 'fa-solid fa-thumbs-up'
                                     : 'fa-regular fa-thumbs-up',
-                                'w-4 h-4 text-white'
+                                'text-white text-sm'
                             ]"></i>
-                        </div>
-
+                        </span>
                         {{ comment.nb_like }}
                     </button>
 
-                    <!-- Dislike -->
-                    <button @click="toggleReaction('dislike')" :class="[
-                        'cursor-pointer hover:translate-y-[3px] flex items-center space-x-1 transition-colors duration-200',
-                        store.comments[index].nb_dislike
-                            ? 'text-blue-700'
+                    <!-- Je n'aime pas -->
+                    <button :class="[
+                        'cursor-pointer hover:translate-y-0.5 flex items-center space-x-1 transition-all duration-200',
+                        currentComment?.user_reaction === 'dislike'
+                            ? 'text-blue-700 font-semibold'
                             : 'text-gray-500 hover:text-blue-500'
-                    ]">
-                        <div class="w-8 h-8 bg-[#1E2A38] mr-2 rounded-full flex items-center justify-center">
+                    ]" @click="toggleReaction('dislike')">
+                        <span class="w-8 h-8 bg-blue-night mr-2 rounded-full grid place-items-center">
                             <i :class="[
-                                store.comments[index].nb_dislike
+                                currentComment?.user_reaction === 'dislike'
                                     ? 'fa-solid fa-thumbs-down'
                                     : 'fa-regular fa-thumbs-down',
-                                'w-4 h-4 text-white'
+                                'text-white text-sm'
                             ]"></i>
-                        </div>
+                        </span>
                         {{ comment.nb_dislike }}
                     </button>
 
-                    <!-- Reply -->
-                    <button @click="toggleReply"
-                        class="cursor-pointer flex items-center space-x-1 text-[12px] text-gray-700 hover:text-blue-night transition-colors">
+                    <!-- Répondre -->
+                    <button
+                        class="cursor-pointer flex items-center space-x-1 text-[12px] text-gray-700 hover:text-blue-night transition-colors"
+                        @click="toggleReply">
                         <span class="font-roboto text-caption">
-                            {{ isReplying ? 'Cancel' : 'Reply' }}
+                            {{ isReplying ? 'Annuler' : 'Répondre' }}
                         </span>
-                        <i class="fa-solid fa-reply w-4 h-4 mr-1"></i>
+                        <i class="fa-solid fa-reply ml-1"></i>
                     </button>
                 </div>
 
-                <!-- Show / Hide replies -->
-                <div v-if="store.comments.filter(reply => reply.parent_id == props.comment.id) && store.comments.filter(reply => reply.parent_id == props.comment.id).length > 0"
-                    class="flex items-center space-x-2">
-                    <button @click="toggleReplies"
-                        class="cursor-pointer font-roboto text-caption text-blue-night hover:underline scale-[.9]">
-                        {{showReplies ? 'Hide replies' : `Show ${store.comments.filter(reply => reply.parent_id ==
-                            props.comment.id).length} replies`}}
+                <!-- Afficher / masquer les réponses -->
+                <div v-if="replies.length > 0" class="flex items-center space-x-2">
+                    <button
+                        class="cursor-pointer font-roboto text-caption text-blue-night hover:underline scale-[.9]"
+                        @click="toggleReplies">
+                        {{ showReplies ? 'Masquer les réponses' : `Afficher ${replies.length} réponse${replies.length > 1 ? 's' : ''}` }}
                     </button>
                 </div>
             </footer>
 
-            <!-- Reply form -->
-            <CommentForm v-if="isReplying" @submitComment="addReply" :content="content" />
+            <!-- Formulaire de réponse -->
+            <CommentForm v-if="isReplying" :content="''" @submitComment="addReply" />
 
-            <!-- Edit form -->
-            <CommentForm v-if="isEditing" @editComment="editComment" :content="content" :id="comment.id" />
+            <!-- Formulaire d'édition -->
+            <CommentForm v-if="isEditing" :content="content" :id="comment.id" @editComment="editComment" />
 
-            <!-- Nested replies (recursive rendering) -->
+            <!-- Réponses imbriquées (rendu récursif) -->
             <div v-if="showReplies" class="ml-10 mt-4 space-y-4">
-                <CommentCard v-for="reply in store.comments.filter(reply => reply.parent_id == props.comment.id)"
-                    :key="reply.id" @deleteComment="deleteComment" :comment="reply" />
+                <CommentCard v-for="reply in replies" :key="reply.id" :comment="reply" />
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from "vue";
+import { computed, ref } from "vue";
 import CommentForm from "../layouts/CommentForm.vue";
 import { useCommentStore } from "@/stores/comment";
 import { useUserStore } from "@/stores/user";
 import Swal from "sweetalert2";
 
-
 const storeUser = useUserStore()
 const user = storeUser.user
-// props : a comment with comments
+
 const props = defineProps({
     comment: {
         type: Object,
@@ -114,161 +116,103 @@ const props = defineProps({
     }
 });
 
-const emit = defineEmits(["editComment", "deleteComment"]);
-
 const store = useCommentStore();
 const isReplying = ref(false);
 const showReplies = ref(false);
 const isEditing = ref(false)
 const content = ref("")
-const replies = ref([])
-const index = store.comments.findIndex(comment => comment.id == props.comment.id)
 
-onMounted(async () => {
-    replies.value = store.comments.filter(reply => reply.parent_id == props.comment.id)
-})
+// Toujours résoudre le commentaire courant dans le store (index jamais figé)
+const currentComment = computed(() =>
+    store.comments.find((c) => c.id === props.comment.id) || props.comment
+);
 
-watch(store.comments, () => {
+const replies = computed(() =>
+    store.comments.filter((reply) => reply.parent_id === props.comment.id)
+);
 
-    replies.value = store.comments.filter(reply => reply.parent_id == props.comment.id)
-})
+const dateFormatted = computed(() => {
+    const d = new Date(props.comment.created_at);
+    return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }) +
+        ' à ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+});
 
-// toggle reply form
 const toggleReply = () => {
     isReplying.value = !isReplying.value;
-    content.value = ""
 };
 
 const toggleEdit = () => {
     isEditing.value = !isEditing.value
     content.value = props.comment.content
-
 };
 
-
-
-// toggle show/hide replies
 const toggleReplies = () => {
     showReplies.value = !showReplies.value;
 };
 
-
-// reply to comment
-
+// Répondre au commentaire
 const addReply = (replyContent) => {
-
     store.addComment({
         review_id: props.comment.review_id,
         parent_id: props.comment.id,
         content: replyContent
     })
-    toggleReply()
-
+    isReplying.value = false;
 };
 
-const editComment = (commentContent) => {
-
+// Modifier le commentaire
+const editComment = async (commentContent) => {
+    await store.updateComment({ content: commentContent.content }, props.comment.id)
     Swal.fire({
         icon: "success",
-        title: "Comment edited!",
+        title: "Commentaire modifié !",
         timer: 1200,
         showConfirmButton: false
     })
-
-    if (showReplies.value) {
-        emit("editComment", commentContent)
-    } else {
-        store.updateComment({ content: commentContent.content }, props.comment.id)
-
-    }
-    toggleEdit()
+    isEditing.value = false;
 }
-/*   store.updateComment({ content: commentContent }, props.comment.id)
-  toggleEdit() */
 
-
+// Supprimer le commentaire
 const deleteComment = () => {
-    if (showReplies.value) {
-        Swal.fire({
-            title: "Confirm deletion",
-            text: "Do you really want to delete this comment ?",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#FF6B35",
-            cancelButtonColor: "#1E2A38",
-            confirmButtonText: "Yes, delete"
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                emit("deleteComment", props.comment.id)
-
-                Swal.fire({
-                    title: "Deleted!",
-                    text: "The comment has been deleted.",
-                    icon: "success",
-                    confirmButtonColor: "#FF6B35"
-                });
-            }
-        });
-    } else {
-        Swal.fire({
-            title: "Confirm deletion",
-            text: "Do you really want to delete this comment ?",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#FF6B35",
-            cancelButtonColor: "#1E2A38",
-            confirmButtonText: "Yes, delete"
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                store.deleteComment(props.comment.id)
-
-
-                Swal.fire({
-                    title: "Deleted!",
-                    text: "The comment has been deleted.",
-                    icon: "success",
-                    confirmButtonColor: "#FF6B35"
-                });
-            }
-        });
-
-
-    }
-    /* store.deleteComment(props.comment.id) */
-
+    Swal.fire({
+        title: "Confirmer la suppression",
+        text: "Veux-tu vraiment supprimer ce commentaire ?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#FF6B35",
+        cancelButtonColor: "#1E2A38",
+        confirmButtonText: "Oui, supprimer",
+        cancelButtonText: "Annuler"
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            await store.deleteComment(props.comment.id)
+            Swal.fire({
+                title: "Supprimé !",
+                text: "Le commentaire a été supprimé.",
+                icon: "success",
+                timer: 1500,
+                showConfirmButton: false,
+            });
+        }
+    });
 }
 
-// Fonction Like / Dislike
+// J'aime / Je n'aime pas
 const toggleReaction = async (reaction) => {
     if (!storeUser.user?.id) {
         Swal.fire({
             icon: 'error',
-            title: 'Oops...',
-            text: "You must be logged in to react.",
-            showConfirmButton: true,
-            confirmButtonColor: "#FF6B35"
+            title: 'Connexion requise',
+            text: 'Tu dois être connecté pour réagir.',
+            confirmButtonColor: '#FF6B35',
         });
         return
     }
 
     try {
-        const response = await store.reactToComment(props.comment.id, reaction)
-
-        
-
-        // Mise à jour instantanée
-        store.comments[index].nb_like = response.data.nb_like
-        store.comments[index].nb_dislike = response.data.nb_dislike
-        store.comments[index].user_reaction = response.data.user_reaction
-
-        /* localReview.value = {
-          ...localReview.value,
-          nb_like: response.data.nb_like,
-          nb_dislike: response.data.nb_dislike,
-          user_reaction: response.data.user_reaction
-        } */
+        await store.reactToComment(props.comment.id, reaction)
     } catch {
-        // Silent error handling
+        // Erreur silencieuse : les compteurs restent inchangés
     }
 }
 </script>

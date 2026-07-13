@@ -3,87 +3,95 @@
   <!-- header -->
   <Header />
 
-  <!-- Profile Section -->
+  <!-- Profil -->
   <div class="min-h-screen bg-gray-50 pt-20 pb-8">
     <div class="container mx-auto px-4 max-w-7xl">
-      
-      <!-- User profile info -->
+
       <div class="animate-fade-in-up">
         <UserProfilData />
       </div>
 
-      <!-- Navigation Tabs -->
+      <!-- Onglets -->
       <div class="flex flex-wrap gap-3 mb-8 animate-fade-in-up animation-delay-200">
         <router-link to="/user/summary"
-          class="px-4 md:px-6 py-2 md:py-3 rounded-lg text-white bg-orange-primary hover:bg-[#ff5522] transition-all shadow-md hover:shadow-lg font-medium flex-1 sm:flex-none text-center">
+          class="px-4 md:px-6 py-2 md:py-3 rounded-lg text-white bg-orange-primary hover:bg-orange-primary-dark transition-all shadow-md hover:shadow-lg font-medium flex-1 sm:flex-none text-center">
           <i class="fa-solid fa-chart-line mr-2"></i>
-          <span>Summary</span>
+          <span>Résumé</span>
         </router-link>
         <router-link to="/user/my-reviews"
-          class="px-4 md:px-6 py-2 md:py-3 rounded-lg text-white bg-blue-night hover:bg-[#FF6B35] transition-all shadow-md hover:shadow-lg font-medium flex-1 sm:flex-none text-center">
+          class="px-4 md:px-6 py-2 md:py-3 rounded-lg text-white bg-blue-night hover:bg-orange-primary transition-all shadow-md hover:shadow-lg font-medium flex-1 sm:flex-none text-center">
           <i class="fa-solid fa-newspaper mr-2"></i>
-          <span>My Reviews</span>
+          <span>Mes reviews</span>
         </router-link>
         <router-link to="/user/activity"
-          class="px-4 md:px-6 py-2 md:py-3 rounded-lg text-white bg-blue-night hover:bg-[#FF6B35] transition-all shadow-md hover:shadow-lg font-medium flex-1 sm:flex-none text-center">
+          class="px-4 md:px-6 py-2 md:py-3 rounded-lg text-white bg-blue-night hover:bg-orange-primary transition-all shadow-md hover:shadow-lg font-medium flex-1 sm:flex-none text-center">
           <i class="fa-solid fa-clock-rotate-left mr-2"></i>
-          <span>Activity</span>
+          <span>Activité</span>
         </router-link>
       </div>
 
-      <!-- Statistics Section -->
+      <!-- Statistiques -->
       <div class="bg-white border border-orange-200 rounded-xl p-4 md:p-6 lg:p-8 shadow-lg animate-fade-in-up animation-delay-400">
         <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-          <i class="fa-solid fa-chart-pie text-[#FF6B35]"></i>
-          <span>Your Statistics</span>
+          <i class="fa-solid fa-chart-pie text-orange-primary"></i>
+          <span>Tes statistiques</span>
         </h2>
-        
+
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-          <!-- Engagement by age (Bar chart) -->
+          <!-- Tuiles de compteurs -->
+          <div class="bg-gradient-to-br from-orange-50 to-white rounded-lg p-6 flex flex-col items-center justify-center hover:shadow-md transition-shadow border border-orange-100">
+            <i class="fa-solid fa-eye text-4xl md:text-5xl text-orange-primary mb-4"></i>
+            <span class="text-3xl md:text-4xl font-bold text-blue-night mb-2">
+              {{ totalViews.toLocaleString('fr-FR') }}
+            </span>
+            <p class="text-gray-600 font-medium text-sm md:text-base">Vues cumulées</p>
+          </div>
+
+          <div class="bg-gradient-to-br from-orange-50 to-white rounded-lg p-6 flex flex-col items-center justify-center hover:shadow-md transition-shadow border border-orange-100">
+            <i class="fa-solid fa-newspaper text-4xl md:text-5xl text-orange-primary mb-4"></i>
+            <span class="text-3xl md:text-4xl font-bold text-blue-night mb-2">
+              {{ myReviews.length }}
+            </span>
+            <p class="text-gray-600 font-medium text-sm md:text-base">Reviews publiées</p>
+          </div>
+
+          <!-- Répartition des réactions (doughnut) -->
           <div class="bg-gray-50 rounded-lg p-4 flex flex-col items-center justify-center hover:shadow-md transition-shadow">
+            <div class="w-full h-48 md:h-56">
+              <DoughnutChart v-if="hasEngagement" :data="chartDataType" :options="chartOptions" class="w-full h-full" />
+              <p v-else class="h-full grid place-items-center text-sm text-gray-400 text-center px-4">
+                Pas encore de réactions sur tes reviews
+              </p>
+            </div>
+            <p class="text-blue-night font-semibold mt-4 text-sm md:text-base">
+              Réactions sur tes reviews
+            </p>
+          </div>
+
+          <!-- Répartition par âge de la communauté (bar) -->
+          <div class="bg-gray-50 rounded-lg p-4 flex flex-col items-center justify-center hover:shadow-md transition-shadow md:col-span-2 lg:col-span-1">
             <div class="w-full h-48 md:h-56">
               <BarChart :data="chartDataByAge" :options="chartOptions" class="w-full h-full" />
             </div>
             <p class="text-blue-night font-semibold mt-4 text-sm md:text-base">
-              Engagement by Age
+              La communauté par tranche d'âge
             </p>
           </div>
 
-          <!-- Engagement type (Doughnut chart) -->
-          <div class="bg-gray-50 rounded-lg p-4 flex flex-col items-center justify-center hover:shadow-md transition-shadow">
-            <div class="w-full h-48 md:h-56">
-              <DoughnutChart :data="chartDataType" :options="chartOptions" class="w-full h-full" />
-            </div>
-            <p class="text-blue-night font-semibold mt-4 text-sm md:text-base">
-              Engagement Type
-            </p>
-          </div>
-
-          <!-- Number of views -->
-          <div class="bg-gradient-to-br from-orange-50 to-white rounded-lg p-6 flex flex-col items-center justify-center hover:shadow-md transition-shadow border border-orange-100">
-            <i class="fa-solid fa-eye text-4xl md:text-5xl text-[#FF6B35] mb-4"></i>
-            <span class="text-3xl md:text-4xl font-bold text-blue-night mb-2">
-              {{ stats.numberOfViews.toLocaleString() }}
-            </span>
-            <p class="text-gray-600 font-medium text-sm md:text-base">
-              Total Views
-            </p>
-          </div>
-
-          <!-- Audience last 90 days (Line chart) -->
-          <div class="bg-gray-50 rounded-lg p-4 flex flex-col items-center justify-center hover:shadow-md transition-shadow md:col-span-2 lg:col-span-3">
+          <!-- Publications sur 6 mois (line) -->
+          <div class="bg-gray-50 rounded-lg p-4 flex flex-col items-center justify-center hover:shadow-md transition-shadow md:col-span-2">
             <div class="w-full h-48 md:h-64">
-              <LineChart :data="chartDataAudience" :options="chartOptions" class="w-full h-full" />
+              <LineChart :data="chartDataTimeline" :options="chartOptions" class="w-full h-full" />
             </div>
             <p class="text-blue-night font-semibold mt-4 text-sm md:text-base">
-              Audience Over the Last 90 Days
+              Tes publications sur les 6 derniers mois
             </p>
           </div>
         </div>
       </div>
 
-      <!-- Leave Community -->
+      <!-- Quitter la communauté -->
       <div class="mt-8 animate-fade-in-up animation-delay-400">
         <LeaveCommunity />
       </div>
@@ -97,10 +105,8 @@
 <script setup>
 import Header from '@/components/layouts/Header.vue';
 import Footer from '@/components/layouts/Footer.vue';
-import { ref, onMounted, computed } from 'vue';
+import { computed, onMounted } from 'vue';
 
-
-// Import Chart.js libraries
 import {
   Chart as ChartJS,
   BarElement,
@@ -115,8 +121,9 @@ import {
 import { Bar, Doughnut, Line } from 'vue-chartjs';
 import UserProfilData from '@/components/layouts/UserProfilData.vue';
 import LeaveCommunity from '@/components/layouts/LeaveCommunity.vue';
+import { useReviewStore } from '@/stores/review';
+import { useUserStore } from '@/stores/user';
 
-// saving chart.js components
 ChartJS.register(
   BarElement,
   ArcElement,
@@ -132,79 +139,98 @@ const BarChart = Bar;
 const DoughnutChart = Doughnut;
 const LineChart = Line;
 
+const reviewStore = useReviewStore();
+const userStore = useUserStore();
 
-const stats = ref({
-  numberOfViews: 0,
-  engagementByAge: [],
-  engagementType: [],
-  audienceLast90Days: [],
+onMounted(() => {
+  reviewStore.getReviews();
+  reviewStore.getKPI();
 });
 
-// Fonction qui génère des données aléatoires pour simuler une API
-const generateRandomData = () => {
-  // Number of views
-  stats.value.numberOfViews = Math.floor(Math.random() * 1_000) + 0;
+// Reviews de l'utilisateur connecté (données réelles)
+const myReviews = computed(() =>
+  reviewStore.reviews.filter((review) => review.user_id === userStore.user?.id)
+);
 
-  // Engagement per age
-  stats.value.engagementByAge = [
-    { range: '13–17', value: Math.floor(Math.random() * 100) },
-    { range: '18–22', value: Math.floor(Math.random() * 100) },
-    { range: '25–29', value: Math.floor(Math.random() * 100) },
-    { range: '30–35', value: Math.floor(Math.random() * 100) },
-  ];
+const totalViews = computed(() =>
+  myReviews.value.reduce((sum, review) => sum + (review.nb_views || 0), 0)
+);
 
-  // Engagement (likes, dislikes, comments)
-  stats.value.engagementType = [
-    { type: 'Likes', value: Math.floor(Math.random() * 1000) },
-    { type: 'Dislikes', value: Math.floor(Math.random() * 1000) },
-    { type: 'Comments', value: Math.floor(Math.random() * 500) },
-  ];
+const totalLikes = computed(() =>
+  myReviews.value.reduce((sum, review) => sum + (review.nb_like || 0), 0)
+);
 
-  // Audience of  last 90 days
-  stats.value.audienceLast90Days = Array.from({ length: 90 }, () =>
-    Math.floor(Math.random() * 1000)
-  );
-};
+const totalDislikes = computed(() =>
+  myReviews.value.reduce((sum, review) => sum + (review.nb_dislike || 0), 0)
+);
 
-// graphic bar data (age)
-const chartDataByAge = computed(() => ({
-  labels: stats.value.engagementByAge.map((d) => d.range),
-  datasets: [
-    {
-      label: 'Age group',
-      data: stats.value.engagementByAge.map((d) => d.value),
-      backgroundColor: '#FF6B35',
-    },
-  ],
-}));
+const totalComments = computed(() =>
+  myReviews.value.reduce((sum, review) => sum + (review.comments?.length || 0), 0)
+);
 
-// grph doughnut data (engagement)
+const hasEngagement = computed(
+  () => totalLikes.value + totalDislikes.value + totalComments.value > 0
+);
+
+// Doughnut : réactions sur mes reviews
 const chartDataType = computed(() => ({
-  labels: stats.value.engagementType.map((d) => d.type),
+  labels: ["J'aime", "Je n'aime pas", 'Commentaires'],
   datasets: [
     {
-      data: stats.value.engagementType.map((d) => d.value),
+      data: [totalLikes.value, totalDislikes.value, totalComments.value],
       backgroundColor: ['#FF6B35', '#1E2A38', '#FDBA74'],
     },
   ],
 }));
 
-// graph line data (audience)
-const chartDataAudience = computed(() => ({
-  labels: Array.from({ length: 90 }, (_, i) => i + 1),
-  datasets: [
-    {
-      label: 'Daily Audience',
-      data: stats.value.audienceLast90Days,
-      borderColor: '#FF6B35',
-      backgroundColor: '#FF6B35',
-      tension: 0.4,
-      pointRadius: 0,
-    },
-  ],
-}));
+// Bar : répartition par âge de la communauté (KPI global)
+const chartDataByAge = computed(() => {
+  const ranges = reviewStore.kpi?.nbUsersByAgeRange || {};
+  return {
+    labels: Object.keys(ranges),
+    datasets: [
+      {
+        label: 'Membres',
+        data: Object.values(ranges),
+        backgroundColor: '#FF6B35',
+        borderRadius: 6,
+      },
+    ],
+  };
+});
 
-// graph globale option
+// Line : mes publications par mois (6 derniers mois)
+const chartDataTimeline = computed(() => {
+  const now = new Date();
+  const months = [];
+  const counts = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    months.push(d.toLocaleDateString('fr-FR', { month: 'short' }));
+    counts.push(
+      myReviews.value.filter((review) => {
+        const created = new Date(review.created_at);
+        return created.getFullYear() === d.getFullYear() && created.getMonth() === d.getMonth();
+      }).length
+    );
+  }
+  return {
+    labels: months,
+    datasets: [
+      {
+        label: 'Reviews publiées',
+        data: counts,
+        borderColor: '#FF6B35',
+        backgroundColor: 'rgba(255, 107, 53, 0.15)',
+        tension: 0.4,
+        fill: true,
+        pointRadius: 4,
+        pointBackgroundColor: '#FF6B35',
+      },
+    ],
+  };
+});
+
 const chartOptions = {
   responsive: true,
   maintainAspectRatio: false,
@@ -213,12 +239,7 @@ const chartOptions = {
   },
   scales: {
     x: { grid: { display: false } },
-    y: { grid: { color: '#E5E7EB' }, ticks: { stepSize: 20 } },
+    y: { grid: { color: '#E5E7EB' }, ticks: { precision: 0 } },
   },
 };
-
-
-onMounted(() => {
-  generateRandomData();
-});
 </script>

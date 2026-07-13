@@ -1,39 +1,42 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <Header />
-  <div class="max-w-4xl mx-auto py-10 px-6">
-    <h1 class="text-3xl font-bold text-[#1E2A38] mb-6">About YOWL Community</h1>
+  <div class="max-w-4xl mx-auto py-10 px-6 pt-24 min-h-screen">
+    <h1 class="text-3xl font-bold text-blue-night mb-6">À propos de YOWL Community</h1>
 
     <p class="text-gray-700 mb-4">
-      YOWL Community was created with a vision: to build a vibrant digital space where young individuals between <strong>13 and 35 years old</strong> can connect, share, and grow together.
+      YOWL Community est né d'une vision : construire un espace numérique vivant où les jeunes de
+      <strong>13 à 35 ans</strong> peuvent se connecter, partager et grandir ensemble.
     </p>
 
     <p class="text-gray-700 mb-4">
-      We understand the power of community-driven discussions. YOWL is more than a social platform—it is a safe environment where ideas, reviews, and personal experiences are exchanged freely and constructively.
+      Nous croyons à la force des discussions portées par la communauté. YOWL est plus qu'une plateforme
+      sociale : c'est un environnement sûr où idées, avis et expériences personnelles s'échangent librement
+      et de manière constructive.
     </p>
 
-    <h2 class="font-semibold text-lg text-[#FF6B35] mt-6">Our Mission</h2>
+    <h2 class="font-semibold text-lg text-orange-primary mt-6">Notre mission</h2>
     <p class="text-gray-700 mb-4">
-      To empower young people by providing a platform that fosters open discussions, peer-to-peer learning, and cultural exchange while ensuring safety and inclusivity.
+      Donner aux jeunes une plateforme qui favorise les discussions ouvertes, l'apprentissage entre pairs
+      et l'échange culturel, tout en garantissant sécurité et inclusivité.
     </p>
 
-    <h2 class="font-semibold text-lg text-[#FF6B35] mt-6">Why YOWL?</h2>
+    <h2 class="font-semibold text-lg text-orange-primary mt-6">Pourquoi YOWL ?</h2>
     <p class="text-gray-700 mb-4">
-      - Because every voice matters.<br />
-      - Because young people deserve a platform tailored to them.<br />
-      - Because growth, learning, and fun can coexist in the same place.
+      - Parce que chaque voix compte.<br />
+      - Parce que les jeunes méritent une plateforme pensée pour eux.<br />
+      - Parce que progresser, apprendre et s'amuser peuvent coexister au même endroit.
     </p>
 
     <p class="text-gray-700">
-      Whether you are here to share a review, discover new perspectives, or connect with like-minded individuals, YOWL Community is your space. Together, we create conversations that matter.
+      Que tu sois là pour partager un avis, découvrir de nouvelles perspectives ou rencontrer des personnes
+      qui te ressemblent, YOWL Community est ton espace. Ensemble, créons des conversations qui comptent.
     </p>
   </div>
   <Footer />
 </template>
 
-
 <script setup>
 import Header from '../layouts/Header.vue';
 import Footer from '../layouts/Footer.vue';
 </script>
-

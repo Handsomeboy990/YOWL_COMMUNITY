@@ -1,19 +1,24 @@
 @import '@fortawesome/fontawesome-free/css/all.min.css';
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@theme {
+    --color-orange-primary: #ff6b35;
+    --color-orange-primary-dark: #e75a27;
+    --color-blue-night: #1e2a38;
+    --color-blue-night-light: #344155;
+
+    --font-poppins: 'Poppins', sans-serif;
+    --font-roboto: 'Roboto', sans-serif;
+
+    --text-caption: 12px;
+    --text-caption--line-height: 16px;
+    --text-body: 14px;
+    --text-body--line-height: 20px;
+}
 
 body {
     margin: 0;
     padding: 0;
-    font-family: 'Roboto', sans-serif;
-}
-
-.font-poppins {
-    font-family: 'Poppins', sans-serif;
-}
-
-.font-roboto {
     font-family: 'Roboto', sans-serif;
 }
 
@@ -66,22 +71,6 @@ small,
     font-family: 'Roboto', sans-serif;
     font-size: 12px;
     line-height: 16px;
-}
-
-.bg-orange-primary {
-    background-color: #FF6B35;
-}
-
-.bg-blue-night {
-    background-color: #1E2A38;
-}
-
-.text-blue-night {
-    color: #1e2a38;
-}
-
-.border-orange-primary {
-    border-color: #ff6b35;
 }
 
 /* Animation du menu mobile */

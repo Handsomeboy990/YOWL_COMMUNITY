@@ -1,65 +1,42 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <aside class="flex-shrink-0 w-full md:w-1/4 mb-6 md:mb-0">
+  <aside class="flex-shrink-0 w-full">
     <div class="bg-blue-night text-white rounded-lg p-4 sm:p-6">
-      <!-- Filter by -->
+      <!-- Filtres -->
       <div class="mb-6">
-        <h3 class="font-roboto font-medium text-white mb-4 text-lg sm:text-base">Filtered by</h3>
+        <h3 class="font-roboto font-medium text-white mb-4 text-lg sm:text-base">Filtrer par</h3>
         <div class="space-y-3">
-          <label class="flex items-center">
-            <input type="checkbox" v-model="filters.noAnswers" class="rounded border-gray-300 cursor-pointer text-[#FF6B35] focus:ring-[#FF6B35]">
-            <span class="cursor-pointer ml-2 text-sm font-roboto">No answers</span>
-          </label>
-          <label class="flex items-center">
-            <input type="checkbox" v-model="filters.noViews" class="rounded border-gray-300 cursor-pointer text-[#FF6B35] focus:ring-[#FF6B35]">
-            <span class="cursor-pointer ml-2 text-sm font-roboto">No views</span>
-          </label>
-          <label class="flex items-center">
-            <input type="checkbox" v-model="filters.noLikes" class="rounded border-gray-300 cursor-pointer text-[#FF6B35] focus:ring-[#FF6B35]">
-            <span class="cursor-pointer ml-2 text-sm font-roboto">No likes</span>
-          </label>
+          <BaseCheckbox v-model="filters.noAnswers" dark label="Sans réponses" />
+          <BaseCheckbox v-model="filters.noViews" dark label="Sans vues" />
+          <BaseCheckbox v-model="filters.noLikes" dark label="Sans likes" />
         </div>
       </div>
 
-      <!-- Sorted by -->
+      <!-- Tri -->
       <div class="mb-6">
-        <h3 class="font-roboto font-medium text-white mb-4 text-lg sm:text-base">Sorted by</h3>
+        <h3 class="font-roboto font-medium text-white mb-4 text-lg sm:text-base">Trier par</h3>
         <div class="space-y-3">
-          <label class="flex items-center">
-            <input type="radio" v-model="sortBy" value="newest" name="sort" class="cursor-pointer text-[#FF6B35] focus:ring-[#FF6B35]">
-            <span class="cursor-pointer ml-2 text-sm font-roboto">Newest</span>
-          </label>
-          <label class="flex items-center">
-            <input type="radio" v-model="sortBy" value="older" name="sort" class="cursor-pointer text-[#FF6B35] focus:ring-[#FF6B35]">
-            <span class="cursor-pointer ml-2 text-sm font-roboto">Older</span>
-          </label>
-          <label class="flex items-center">
-            <input type="radio" v-model="sortBy" value="highestLike" name="sort" class="cursor-pointer text-[#FF6B35] focus:ring-[#FF6B35]">
-            <span class="cursor-pointer ml-2 text-sm font-roboto">Highest like</span>
-          </label>
+          <BaseRadio v-model="sortBy" value="newest" name="sort" dark label="Plus récentes" />
+          <BaseRadio v-model="sortBy" value="older" name="sort" dark label="Plus anciennes" />
+          <BaseRadio v-model="sortBy" value="highestLike" name="sort" dark label="Plus aimées" />
         </div>
       </div>
 
-      <!-- Tagged with -->
+      <!-- Tags -->
       <div class="mb-6">
-        <h3 class="font-roboto font-medium text-white mb-4 text-lg sm:text-base">Tagged with</h3>
+        <h3 class="font-roboto font-medium text-white mb-4 text-lg sm:text-base">Avec les tags</h3>
         <input
-          type="text"
           v-model="tagInput"
-          placeholder="e.g. electronic, twitter"
-          class="w-full px-3 py-2 bg-white rounded-md text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B35]"
+          type="text"
+          placeholder="ex : gaming, musique"
+          class="w-full px-3.5 py-2.5 bg-white/95 rounded-xl text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-orange-primary transition-shadow"
         >
       </div>
 
-      <!-- Apply Filter Button -->
-      <div class="flex items-center justify-center">
-        <button
-          class="cursor-pointer hover:translate-y-[-4px] w-full sm:max-w-[80%] bg-white text-[#1E2A38] font-medium py-2 px-4 rounded-md hover:bg-gray-100 transition-colors"
-          @click="applyFilter"
-        >
-          Apply filter
-        </button>
-      </div>
+      <!-- Bouton d'application -->
+      <BaseButton variant="primary" block :shine="false" icon="fa-solid fa-filter" @click="applyFilter">
+        Appliquer les filtres
+      </BaseButton>
     </div>
   </aside>
 </template>
@@ -67,6 +44,10 @@
 <script setup>
 import { ref } from 'vue';
 import { useReviewStore } from '@/stores/review';
+import BaseCheckbox from '@/components/ui/BaseCheckbox.vue';
+import BaseRadio from '@/components/ui/BaseRadio.vue';
+import BaseButton from '@/components/ui/BaseButton.vue';
+
 const reviewStore = useReviewStore();
 
 const filters = ref({
@@ -79,7 +60,6 @@ const sortBy = ref('newest');
 const tagInput = ref('');
 
 function applyFilter() {
-
   reviewStore.filterReviews({
     noAnswers: filters.value.noAnswers,
     noViews: filters.value.noViews,
