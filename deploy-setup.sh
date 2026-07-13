@@ -17,7 +17,7 @@ if [ ! -d "yowl-project" ]; then
     exit 1
 fi
 
-echo -e "${GREEN}✓${NC} Répertoire correct"
+echo -e "${GREEN}OK${NC} Répertoire correct"
 
 # 1. Vérifier Git
 echo ""
@@ -26,7 +26,7 @@ if ! command -v git &> /dev/null; then
     echo -e "${RED} Git n'est pas installé${NC}"
     exit 1
 fi
-echo -e "${GREEN}✓${NC} Git installé"
+echo -e "${GREEN}OK${NC} Git installé"
 
 # 2. Générer APP_KEY si nécessaire
 echo ""
@@ -36,7 +36,7 @@ cd yowl-project/backend
 if [ -f "artisan" ]; then
     echo "Génération de la clé d'application..."
     APP_KEY=$(php artisan key:generate --show)
-    echo -e "${GREEN}✓${NC} APP_KEY générée : ${YELLOW}${APP_KEY}${NC}"
+    echo -e "${GREEN}OK${NC} APP_KEY générée : ${YELLOW}${APP_KEY}${NC}"
     echo ""
     echo -e "${YELLOW}  IMPORTANT : Copiez cette clé pour Railway !${NC}"
     echo "APP_KEY=${APP_KEY}"
@@ -62,7 +62,7 @@ files=(
 
 for file in "${files[@]}"; do
     if [ -f "$file" ]; then
-        echo -e "${GREEN}✓${NC} $file"
+        echo -e "${GREEN}OK${NC} $file"
     else
         echo -e "${RED}${NC} $file manquant"
     fi
@@ -83,21 +83,21 @@ echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━
 echo ""
 echo " Prochaines étapes :"
 echo ""
-echo "1️⃣  Commitez les nouveaux fichiers :"
+echo "1. Commitez les nouveaux fichiers :"
 echo -e "   ${YELLOW}git add .${NC}"
 echo -e "   ${YELLOW}git commit -m \"feat: add deployment configuration\"${NC}"
 echo -e "   ${YELLOW}git push origin main${NC}"
 echo ""
-echo "2️⃣  Créez un compte sur Railway :"
+echo "2. Créez un compte sur Railway :"
 echo -e "   ${YELLOW}https://railway.app${NC}"
 echo ""
-echo "3️⃣  Créez un compte sur Vercel :"
+echo "3. Créez un compte sur Vercel :"
 echo -e "   ${YELLOW}https://vercel.com${NC}"
 echo ""
-echo "4️⃣  Suivez le guide de déploiement :"
+echo "4. Suivez le guide de déploiement :"
 echo -e "   ${YELLOW}cat DEPLOYMENT_GUIDE.md${NC}"
 echo ""
 echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
-echo "💡 Astuce : Lisez le fichier DEPLOYMENT_GUIDE.md pour des instructions détaillées"
+echo " Astuce : Lisez le fichier DEPLOYMENT_GUIDE.md pour des instructions détaillées"
 echo ""

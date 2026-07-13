@@ -1,4 +1,4 @@
-# YOWL Community 🌐
+# YOWL Community
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Vue.js](https://img.shields.io/badge/Vue.js-3.x-green.svg)](https://vuejs.org/)
@@ -34,34 +34,34 @@
 -  Mettre en place des outils de suivi et d'analyse (KPI, dashboard)
 -  Garantir la compatibilité multi-supports (desktop, mobile, tablette)
 
-## ⚡ Fonctionnalités
+## Fonctionnalités
 
 ### MVP (Version actuelle)
 
-- 👤 **Inscription & Connexion** : Création de compte par email/téléphone avec authentification sécurisée
-- 📝 **Publication d'avis** : Commenter n'importe quel contenu web externe
-- 💬 **Commentaires & Réponses** : Système de discussion threadé
-- 👍 **Réactions** : Like/Dislike sur les publications et commentaires
-- 🔍 **Recherche & Filtres** : Recherche par mots-clés, popularité, date et thèmes
-- 🔔 **Notifications** : Alertes en temps réel sur les interactions
-- 👤 **Profils utilisateurs** : Avatar, pseudo, bio et préférences personnalisables
+- **Inscription & Connexion** : Création de compte par email/téléphone avec authentification sécurisée
+- **Publication d'avis** : Commenter n'importe quel contenu web externe
+- **Commentaires & Réponses** : Système de discussion threadé
+- **Réactions** : Like/Dislike sur les publications et commentaires
+- **Recherche & Filtres** : Recherche par mots-clés, popularité, date et thèmes
+- **Notifications** : Alertes en temps réel sur les interactions
+- **Profils utilisateurs** : Avatar, pseudo, bio et préférences personnalisables
 
 ### V1 (Prochainement)
 
 -  **Partage externe enrichi** : Intégration réseaux sociaux
-- 🛡️ **Modération basique** : Signalement et gestion des contenus inappropriés
+- **Modération basique** : Signalement et gestion des contenus inappropriés
 -  **Dashboard personnel amélioré** : Statistiques individuelles d'engagement
-- 🌍 **Multilingue** : Support FR/EN
-- 🔔 **Notifications temps réel** : WebSocket pour notifications instantanées
+- **Multilingue** : Support FR/EN
+- **Notifications temps réel** : WebSocket pour notifications instantanées
 
 ### V2 (Futur)
 
 -  **Recommandations personnalisées** : Algorithme de suggestions basé sur les préférences
-- 🎮 **Gamification** : Badges, points et classements
+- **Gamification** : Badges, points et classements
 -  **Partage multi-réseaux** : X (Twitter), LinkedIn, WhatsApp, etc.
-- 🔌 **API tierces** : Intégration actualités et tendances sociales
+- **API tierces** : Intégration actualités et tendances sociales
 
-## 🛠️ Technologies
+## Technologies
 
 ### Frontend
 - **Framework** : Vue.js 3.x
@@ -148,7 +148,7 @@ VITE_API_URL=http://localhost:8000/api
 VITE_APP_NAME=YOWL Community
 ```
 
-## ⚙️ Configuration
+## Configuration
 
 ### Redis (Cache)
 
@@ -172,7 +172,7 @@ La 2FA sera disponible dans une version ultérieure. Configuration à venir.
 - Chiffrement des données sensibles : AES-256
 - Conformité RGPD intégrée
 
-## 🎮 Utilisation
+## Utilisation
 
 ### Démarrer le serveur de développement
 
@@ -197,7 +197,7 @@ cd frontend
 npm run build
 ```
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 yowl-community/
@@ -242,7 +242,7 @@ yowl-community/
 - **Notification** : Alertes utilisateurs
 - **Report** : Signalements de contenus
 
-## 🧪 Tests
+## Tests
 
 ### Tests Backend (PHPUnit)
 
@@ -264,7 +264,7 @@ npm run test
 - Scénarios testés : inscription, commentaire, réaction, recherche
 - Méthode : observation + questionnaire
 
-## 🚢 Déploiement
+## Déploiement
 
 ### Variables d'environnement (Production)
 
@@ -311,7 +311,7 @@ Cinq indicateurs clés sont suivis :
 - Format PDF
 - API pour intégrations tierces
 
-## 🗓️ Roadmap
+## Roadmap
 
 | Phase | Durée | Statut |
 |-------|-------|--------|
@@ -353,13 +353,13 @@ Les contributions sont les bienvenues ! Veuillez suivre ces étapes :
 | Maintenance et support | $30/mois |
 | Hébergement évolutif | +$200/mois |
 
-## 📞 Support
+## Support
 
 - **Email** : support@yowl.community
 - **Temps de réponse** : 24h
 - **Garantie bugs** : 2 mois après livraison
 
-## 📄 License
+## License
 
 Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
 
@@ -373,4 +373,4 @@ Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de 
 
 **Note** : Capacité actuelle : 5,000 utilisateurs simultanés | Scalable jusqu'à 15,000 utilisateurs
 
-Fait avec ❤️ par l'équipe YOWL Community
+Fait par l'équipe YOWL Community

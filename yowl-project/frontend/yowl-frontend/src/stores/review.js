@@ -108,7 +108,7 @@ export const useReviewStore = defineStore(
       getKPI();
     }
 
-    // 🟩 Modifier une review
+    // Modifier une review
     async function updateReviews(id, data) {
       try {
         const response = await api.post(`/reviews/${id}`, data, {

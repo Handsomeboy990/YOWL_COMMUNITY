@@ -1,17 +1,17 @@
-# 🔧 Fix pour l'erreur Vercel "vite: command not found"
+# Fix pour l'erreur Vercel "vite: command not found"
 
-## ❌ Problème
+## Problème
 
 ```
 sh: line 1: vite: command not found
 Error: Command "npm run build" exited with 127
 ```
 
-## 🔍 Cause
+## Cause
 
 Vite est dans `devDependencies` mais Vercel n'installe que les `dependencies` par défaut en production.
 
-## ✅ Solution appliquée
+## Solution appliquée
 
 Le fichier `vercel.json` a été mis à jour :
 
@@ -23,7 +23,7 @@ Le fichier `vercel.json` a été mis à jour :
 
 Cela force Vercel à installer les `devDependencies` (incluant Vite) lors du build.
 
-## 📝 Prochaines étapes
+## Prochaines étapes
 
 ```bash
 cd /home/lauret-chacha/Importants/yowl_community
@@ -33,17 +33,17 @@ git commit -m "fix: install devDependencies on Vercel build"
 git push origin main
 ```
 
-Vercel redéploiera automatiquement et le build devrait réussir ! ✅
+Vercel redéploiera automatiquement et le build devrait réussir !
 
-## 🔍 Vérification
+## Vérification
 
 Dans les logs Vercel, vous devriez voir :
-- ✓ `npm install --include=dev` (au lieu de `npm install`)
-- ✓ Vite installé dans les dépendances
-- ✓ `vite build` exécuté avec succès
-- ✓ Build completed successfully
+- OK `npm install --include=dev` (au lieu de `npm install`)
+- OK Vite installé dans les dépendances
+- OK `vite build` exécuté avec succès
+- OK Build completed successfully
 
-## 💡 Alternative
+## Alternative
 
 Si le problème persiste, vous pouvez aussi déplacer Vite dans `dependencies` :
 

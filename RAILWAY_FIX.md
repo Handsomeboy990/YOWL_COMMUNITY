@@ -1,6 +1,6 @@
-# 🔧 Fix pour l'erreur "could not find driver" sur Railway
+# Fix pour l'erreur "could not find driver" sur Railway
 
-## ❌ Problème
+## Problème
 
 ```
 could not find driver (Connection: pgsql, SQL: select exists...)
@@ -8,7 +8,7 @@ could not find driver (Connection: pgsql, SQL: select exists...)
 
 Cette erreur signifie que PHP n'a pas les extensions PostgreSQL installées.
 
-## ✅ Solution appliquée (VERSION 2 - Dockerfile)
+## Solution appliquée (VERSION 2 - Dockerfile)
 
 Le Dockerfile a été complètement réécrit pour :
 1. Utiliser **PHP 8.2-CLI** (au lieu de FPM)
@@ -22,7 +22,7 @@ Le Dockerfile a été complètement réécrit pour :
 
 Railway utilisera maintenant automatiquement le **Dockerfile**.
 
-## 📝 Prochaines étapes
+## Prochaines étapes
 
 1. **Commiter la correction** :
    ```bash
@@ -35,16 +35,16 @@ Railway utilisera maintenant automatiquement le **Dockerfile**.
 2. **Redéployer sur Railway** :
    - Railway détectera automatiquement le push
    - Le build redémarrera avec les bonnes extensions
-   - Le déploiement devrait maintenant réussir ✅
+   - Le déploiement devrait maintenant réussir
 
-## 🔍 Vérification
+## Vérification
 
 Une fois redéployé, vérifiez les logs Railway. Vous devriez voir :
-- ✅ Build successful
-- ✅ Migrations exécutées
-- ✅ Container running
+- Build successful
+- Migrations exécutées
+- Container running
 
-## 🆘 Si le problème persiste
+## Si le problème persiste
 
 Vérifiez dans Railway que :
 1. La base de données PostgreSQL est bien provisionnée
@@ -52,7 +52,7 @@ Vérifiez dans Railway que :
    - `DB_CONNECTION=pgsql`
    - `PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER`, `PGPASSWORD` sont injectées automatiquement
 
-## 💡 Alternative : Utiliser SQLite en développement
+## Alternative : Utiliser SQLite en développement
 
 Si vous voulez tester rapidement sans PostgreSQL :
 

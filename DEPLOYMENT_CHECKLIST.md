@@ -95,7 +95,7 @@ Votre application est en ligne gratuitement !
 
 ---
 
-## 📞 En cas de problème
+## En cas de problème
 
 1. Vérifier les logs sur Railway/Vercel
 2. Vérifier les variables d'environnement

@@ -1,4 +1,4 @@
-# 🌐 URLs de Production YOWL Community
+# URLs de Production YOWL Community
 
 Remplissez ce fichier après avoir déployé sur Railway et Vercel.
 

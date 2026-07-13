@@ -1,6 +1,6 @@
 console.log("[YOWL] Content script loaded");
 const btn = document.createElement("button");
-btn.textContent = "💬 YOWL Comment";
+btn.textContent = "YOWL Comment";
 btn.style.position = "fixed";
 btn.style.bottom = "20px";
 btn.style.right = "20px";

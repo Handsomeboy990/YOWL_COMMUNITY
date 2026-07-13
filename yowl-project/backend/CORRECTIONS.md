@@ -146,5 +146,5 @@ Duration: 1.37s
 
 ---
 
-**Développeur**: Assistant IA  
+**Développeur**: Handsomeboy990  
 **Révision**: À valider par l'équipe

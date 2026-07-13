@@ -8,7 +8,7 @@
 - **Problème**: `error.value.valuerr` au lieu de `err` dans les blocs catch (lignes 107, 136, 161)
 - **Impact**: Crashes lors de la gestion d'erreurs API
 - **Solution**: 
-  - Corrigé `error.value.valuerr.response` → `err.response`
+  - Corrigé `error.value.valuerr.response` -> `err.response`
   - Affichage du message d'erreur dynamique dans SweetAlert
   - Ajout de feedback UX avec message serveur
 - **Fichiers modifiés**: `src/stores/review.js`
@@ -35,7 +35,7 @@
 #### 5. **Dépendances obsolètes** - MISES À JOUR 
 - **Problème**: 19 packages outdated + baseline-browser-mapping périmé
 - **Solution**: 
-  - `npm update` → 123 packages mis à jour
+  - `npm update` -> 123 packages mis à jour
   - `baseline-browser-mapping@latest` installé
   - 0 vulnérabilité de sécurité
 - **Résultat**: 
@@ -79,20 +79,20 @@
 ##  Historique des Corrections
 
 ### 2025-12-30 (Corrections précédentes)
-- URLs hardcodées → Configuration centralisée
-- Double stockage token → Pinia uniquement
-- Protection routes fragile → Guards robustes
-- Console.log (28+ occurrences) → Nettoyés
-- ESLint errors (5) → Corrigés
-- Fichiers React/trelltech → Supprimés
-- Configuration axios → Simplifiée
+- URLs hardcodées -> Configuration centralisée
+- Double stockage token -> Pinia uniquement
+- Protection routes fragile -> Guards robustes
+- Console.log (28+ occurrences) -> Nettoyés
+- ESLint errors (5) -> Corrigés
+- Fichiers React/trelltech -> Supprimés
+- Configuration axios -> Simplifiée
 
 ### 2025-12-31 (Aujourd'hui)
-- Bug `error.value.valuerr` → Corrigé
-- Console.log restants → Supprimés
-- Code commenté → Nettoyé
-- Dépendances → Mises à jour
-- HTML warnings → Corrigés
+- Bug `error.value.valuerr` -> Corrigé
+- Console.log restants -> Supprimés
+- Code commenté -> Nettoyé
+- Dépendances -> Mises à jour
+- HTML warnings -> Corrigés
 
 ---
 
@@ -138,7 +138,7 @@
 
 ---
 
-**Développeur**: Assistant IA  
+**Développeur**: Handsomeboy990  
 **Révision**: Lauret CHACHA (Lead Frontend)  
 **Status**:  Production Ready (optimisations recommandées)
 

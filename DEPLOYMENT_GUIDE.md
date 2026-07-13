@@ -24,13 +24,13 @@ Ce guide vous aide à déployer **gratuitement** votre projet YOWL Community sur
 1. Cliquez sur **"New Project"**
 2. Sélectionnez **"Provision PostgreSQL"** (base de données gratuite)
 3. Attendez que PostgreSQL soit provisionné
-4. Cliquez sur **"New"** → **"GitHub Repo"**
+4. Cliquez sur **"New"** -> **"GitHub Repo"**
 5. Sélectionnez votre repository `yowl-community`
 6. Choisissez le dossier **`yowl-project/backend`** comme racine
 
 ### Étape 3 : Configuration des variables d'environnement
 
-Dans Railway, allez dans votre service backend → **Variables** :
+Dans Railway, allez dans votre service backend -> **Variables** :
 
 ```env
 APP_NAME=YOWL Community
@@ -90,7 +90,7 @@ curl https://votre-app.up.railway.app/api/health
 
 ### Étape 2 : Importer le projet
 
-1. Cliquez sur **"Add New..."** → **"Project"**
+1. Cliquez sur **"Add New..."** -> **"Project"**
 2. Importez votre repository `yowl-community`
 3. **Framework Preset** : Sélectionnez **"Vite"**
 4. **Root Directory** : Cliquez sur **"Edit"** et sélectionnez `yowl-project/frontend/yowl-frontend`
@@ -117,7 +117,7 @@ NODE_ENV=production
 
 ---
 
-##  PARTIE 3 : Configuration CORS (Liaison Backend ↔ Frontend)
+## PARTIE 3 : Configuration CORS (Liaison Backend <-> Frontend)
 
 ### Sur Railway (Backend)
 
@@ -166,7 +166,7 @@ curl https://votre-backend.up.railway.app/api/health
 ### Test 2 : Frontend
 Ouvrez `https://votre-app.vercel.app` dans votre navigateur.
 
-### Test 3 : Connexion Backend ↔ Frontend
+### Test 3 : Connexion Backend <-> Frontend
 1. Allez sur votre frontend
 2. Essayez de vous connecter / créer un compte
 3. Vérifiez que les requêtes API fonctionnent
@@ -205,7 +205,7 @@ Après la configuration initiale :
 ##  Dépannage
 
 ### Erreur 500 sur Railway
-1. Vérifiez les logs : Railway Dashboard → Votre service → **Deployments** → **View Logs**
+1. Vérifiez les logs : Railway Dashboard -> Votre service -> **Deployments** -> **View Logs**
 2. Vérifiez que `APP_KEY` est défini
 3. Vérifiez la connexion PostgreSQL
 
@@ -243,11 +243,11 @@ Votre projet YOWL Community est maintenant **en ligne et gratuit** !
 
 ---
 
-## 📞 Support
+## Support
 
 Si vous avez des questions :
 1. Consultez les logs sur Railway/Vercel
 2. Vérifiez la documentation Laravel/Vue.js
 3. Contactez l'équipe YOWL Community
 
-**Fait avec ❤️ par l'équipe YOWL Community**
+**Fait par l'équipe YOWL Community**
