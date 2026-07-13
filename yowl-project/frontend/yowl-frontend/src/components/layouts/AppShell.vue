@@ -1,0 +1,295 @@
+<template>
+    <div class="min-h-screen bg-gray-50 w-full">
+        <!-- ===== HEADER ===== -->
+        <header class="fixed top-0 left-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
+            <div class="w-full px-3 md:px-6 h-16 flex items-center gap-3 md:gap-6">
+                <!-- Logo -->
+                <router-link to="/feed" class="flex items-center gap-2 shrink-0" @click="refreshFeed">
+                    <span class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-primary to-[#ff8c5a] grid place-items-center shadow-md shadow-orange-primary/30">
+                        <img src="@/assets/logo.png" alt="Logo YOWL" class="w-7 h-7">
+                    </span>
+                    <span class="hidden sm:inline font-poppins font-extrabold text-xl text-blue-night">YOWL</span>
+                </router-link>
+
+                <!-- Recherche -->
+                <div class="flex-1 max-w-xl mx-auto">
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400">
+                            <i class="fas fa-search text-sm"></i>
+                        </span>
+                        <input v-model="searchQuery" type="text" placeholder="Rechercher sur YOWL..."
+                            class="pl-10 pr-4 py-2.5 w-full bg-gray-100 hover:bg-gray-200/70 focus:bg-white border border-transparent focus:border-orange-primary rounded-full text-gray-900 text-sm focus:outline-none transition-all duration-200"
+                            @keyup.enter="handleSearch" />
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex items-center gap-2 md:gap-3 shrink-0">
+                    <BaseButton class="hidden md:inline-flex" variant="primary" size="sm" icon="fa-solid fa-plus" @click="openPublish">
+                        Publier
+                    </BaseButton>
+
+                    <!-- Profil ou connexion -->
+                    <div v-if="userStore.isAuthenticated" ref="dropdownRef" class="relative">
+                        <button class="flex items-center gap-1.5 cursor-pointer" :aria-expanded="isDropdownOpen" aria-label="Menu du profil" @click="isDropdownOpen = !isDropdownOpen">
+                            <img v-if="userStore.user?.picture"
+                                class="w-10 h-10 rounded-full object-cover ring-2 ring-orange-primary/40"
+                                :src="getStorageUrl(userStore.user.picture)" alt="Photo de profil">
+                            <span v-else
+                                class="w-10 h-10 bg-blue-night rounded-full grid place-items-center text-white text-sm font-bold">
+                                {{ userInitials }}
+                            </span>
+                        </button>
+
+                        <Transition name="dropdown">
+                            <div v-if="isDropdownOpen"
+                                class="absolute right-0 mt-3 w-56 bg-white text-gray-800 rounded-2xl shadow-xl shadow-blue-night/10 py-2 border border-gray-100">
+                                <div class="px-4 py-2.5 border-b border-gray-100">
+                                    <p class="font-semibold text-blue-night text-sm truncate">{{ userStore.user?.fullname }}</p>
+                                    <p class="text-xs text-gray-400 truncate">@{{ userStore.user?.username }}</p>
+                                </div>
+                                <router-link to="/user/activity" class="flex items-center gap-2.5 px-4 py-2.5 text-sm hover:bg-gray-50" @click="isDropdownOpen = false">
+                                    <i class="fa-regular fa-user text-gray-400 w-4"></i> Mon profil
+                                </router-link>
+                                <router-link to="/user/summary" class="flex items-center gap-2.5 px-4 py-2.5 text-sm hover:bg-gray-50" @click="isDropdownOpen = false">
+                                    <i class="fa-solid fa-chart-pie text-gray-400 w-4"></i> Mes statistiques
+                                </router-link>
+                                <router-link v-if="userStore.isAdmin" to="/admin" class="flex items-center gap-2.5 px-4 py-2.5 text-sm hover:bg-gray-50" @click="isDropdownOpen = false">
+                                    <i class="fa-solid fa-gauge-high text-gray-400 w-4"></i> Administration
+                                </router-link>
+                                <button class="w-full flex items-center gap-2.5 text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 cursor-pointer" @click="logout">
+                                    <i class="fa-solid fa-arrow-right-from-bracket w-4"></i> Déconnexion
+                                </button>
+                            </div>
+                        </Transition>
+                    </div>
+
+                    <BaseButton v-else :tag="'router-link'" :to="'/login'" variant="night" size="sm" :shine="false">
+                        <span class="hidden sm:inline">Connexion</span>
+                        <i class="sm:hidden fa-solid fa-right-to-bracket"></i>
+                    </BaseButton>
+                </div>
+            </div>
+        </header>
+
+        <!-- ===== NAVIGATION GAUCHE (desktop) ===== -->
+        <nav class="hidden lg:flex flex-col fixed left-0 top-16 bottom-0 w-60 xl:w-64 bg-white border-r border-gray-200 px-3 py-5 z-40"
+            aria-label="Navigation principale">
+            <div class="flex-1 space-y-1 overflow-y-auto">
+                <router-link v-for="item in mainNav" :key="item.to" :to="item.to"
+                    class="flex items-center gap-3.5 px-4 py-3 rounded-xl font-medium transition-all duration-200"
+                    :class="isActive(item) ? 'bg-orange-primary/10 text-orange-primary' : 'text-blue-night hover:bg-gray-100'">
+                    <i :class="[item.icon, 'w-5 text-center text-lg']"></i>
+                    {{ item.label }}
+                </router-link>
+
+                <div class="pt-4">
+                    <BaseButton variant="primary" block icon="fa-solid fa-plus" @click="openPublish">
+                        Publier une review
+                    </BaseButton>
+                </div>
+            </div>
+
+            <!-- Liens secondaires -->
+            <div class="pt-4 border-t border-gray-100 space-y-0.5">
+                <router-link v-for="item in secondaryNav" :key="item.to" :to="item.to"
+                    class="flex items-center gap-3 px-4 py-2 rounded-lg text-sm text-gray-500 hover:text-blue-night hover:bg-gray-50 transition-colors">
+                    <i :class="[item.icon, 'w-4 text-center']"></i>
+                    {{ item.label }}
+                </router-link>
+                <p class="px-4 pt-3 text-[11px] text-gray-400">
+                    © {{ new Date().getFullYear() }} YOWL — LONG Corp
+                </p>
+            </div>
+        </nav>
+
+        <!-- ===== CONTENU ===== -->
+        <div class="pt-16 lg:pl-60 xl:pl-64 w-full" :class="$slots.rail ? 'xl:pr-80' : ''">
+            <main class="w-full min-h-[calc(100vh-4rem)] pb-24 lg:pb-8">
+                <slot />
+            </main>
+        </div>
+
+        <!-- ===== RAIL DROIT (optionnel) ===== -->
+        <aside v-if="$slots.rail"
+            class="hidden xl:block fixed right-0 top-16 bottom-0 w-80 border-l border-gray-200 bg-white overflow-y-auto p-5 z-40">
+            <slot name="rail" />
+        </aside>
+
+        <!-- ===== NAVIGATION BASSE (mobile) ===== -->
+        <nav class="lg:hidden fixed bottom-0 left-0 w-full z-50 bg-white/95 backdrop-blur-md border-t border-gray-200 pb-[env(safe-area-inset-bottom)]"
+            aria-label="Navigation mobile">
+            <div class="grid grid-cols-5 h-16">
+                <router-link to="/feed" class="flex flex-col items-center justify-center gap-1 text-[11px]"
+                    :class="route.name === 'home' ? 'text-orange-primary font-semibold' : 'text-gray-500'">
+                    <i class="fa-solid fa-house text-lg"></i>
+                    Fil
+                </router-link>
+                <router-link to="/user/my-reviews" class="flex flex-col items-center justify-center gap-1 text-[11px]"
+                    :class="route.name === 'my-reviews' ? 'text-orange-primary font-semibold' : 'text-gray-500'">
+                    <i class="fa-solid fa-newspaper text-lg"></i>
+                    Reviews
+                </router-link>
+                <button class="flex flex-col items-center justify-center cursor-pointer" aria-label="Publier une review" @click="openPublish">
+                    <span class="w-12 h-12 -mt-5 rounded-2xl bg-gradient-to-br from-orange-primary to-[#ff8c5a] grid place-items-center text-white text-xl shadow-lg shadow-orange-primary/40 border-4 border-white">
+                        <i class="fa-solid fa-plus"></i>
+                    </span>
+                </button>
+                <router-link to="/user/activity" class="flex flex-col items-center justify-center gap-1 text-[11px]"
+                    :class="route.name === 'activity' ? 'text-orange-primary font-semibold' : 'text-gray-500'">
+                    <i class="fa-solid fa-clock-rotate-left text-lg"></i>
+                    Activité
+                </router-link>
+                <router-link :to="userStore.isAuthenticated ? '/user/summary' : '/login'"
+                    class="flex flex-col items-center justify-center gap-1 text-[11px]"
+                    :class="route.name === 'summary' || route.name === 'login' ? 'text-orange-primary font-semibold' : 'text-gray-500'">
+                    <i class="fa-regular fa-user text-lg"></i>
+                    Profil
+                </router-link>
+            </div>
+        </nav>
+
+        <!-- Modale de publication globale -->
+        <AddReviewModal :isOpen="isPublishOpen" @close="isPublishOpen = false" @publish="publishReview" />
+    </div>
+</template>
+
+<script setup>
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/user';
+import { useReviewStore } from '@/stores/review';
+import { getStorageUrl } from '@/config';
+import Swal from 'sweetalert2';
+import BaseButton from '@/components/ui/BaseButton.vue';
+import AddReviewModal from '@/components/layouts/AddReviewModal.vue';
+
+const route = useRoute();
+const router = useRouter();
+const userStore = useUserStore();
+const reviewStore = useReviewStore();
+
+const searchQuery = ref('');
+const isDropdownOpen = ref(false);
+const isPublishOpen = ref(false);
+const dropdownRef = ref(null);
+
+const mainNav = computed(() => {
+    const items = [
+        { to: '/feed', icon: 'fa-solid fa-house', label: 'Fil', name: 'home' },
+    ];
+    if (userStore.isAuthenticated) {
+        items.push(
+            { to: '/user/my-reviews', icon: 'fa-solid fa-newspaper', label: 'Mes reviews', name: 'my-reviews' },
+            { to: '/user/activity', icon: 'fa-solid fa-clock-rotate-left', label: 'Activité', name: 'activity' },
+            { to: '/user/summary', icon: 'fa-solid fa-chart-pie', label: 'Statistiques', name: 'summary' },
+        );
+    }
+    if (userStore.isAdmin) {
+        items.push({ to: '/admin', icon: 'fa-solid fa-gauge-high', label: 'Administration', name: 'admin-dashboard' });
+    }
+    return items;
+});
+
+const secondaryNav = [
+    { to: '/about', icon: 'fa-regular fa-circle-question', label: 'À propos' },
+    { to: '/faq', icon: 'fa-regular fa-comments', label: 'FAQ' },
+    { to: '/policy', icon: 'fa-solid fa-shield-halved', label: 'Charte' },
+    { to: '/suggestion', icon: 'fa-regular fa-lightbulb', label: 'Suggestions' },
+];
+
+const isActive = (item) => route.name === item.name;
+
+const userInitials = computed(() => {
+    if (!userStore.user?.username) return '';
+    return userStore.user.username
+        .split(' ')
+        .map((n) => n[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2);
+});
+
+const refreshFeed = () => {
+    if (route.name === 'home') reviewStore.getReviews();
+};
+
+const openPublish = () => {
+    if (!userStore.isAuthenticated) {
+        router.push({ name: 'login', query: { redirect: route.fullPath } });
+        return;
+    }
+    isPublishOpen.value = true;
+};
+
+const publishReview = async (reviewData) => {
+    await reviewStore.createReviews(reviewData);
+    if (route.name !== 'home') router.push('/feed');
+};
+
+const handleSearch = async () => {
+    if (searchQuery.value.trim()) {
+        await reviewStore.searchReviews(searchQuery.value.trim());
+        if (reviewStore.reviews.length === 0) {
+            Swal.fire({
+                title: 'Aucun résultat',
+                text: 'Aucune review ne correspond à ta recherche pour le moment.',
+                icon: 'info',
+                confirmButtonColor: '#FF6B35',
+            });
+            searchQuery.value = '';
+            reviewStore.getReviews();
+        }
+        router.push('/feed');
+    } else {
+        reviewStore.getReviews();
+    }
+};
+
+const logout = () => {
+    isDropdownOpen.value = false;
+    Swal.fire({
+        title: 'Confirmer la déconnexion',
+        text: 'Veux-tu vraiment te déconnecter ?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#FF6B35',
+        cancelButtonColor: '#1E2A38',
+        confirmButtonText: 'Oui, me déconnecter',
+        cancelButtonText: 'Annuler',
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            await userStore.logoutUser();
+            router.push('/');
+            Swal.fire({
+                title: 'Déconnecté !',
+                text: 'À très vite !',
+                icon: 'success',
+                timer: 1800,
+                showConfirmButton: false,
+            });
+        }
+    });
+};
+
+const onClickOutside = (event) => {
+    if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
+        isDropdownOpen.value = false;
+    }
+};
+
+onMounted(() => document.addEventListener('click', onClickOutside));
+onBeforeUnmount(() => document.removeEventListener('click', onClickOutside));
+</script>
+
+<style scoped>
+.dropdown-enter-active,
+.dropdown-leave-active {
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.dropdown-enter-from,
+.dropdown-leave-to {
+    opacity: 0;
+    transform: translateY(-6px);
+}
+</style>

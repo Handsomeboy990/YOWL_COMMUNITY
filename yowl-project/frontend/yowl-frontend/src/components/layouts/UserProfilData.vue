@@ -1,5 +1,5 @@
 <template>
-    <div class="flex items-center pt-15 mb-8">
+    <div class="flex items-center mb-8">
         <!-- Avatar -->
         <img v-if="userStore.user?.picture"
             class="w-20 h-20 rounded-full object-cover border-2 border-orange-primary/30"

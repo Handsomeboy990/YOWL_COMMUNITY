@@ -1,7 +1,7 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <Header />
-  <div class="max-w-4xl mx-auto py-10 px-6 pt-24 min-h-screen">
+  <AppShell>
+  <div class="max-w-3xl mx-auto py-10 px-6">
     <h1 class="text-3xl font-bold text-blue-night mb-6">À propos de YOWL Community</h1>
 
     <p class="text-gray-700 mb-4">
@@ -33,10 +33,9 @@
       qui te ressemblent, YOWL Community est ton espace. Ensemble, créons des conversations qui comptent.
     </p>
   </div>
-  <Footer />
+  </AppShell>
 </template>
 
 <script setup>
-import Header from '../layouts/Header.vue';
-import Footer from '../layouts/Footer.vue';
+import AppShell from '@/components/layouts/AppShell.vue';
 </script>

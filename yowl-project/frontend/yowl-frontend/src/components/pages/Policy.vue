@@ -1,7 +1,7 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <Header />
-  <div class="max-w-4xl mx-auto py-10 px-6 pt-24 min-h-screen">
+  <AppShell>
+  <div class="max-w-3xl mx-auto py-10 px-6">
     <h1 class="text-3xl font-bold text-blue-night mb-6">Charte de la communauté</h1>
 
     <p class="mb-4 text-gray-700">
@@ -56,10 +56,9 @@
       tout le monde. Notre objectif : une plateforme dynamique, respectueuse et enrichissante pour les jeunes.
     </p>
   </div>
-  <Footer />
+  </AppShell>
 </template>
 
 <script setup>
-import Header from '../layouts/Header.vue';
-import Footer from '../layouts/Footer.vue';
+import AppShell from '@/components/layouts/AppShell.vue';
 </script>

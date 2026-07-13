@@ -1,11 +1,8 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <!-- header -->
-  <Header />
-
-  <!-- Profil -->
-  <div class="min-h-screen bg-gray-50 pt-20 pb-8">
-    <div class="container mx-auto px-4 max-w-7xl">
+  <AppShell>
+  <div class="w-full py-6">
+    <div class="w-full px-4 md:px-8">
 
       <div class="animate-fade-in-up">
         <UserProfilData />
@@ -98,13 +95,11 @@
     </div>
   </div>
 
-  <!-- footer -->
-  <Footer />
+  </AppShell>
 </template>
 
 <script setup>
-import Header from '@/components/layouts/Header.vue';
-import Footer from '@/components/layouts/Footer.vue';
+import AppShell from '@/components/layouts/AppShell.vue';
 import { computed, onMounted } from 'vue';
 
 import {

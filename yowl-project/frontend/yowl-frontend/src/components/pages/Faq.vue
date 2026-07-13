@@ -1,7 +1,7 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <Header />
-  <div class="max-w-4xl mx-auto py-10 px-6 pt-24 min-h-screen">
+  <AppShell>
+  <div class="max-w-3xl mx-auto py-10 px-6">
     <h1 class="text-3xl font-bold text-blue-night mb-6">Foire aux questions</h1>
 
     <div class="space-y-6">
@@ -44,10 +44,9 @@
       </div>
     </div>
   </div>
-  <Footer />
+  </AppShell>
 </template>
 
 <script setup>
-import Header from '../layouts/Header.vue';
-import Footer from '../layouts/Footer.vue';
+import AppShell from '@/components/layouts/AppShell.vue';
 </script>

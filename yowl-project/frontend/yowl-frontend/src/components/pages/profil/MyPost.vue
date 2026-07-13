@@ -1,9 +1,6 @@
 <template>
-  <!-- header -->
-  <Header />
-
-  <!-- Profil -->
-  <div class="container mx-auto p-6 pt-20">
+  <AppShell>
+  <div class="w-full px-4 md:px-8 py-6">
     <UserProfilData />
 
     <!-- Onglets -->
@@ -122,13 +119,11 @@
   <AddReviewModal :isOpen="isModalOpen" :editedReview="selectedReview" @close="closeModal" @publish="addPost"
     @update="updatePost" />
 
-  <!-- footer -->
-  <Footer />
+  </AppShell>
 </template>
 
 <script setup>
-import Header from '@/components/layouts/Header.vue';
-import Footer from '@/components/layouts/Footer.vue';
+import AppShell from '@/components/layouts/AppShell.vue';
 import { computed, ref, onMounted } from 'vue';
 import Pagination from '@/components/layouts/Pagination.vue';
 import UserProfilData from '@/components/layouts/UserProfilData.vue';

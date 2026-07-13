@@ -1,7 +1,7 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <Header />
-  <div class="container mx-auto p-6 pt-20">
+  <AppShell>
+  <div class="w-full px-4 md:px-8 py-6">
     <UserProfilData />
 
     <!-- Onglets -->
@@ -53,12 +53,11 @@
 
     <LeaveCommunity class="mt-6" />
   </div>
-  <Footer />
+  </AppShell>
 </template>
 
 <script setup>
-import Header from '@/components/layouts/Header.vue';
-import Footer from '@/components/layouts/Footer.vue';
+import AppShell from '@/components/layouts/AppShell.vue';
 import UserProfilData from '@/components/layouts/UserProfilData.vue';
 import LeaveCommunity from '@/components/layouts/LeaveCommunity.vue';
 import { ref, onMounted } from 'vue';

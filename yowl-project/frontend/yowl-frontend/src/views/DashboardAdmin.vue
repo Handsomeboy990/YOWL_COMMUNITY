@@ -1,6 +1,6 @@
 <template>
-  <Header />
-  <div class="max-w-6xl mx-auto py-20 px-4">
+  <AppShell>
+  <div class="w-full px-4 md:px-8 py-6">
     <!-- Bandeau -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-8 p-5 bg-blue-night text-white rounded-xl shadow">
       <h1 class="text-2xl md:text-3xl font-poppins font-bold">Tableau de bord admin</h1>
@@ -173,10 +173,11 @@
       <div v-else class="text-gray-500">Chargement des commentaires...</div>
     </section>
   </div>
+  </AppShell>
 </template>
 
 <script setup>
-import Header from '@/components/layouts/Header.vue';
+import AppShell from '@/components/layouts/AppShell.vue';
 import Pagination from '@/components/layouts/Pagination.vue';
 import { ref, onMounted } from 'vue';
 import api from '@/services/apiService';

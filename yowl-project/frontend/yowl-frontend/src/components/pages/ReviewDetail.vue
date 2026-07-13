@@ -1,8 +1,7 @@
 <template>
-  <Header />
-
-  <div class="min-h-screen bg-gray-50 pt-20 pb-8">
-    <div class="container mx-auto px-4 max-w-5xl">
+  <AppShell>
+  <div class="w-full py-6">
+    <div class="container mx-auto px-4 max-w-4xl">
 
       <!-- Retour au fil -->
       <router-link to="/feed"
@@ -162,15 +161,14 @@
     </div>
   </div>
 
-  <Footer />
+  </AppShell>
 </template>
 
 <script setup>
+import AppShell from '@/components/layouts/AppShell.vue';
 import { getStorageUrl } from '@/config';
 import { computed, onBeforeMount, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import Header from '../layouts/Header.vue'
-import Footer from '../layouts/Footer.vue'
 import CommentList from '../CommentList.vue'
 import { useCommentStore } from '@/stores/comment'
 import { useUserStore } from '@/stores/user'
