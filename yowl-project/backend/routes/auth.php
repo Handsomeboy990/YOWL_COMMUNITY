@@ -12,10 +12,10 @@ Route::post('/register', [RegisteredUserController::class, 'store'])
     ->middleware('guest')
     ->name('register');
 
-// OTP email verification (code based)
+// OTP email verification (code based) - throttled against brute force
 use App\Http\Controllers\Auth\EmailOtpController;
-Route::post('/email/otp/resend', [EmailOtpController::class, 'resend'])->middleware('guest');
-Route::post('/email/otp/verify', [EmailOtpController::class, 'verify'])->middleware('guest');
+Route::post('/email/otp/resend', [EmailOtpController::class, 'resend'])->middleware(['guest', 'throttle:6,1']);
+Route::post('/email/otp/verify', [EmailOtpController::class, 'verify'])->middleware(['guest', 'throttle:10,1']);
 
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])
     ->middleware('guest')

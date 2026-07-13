@@ -102,7 +102,8 @@ curl https://votre-app.up.railway.app/api/health
 Dans les **Environment Variables** de Vercel :
 
 ```env
-VITE_API_URL=https://votre-backend.up.railway.app/api
+VITE_BASE_URL=https://votre-backend.up.railway.app/api
+VITE_STORAGE_URL=https://votre-backend.up.railway.app/storage
 VITE_APP_NAME=YOWL Community
 NODE_ENV=production
 ```
@@ -210,7 +211,7 @@ Après la configuration initiale :
 3. Vérifiez la connexion PostgreSQL
 
 ### Frontend ne se connecte pas au Backend
-1. Vérifiez `VITE_API_URL` sur Vercel
+1. Vérifiez `VITE_BASE_URL` sur Vercel
 2. Vérifiez les CORS sur Railway
 3. Ouvrez la console du navigateur (F12) pour voir les erreurs
 

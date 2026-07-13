@@ -24,9 +24,12 @@ class ReviewReactionController extends Controller
             ->where('user_id', $userId)
             ->first();
 
+        $userReaction = $reactionType;
         if ($existingReaction) {
             if ($existingReaction->reaction === $reactionType) {
+                // Cliquer deux fois sur la même réaction la retire
                 $existingReaction->delete();
+                $userReaction = null;
             } else {
                 $existingReaction->update(['reaction' => $reactionType]);
             }
@@ -47,6 +50,7 @@ class ReviewReactionController extends Controller
         return response()->json([
             'nb_like' => $review->nb_like,
             'nb_dislike' => $review->nb_dislike,
+            'user_reaction' => $userReaction,
         ]);
     }
 }

@@ -46,7 +46,7 @@ class UsersSeeder extends Seeder
                 'fullname' => 'User ' . $i,
                 'email' => 'user' . $i . '@yowl.fr',
                 'password' => Hash::make('user123'),
-                'birthdate' => '2000-01-' . str_pad($i, 2, '0', STR_PAD_LEFT),
+                'birthdate' => '2000-01-' . str_pad((string) (($i % 28) + 1), 2, '0', STR_PAD_LEFT),
                 'email_verification_code' => null,
                 'email_verification_expires_at' => null,
                 'email_verified_at' => now(),

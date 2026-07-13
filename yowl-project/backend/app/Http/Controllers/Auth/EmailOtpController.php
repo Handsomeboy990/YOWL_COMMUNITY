@@ -24,9 +24,7 @@ class EmailOtpController extends Controller {
         $user->email_verification_code = $code;
         $user->email_verification_expires_at = now()->addMinutes(15);
         $user->save();
-        Mail::raw("Votre code de vérification : $code", function($message) use ($user) {
-            $message->to($user->email)->subject('Code de vérification YOWL');
-        });
+        Mail::to($user->email)->send(new \App\Mail\EmailVerificationCode($code));
         return response()->json(['success' => true, 'message' => 'Code envoyé']);
     }
     public function verify(Request $request) {

@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Review;
 use App\Models\Comment;
+use App\Models\Tag;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
@@ -30,10 +32,22 @@ class AdminController extends Controller
             'message' => "Rôle mis à jour : {$validated['role']}"
         ]);
     }
-    public function banUser(User $user)
+    public function banUser(Request $request, User $user)
     {
+        // Un admin ne peut pas se bannir lui-même
+        if ($user->id === $request->user()->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Vous ne pouvez pas bannir votre propre compte',
+            ], 403);
+        }
+
         $user->is_active = false;
         $user->save();
+
+        // Révoquer immédiatement toutes les sessions du banni
+        $user->tokens()->delete();
+
         return response()->json(['success'=>true,'message'=>'User banned']);
     }
 
@@ -66,6 +80,7 @@ class AdminController extends Controller
                 'users' => User::count(),
                 'reviews' => Review::count(),
                 'comments' => Comment::count(),
+                'tags' => Tag::count(),
                 'latest_reviews' => Review::latest()->take(5)->get(['id','content','created_at']),
             ]
         ]);
@@ -112,6 +127,13 @@ class AdminController extends Controller
 
     public function deleteReview(Review $review)
     {
+        // Supprimer physiquement les médias associés
+        if (is_array($review->medias)) {
+            foreach ($review->medias as $mediaPath) {
+                Storage::disk('public')->delete($mediaPath);
+            }
+        }
+
         $review->delete();
         return response()->json(['success'=>true,'message'=>'Review deleted']);
     }

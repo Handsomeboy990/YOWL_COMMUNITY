@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Review;
+use App\Models\ReviewReaction;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -17,19 +18,30 @@ class ReviewController extends Controller
     public function index()
     {
         try {
-            $query = Review::with(['user', 'tags', 'comments']);
+            $currentUser = auth('sanctum')->user();
 
-            // Recherche
+            $query = Review::with(['user:id,username,picture', 'tags', 'comments']);
+
+            // Ne montrer que les reviews publiées (sauf celles de l'utilisateur connecté)
+            $query->where(function ($q) use ($currentUser) {
+                $q->where('is_published', true);
+                if ($currentUser) {
+                    $q->orWhere('user_id', $currentUser->id);
+                }
+            });
+
+            // Recherche (insensible à la casse, portable MySQL/PostgreSQL/SQLite)
             $search = request('search');
             if ($search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('content', 'like', "%$search%")
-                        ->orWhere('link', 'like', "%$search%")
-                        ->orWhereHas('user', function ($userQuery) use ($search) {
-                            $userQuery->where('username', 'like', "%$search%");
+                $needle = '%'.mb_strtolower($search).'%';
+                $query->where(function ($q) use ($needle) {
+                    $q->whereRaw('LOWER(content) LIKE ?', [$needle])
+                        ->orWhereRaw('LOWER(link) LIKE ?', [$needle])
+                        ->orWhereHas('user', function ($userQuery) use ($needle) {
+                            $userQuery->whereRaw('LOWER(username) LIKE ?', [$needle]);
                         })
-                         ->orWhereHas('tags', function ($tagQuery) use ($search) {
-                            $tagQuery->where('name', 'like', "%$search%");
+                        ->orWhereHas('tags', function ($tagQuery) use ($needle) {
+                            $tagQuery->whereRaw('LOWER(name) LIKE ?', [$needle]);
                         });
                 });
             }
@@ -77,6 +89,19 @@ class ReviewController extends Controller
 
             $reviews = $query->paginate(10);
 
+            // Réaction de l'utilisateur connecté sur chaque review de la page
+            $userReactions = collect();
+            if ($currentUser) {
+                $userReactions = ReviewReaction::where('user_id', $currentUser->id)
+                    ->whereIn('review_id', $reviews->getCollection()->pluck('id'))
+                    ->pluck('reaction', 'review_id');
+            }
+            $reviews->getCollection()->transform(function ($review) use ($userReactions) {
+                $review->user_reaction = $userReactions[$review->id] ?? null;
+
+                return $review;
+            });
+
             return response()->json(
                 [
                     'success' => true,
@@ -118,7 +143,8 @@ class ReviewController extends Controller
                     $mediaPaths[] = $media->store('reviews', 'public');
                 }
             }
-            $validated['medias'] = json_encode($mediaPaths);
+            // Le cast "array" du modèle se charge de l'encodage JSON
+            $validated['medias'] = $mediaPaths;
 
             $review = Review::create($validated);
 
@@ -140,7 +166,7 @@ class ReviewController extends Controller
             return response()->json(
                 [
                     'success' => true,
-                    'data' => $review->load(['user', 'tags']),
+                    'data' => $review->load(['user:id,username,picture', 'tags']),
                     'message' => 'Review created successfully.',
                 ],
                 201,
@@ -164,9 +190,26 @@ class ReviewController extends Controller
     {
 
         try {
-            $review->load(['user', 'tags', 'comments']);
+            $currentUser = auth('sanctum')->user();
+
+            // Une review dépubliée n'est visible que par son auteur
+            if (! $review->is_published && (! $currentUser || $currentUser->id !== $review->user_id)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Review introuvable.',
+                ], 404);
+            }
+
+            $review->load(['user:id,username,picture', 'tags', 'comments']);
             $review->nb_views++;
             $review->save();
+
+            $review->user_reaction = $currentUser
+                ? ReviewReaction::where('user_id', $currentUser->id)
+                    ->where('review_id', $review->id)
+                    ->value('reaction')
+                : null;
+
             return response()->json(
                 [
                     'success' => true,
@@ -211,8 +254,8 @@ class ReviewController extends Controller
                 $existingMedias = json_decode($existingMedias, true) ?? [];
             }
 
-            // Récupérer les anciennes images
-            $oldMedias = $review->medias ? json_decode($review->medias, true) : [];
+            // Récupérer les anciennes images (le cast "array" décode déjà le JSON)
+            $oldMedias = is_array($review->medias) ? $review->medias : [];
 
             // Supprimer physiquement les images retirées
             $toDelete = array_diff($oldMedias, $existingMedias);
@@ -229,8 +272,7 @@ class ReviewController extends Controller
             }
 
             // Fusionner les anciennes à garder et les nouvelles
-            $allMedias = array_merge($existingMedias, $newMediaPaths);
-            $validated['medias'] = json_encode($allMedias);
+            $validated['medias'] = array_values(array_merge($existingMedias, $newMediaPaths));
             unset($validated['existingMedias']);
 
             // Modifier les tags
@@ -253,7 +295,7 @@ class ReviewController extends Controller
             return response()->json(
                 [
                     'success' => true,
-                    'data' => $review->load(['user', 'tags']),
+                    'data' => $review->load(['user:id,username,picture', 'tags']),
                     'message' => 'Review updated successfully.',
                 ],
                 200,
@@ -284,11 +326,17 @@ class ReviewController extends Controller
      */
     public function destroy(Request $request, Review $review)
     {
-        //
         if ($review->user_id !== $request->user()->id) {
             return response()->json(['success' => false, 'message' => 'Action non autorisée'], 403);
         }
         try {
+            // Supprimer physiquement les médias associés
+            if (is_array($review->medias)) {
+                foreach ($review->medias as $mediaPath) {
+                    Storage::disk('public')->delete($mediaPath);
+                }
+            }
+
             $review->delete();
 
             return response()->json(

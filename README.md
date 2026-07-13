@@ -144,7 +144,7 @@ cp .env.example .env
 Éditez le fichier `.env` du frontend :
 
 ```env
-VITE_API_URL=http://localhost:8000/api
+VITE_BASE_URL=http://localhost:8000/api
 VITE_APP_NAME=YOWL Community
 ```
 

@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules;
@@ -23,7 +22,7 @@ class RegisteredUserController extends Controller
     {
         try {
             $request->validate([
-                'username' => ['required', 'string', 'max:255', 'min:3'],
+                'username' => ['required', 'string', 'max:255', 'min:3', 'unique:users,username'],
                 'fullname' => ['required', 'string', 'max:255', 'min:5'],
                 'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
                 'password' => ['required', 'confirmed', Rules\Password::defaults()],
@@ -32,8 +31,9 @@ class RegisteredUserController extends Controller
         } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
+                'message' => collect($e->errors())->flatten()->first(),
                 'error' => $e->errors(),
-            ], 401);
+            ], 422);
         }
 
         $user = User::create([
@@ -53,10 +53,8 @@ class RegisteredUserController extends Controller
         $user->email_verification_expires_at = now()->addMinutes(15);
         $user->save();
 
-        // Envoi de l'email (à remplacer par mailable si besoin)
-        Mail::raw("Votre code de vérification : $code", function($message) use ($user) {
-            $message->to($user->email)->subject('Code de vérification YOWL');
-        });
+        // Envoi de l'email de vérification
+        Mail::to($user->email)->send(new \App\Mail\EmailVerificationCode($code));
 
         event(new Registered($user));
 

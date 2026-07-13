@@ -36,7 +36,7 @@ Le frontend est dockerisé via un Dockerfile multi-stage (build Node puis Nginx 
 
 Accès: http://localhost:3000
 
-Variable d'API injectée au build : `VITE_API_URL=http://localhost:8080/api`
+Variable d'API injectée au build : `VITE_BASE_URL=http://localhost:8080/api`
 
 ### Rebuild frontend après changement d'API
 ```bash
@@ -48,7 +48,7 @@ docker compose up -d frontend
 ```bash
 cd yowl-project/frontend/yowl-frontend
 npm install
-echo "VITE_API_URL=http://localhost:8080/api" > .env
+echo "VITE_BASE_URL=http://localhost:8080/api" > .env
 npm run dev
 ```
 

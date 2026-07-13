@@ -42,7 +42,8 @@ DB_CONNECTION=pgsql
 
 ### Variables d'environnement (Vercel)
 ```bash
-VITE_API_URL=https://VOTRE-BACKEND.up.railway.app/api
+VITE_BASE_URL=https://VOTRE-BACKEND.up.railway.app/api
+VITE_STORAGE_URL=https://VOTRE-BACKEND.up.railway.app/storage
 VITE_APP_NAME=YOWL Community
 NODE_ENV=production
 ```

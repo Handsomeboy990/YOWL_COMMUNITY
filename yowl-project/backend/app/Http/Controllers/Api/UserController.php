@@ -13,27 +13,20 @@ use Illuminate\Validation\ValidationException;
 class UserController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
      * Display the specified resource.
      */
-    public function show(User $user)
+    public function show(Request $request, User $user)
     {
-        return $user;
+        // Le propriétaire voit son profil complet, les autres un profil public
+        if ($request->user() && $request->user()->id === $user->id) {
+            $user['roles'] = $user->getRoleNames();
+
+            return $user;
+        }
+
+        return response()->json(
+            $user->only(['id', 'username', 'fullname', 'picture', 'created_at'])
+        );
     }
 
     /**
@@ -51,7 +44,7 @@ class UserController extends Controller
 
         try {
             $validated = $request->validate([
-                'username' => ['string', 'max:255', 'min:3'],
+                'username' => ['string', 'max:255', 'min:3', 'unique:users,username,' . $user->id],
                 'fullname' => ['string', 'max:255', 'min:5'],
                 'email' => ['string', 'lowercase', 'email', 'max:255', 'unique:users,email,' . $user->id],
                 'picture' => ['nullable', 'file', 'image', 'max:2048'],
@@ -107,12 +100,9 @@ class UserController extends Controller
 
         $user->is_active = false;
         $user->save();
-        
-        // Supprimer le token seulement s'il existe
-        $token = $request->user()->currentAccessToken();
-        if ($token) {
-            $token->delete();
-        }
+
+        // Révoquer tous les tokens du compte (toutes sessions confondues)
+        $user->tokens()->delete();
 
         return response()->json(['success'=>true,'message'=>'Compte désactivé avec succès']);
     }
@@ -120,29 +110,40 @@ class UserController extends Controller
     /**
      * Get user activity (reviews, comments)
      */
-    public function activity(User $user)
+    public function activity(Request $request, User $user)
     {
+        // L'activité est privée : seul le propriétaire peut la consulter
+        if ($request->user()->id !== $user->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Action non autorisée',
+            ], 403);
+        }
+
         $activities = [];
         // Reviews
         foreach ($user->reviews()->latest()->limit(10)->get() as $review) {
             $activities[] = [
-                'text' => "You posted a review: " . (mb_strimwidth($review->content, 0, 40, '...')),
+                'text' => "Vous avez publié une review : " . (mb_strimwidth($review->content, 0, 40, '...')),
+                'type' => 'review',
                 'created_at' => $review->created_at,
             ];
         }
         // Comments
         foreach ($user->comments()->latest()->limit(10)->get() as $comment) {
             $activities[] = [
-                'text' => "You commented: " . (mb_strimwidth($comment->content, 0, 40, '...')),
+                'text' => "Vous avez commenté : " . (mb_strimwidth($comment->content, 0, 40, '...')),
+                'type' => 'commentaire',
                 'created_at' => $comment->created_at,
             ];
         }
         // Réactions sur les reviews
         foreach ($user->reviewReactions()->latest()->limit(10)->get() as $reaction) {
             $review = $reaction->review;
-            $type = $reaction->reaction === 'like' ? 'liked' : 'disliked';
+            $type = $reaction->reaction === 'like' ? 'aimé' : 'pas aimé';
             $activities[] = [
-                'text' => "You $type a review: " . (mb_strimwidth($review ? $review->content : '', 0, 40, '...')),
+                'text' => "Vous avez $type une review : " . (mb_strimwidth($review ? $review->content : '', 0, 40, '...')),
+                'type' => 'réaction',
                 'created_at' => $reaction->created_at,
             ];
         }

@@ -13,8 +13,10 @@ class CommentController extends Controller
      */
     public function index()
     {
-        // Charge tous les commentaire avec leurs relations (auteur, review, et reponse enfant)
-        $comments = Comment::with(['user', 'review', 'children'])->orderByDesc('created_at')->paginate(10);
+        // Charge tous les commentaires avec leurs relations (auteur, review et réponses enfants)
+        $comments = Comment::with(['user:id,username,picture', 'review:id,user_id', 'children'])
+            ->orderByDesc('created_at')
+            ->paginate(10);
 
         return $comments;
     }
@@ -45,13 +47,12 @@ class CommentController extends Controller
      */
     public function show(Comment $comment)
     {
-        //
-        $comment->load(['user', 'review', 'children']);
+        $comment->load(['user:id,username,picture', 'review:id,user_id', 'children']);
 
         return response()->json([
             'success' => true,
             'data' => $comment,
-            'message' => 'Commentaire recupere avec succes',
+            'message' => 'Commentaire récupéré avec succès',
         ]);
     }
 
@@ -64,18 +65,18 @@ class CommentController extends Controller
         if ($comment->user_id !== $request->user()->id) {
             return response()->json([
                 'success' => false,
-                'message' => 'Action non autorisee',
+                'message' => 'Action non autorisée',
             ], 403);
         }
         $validated = $request->validate([
-            'content' => 'sometimes|required|string',
+            'content' => 'sometimes|required|string|max:1000',
         ]);
         $comment->update($validated);
 
         return response()->json([
             'success' => true,
             'data' => $comment,
-            'message' => 'Commentaire mis a jour avec succes',
+            'message' => 'Commentaire mis à jour avec succès',
         ]);
     }
 
@@ -84,18 +85,18 @@ class CommentController extends Controller
      */
     public function destroy(Request $request, Comment $comment)
     {
-        // Verifier si c'est bien l'auteur
+        // Vérifier si c'est bien l'auteur
         if ($comment->user_id !== $request->user()->id) {
             return response()->json([
                 'success' => false,
-                'message' => 'Action non autorisee',
+                'message' => 'Action non autorisée',
             ], 403);
         }
         $comment->delete();
 
         return response()->json([
             'success' => true,
-            'message' => 'Commentaire supprime avec succes',
-        ], 204);
+            'message' => 'Commentaire supprimé avec succès',
+        ], 200);
     }
 }

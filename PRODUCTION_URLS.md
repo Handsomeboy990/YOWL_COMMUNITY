@@ -39,7 +39,7 @@ base64:bxkyHpkrDV3T7PLzE9ikmPES8J+nTABk6bolPBsdgts=
 -  FRONTEND_URL (ajouter après déploiement Vercel)
 
 #### Vercel (Frontend)
--  VITE_API_URL (URL Railway)
+-  VITE_BASE_URL et VITE_STORAGE_URL (URL Railway)
 -  VITE_APP_NAME=YOWL Community
 -  NODE_ENV=production
 
