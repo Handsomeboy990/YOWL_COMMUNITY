@@ -536,6 +536,8 @@ onMounted(async () => {
     nbComments: kpi.nbComments || 0,
     nbMeanReviewsPerDay: kpi.nbMeanReviewsPerDay || 0,
   };
+  // Afficher immédiatement les vraies valeurs (le hero les utilise sans scroll)
+  counters.value = { ...target };
 
   const statsObserver = new IntersectionObserver(
     (entries) => {
