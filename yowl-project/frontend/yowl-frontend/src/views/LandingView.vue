@@ -18,6 +18,7 @@
         <div class="hidden md:flex items-center gap-8 font-medium" :class="scrolled ? 'text-blue-night' : 'text-white/90'">
           <a href="#fonctionnalites" class="hover:text-orange-primary transition-colors">Fonctionnalités</a>
           <a href="#comment-ca-marche" class="hover:text-orange-primary transition-colors">Comment ça marche</a>
+          <a href="#partage" class="hover:text-orange-primary transition-colors">Partage rapide</a>
           <a href="#communaute" class="hover:text-orange-primary transition-colors">Communauté</a>
         </div>
 
@@ -236,6 +237,81 @@
             aria-hidden="true"
           ></i>
         </div>
+      </div>
+    </section>
+
+    <!-- ====== PARTAGE RAPIDE ====== -->
+    <section id="partage" class="w-full px-6 md:px-12 py-24 bg-gradient-to-b from-orange-50/40 to-white">
+      <div class="text-center max-w-3xl mx-auto reveal">
+        <span class="text-orange-primary font-poppins font-semibold uppercase tracking-widest text-sm">Partage en 10 secondes</span>
+        <h2 class="mt-3 font-poppins font-extrabold text-blue-night" style="font-size: clamp(1.8rem, 4vw, 3rem)">
+          Partage depuis n'importe où
+        </h2>
+        <p class="mt-4 text-gray-500 text-lg">
+          Tu navigues, tu trouves une pépite, tu la partages. Trois façons de le faire,
+          sans jamais interrompre ta navigation. Choisis la tienne.
+        </p>
+      </div>
+
+      <div class="mt-16 grid md:grid-cols-3 gap-6 max-w-7xl mx-auto">
+        <!-- Application (PWA) -->
+        <article class="reveal bg-white rounded-2xl border border-gray-100 p-8 shadow-sm hover:shadow-2xl hover:shadow-orange-primary/10 hover:-translate-y-2 transition-all duration-500">
+          <div class="flex items-center justify-between mb-6">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-primary to-[#ff8c5a] grid place-items-center text-white text-xl">
+              <i class="fa-solid fa-mobile-screen-button"></i>
+            </div>
+            <span class="text-xs font-bold uppercase tracking-wide px-3 py-1 rounded-full bg-emerald-50 text-emerald-600">Recommandé</span>
+          </div>
+          <h3 class="font-poppins font-bold text-xl text-blue-night mb-3">L'application YOWL</h3>
+          <p class="text-gray-500 text-sm leading-relaxed mb-5">
+            Installe YOWL sur ton téléphone : l'app apparaît directement dans le
+            menu de partage natif. Aucun store, aucune extension.
+          </p>
+          <ol class="space-y-2.5 text-sm text-gray-600">
+            <li class="flex gap-2.5"><span class="step-num">1</span> Ouvre YOWL dans ton navigateur</li>
+            <li class="flex gap-2.5"><span class="step-num">2</span> Menu du navigateur, puis « Ajouter à l'écran d'accueil »</li>
+            <li class="flex gap-2.5"><span class="step-num">3</span> Sur n'importe quel site : Partager, puis YOWL</li>
+          </ol>
+        </article>
+
+        <!-- Bookmarklet -->
+        <article class="reveal bg-white rounded-2xl border border-gray-100 p-8 shadow-sm hover:shadow-2xl hover:shadow-orange-primary/10 hover:-translate-y-2 transition-all duration-500">
+          <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#7C5CFC] to-[#9d85ff] grid place-items-center text-white text-xl mb-6">
+            <i class="fa-solid fa-bookmark"></i>
+          </div>
+          <h3 class="font-poppins font-bold text-xl text-blue-night mb-3">Le bouton favori</h3>
+          <p class="text-gray-500 text-sm leading-relaxed mb-5">
+            Sur ordinateur, glisse ce bouton dans ta barre de favoris.
+            Un clic depuis n'importe quelle page ouvre le composeur YOWL pré-rempli.
+          </p>
+          <a :href="bookmarkletHref" draggable="true"
+            class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#7C5CFC] text-white font-semibold text-sm shadow-lg shadow-[#7C5CFC]/30 cursor-grab active:cursor-grabbing select-none"
+            title="Glisse-moi dans ta barre de favoris"
+            @click.prevent>
+            <i class="fa-solid fa-bolt"></i>
+            Partager sur YOWL
+          </a>
+          <p class="mt-4 text-xs text-gray-400">
+            Astuce : affiche la barre de favoris avec Ctrl+Maj+B puis glisse le bouton dessus.
+          </p>
+        </article>
+
+        <!-- Extension -->
+        <article class="reveal bg-white rounded-2xl border border-gray-100 p-8 shadow-sm hover:shadow-2xl hover:shadow-orange-primary/10 hover:-translate-y-2 transition-all duration-500">
+          <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-night to-blue-night-light grid place-items-center text-white text-xl mb-6">
+            <i class="fa-solid fa-puzzle-piece"></i>
+          </div>
+          <h3 class="font-poppins font-bold text-xl text-blue-night mb-3">L'extension Chrome</h3>
+          <p class="text-gray-500 text-sm leading-relaxed mb-5">
+            Pour les habitués du clic droit : une icône dans la barre d'outils et un
+            menu contextuel « Partager sur YOWL » sur toutes les pages.
+          </p>
+          <ol class="space-y-2.5 text-sm text-gray-600">
+            <li class="flex gap-2.5"><span class="step-num">1</span> Ouvre chrome://extensions et active le « Mode développeur »</li>
+            <li class="flex gap-2.5"><span class="step-num">2</span> « Charger l'extension non empaquetée », puis choisis le dossier yowl-project/extension</li>
+            <li class="flex gap-2.5"><span class="step-num">3</span> Clique sur l'icône YOWL depuis n'importe quelle page</li>
+          </ol>
+        </article>
       </div>
     </section>
 
@@ -467,6 +543,13 @@ const testimonials = [
   },
 ];
 
+// Bookmarklet : ouvre le composeur /share avec l'URL et le titre de la page courante
+const bookmarkletHref = computed(() => {
+  const origin = typeof window !== 'undefined' ? window.location.origin : '';
+  const code = `(function(){window.open('${origin}/share?url='+encodeURIComponent(location.href)+'&title='+encodeURIComponent(document.title),'yowl-share','width=640,height=760');})()`;
+  return `javascript:${code}`;
+});
+
 const displayed = computed(() => ({
   nbUsers: formatNumber(counters.value.nbUsers),
   nbReviews: formatNumber(counters.value.nbReviews),
@@ -560,6 +643,20 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+/* --- Etapes numérotées (section partage) --- */
+.step-num {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 9999px;
+  background: rgba(255, 107, 53, 0.12);
+  color: #ff6b35;
+  font-weight: 700;
+  font-size: 12px;
+  display: grid;
+  place-items: center;
+}
+
 /* --- Hero --- */
 .hero-gradient {
   background:

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Options - YOWL Partage rapide</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            width: 340px;
+            padding: 16px;
+            color: #1e2a38;
+        }
+
+        h1 {
+            font-size: 16px;
+            margin: 0 0 12px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 9px 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 13px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #ff6b35;
+        }
+
+        button {
+            margin-top: 12px;
+            width: 100%;
+            padding: 10px;
+            background: #ff6b35;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #e75a27;
+        }
+
+        p.saved {
+            color: #12b886;
+            font-size: 12px;
+            text-align: center;
+            min-height: 16px;
+            margin: 8px 0 0;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>YOWL - Partage rapide</h1>
+    <label for="appUrl">Adresse de l'application YOWL</label>
+    <input type="url" id="appUrl" placeholder="https://yowl.exemple.com">
+    <button id="save">Enregistrer</button>
+    <p class="saved" id="status"></p>
+    <script src="options.js"></script>
+</body>
+
+</html>

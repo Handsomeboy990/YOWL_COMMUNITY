@@ -55,6 +55,9 @@
 
           <div class="flex items-center justify-between">
             <BaseCheckbox v-model="rememberMe" label="Se souvenir de moi" />
+            <router-link to="/forgot-password" class="text-sm text-orange-primary font-medium hover:underline">
+              Mot de passe oublié ?
+            </router-link>
           </div>
 
           <BaseButton type="submit" variant="primary" size="lg" block :loading="loading">

@@ -4,6 +4,8 @@ import LandingView from '@/views/LandingView.vue'
 import HomeView from '../views/HomeView.vue'
 import SignUp from '@/components/pages/Auth/SignUp.vue'
 import Login from '@/components/pages/Auth/Login.vue'
+import ForgotPassword from '@/components/pages/Auth/ForgotPassword.vue'
+import ResetPassword from '@/components/pages/Auth/ResetPassword.vue'
 import ReviewDetail from '@/components/pages/ReviewDetail.vue'
 import Summary from '@/components/pages/profil/Summary.vue'
 import Activity from '@/components/pages/profil/Activity.vue'
@@ -13,6 +15,7 @@ import Faq from '@/components/pages/Faq.vue'
 import Suggestion from '@/components/pages/Suggestion.vue'
 import Policy from '@/components/pages/Policy.vue'
 import NotFound from '@/views/NotFound.vue'
+import ShareView from '@/views/ShareView.vue'
 import DashboardAdmin from '@/views/DashboardAdmin.vue';
 
 const router = createRouter({
@@ -41,9 +44,26 @@ const router = createRouter({
             meta: { requiresGuest: true }
         },
         {
+            path: '/forgot-password',
+            name: 'forgot-password',
+            component: ForgotPassword,
+            meta: { requiresGuest: true }
+        },
+        {
+            path: '/password-reset/:token',
+            name: 'password-reset',
+            component: ResetPassword,
+            meta: { requiresGuest: true }
+        },
+        {
             path: '/reviews/:id/:actualPage?',
             name: 'review-detail',
             component: ReviewDetail,
+        },
+        {
+            path: '/share',
+            name: 'share',
+            component: ShareView,
         },
         {
             path: '/user/summary',
