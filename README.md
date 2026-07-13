@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Vue.js](https://img.shields.io/badge/Vue.js-3.x-green.svg)](https://vuejs.org/)
-[![Laravel](https://img.shields.io/badge/Laravel-10.x-red.svg)](https://laravel.com/)
+[![Laravel](https://img.shields.io/badge/Laravel-12.x-red.svg)](https://laravel.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.x-38B2AC.svg)](https://tailwindcss.com/)
 
 ##  Table des matières
@@ -70,7 +70,7 @@
 - **Routing** : Vue Router
 
 ### Backend
-- **Framework** : Laravel 10.x
+- **Framework** : Laravel 12.x
 - **Langage** : PHP 8.2+
 - **API** : RESTful API
 - **Authentication** : Laravel Sanctum
@@ -366,7 +366,7 @@ Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de 
 ##  Liens utiles
 
 - [Documentation complète](https://github.com/EpitechCodingAcademyPromo2025/C-DEV-160-COT-1-1-yowl-lauret.chacha/new/main?filename=README.md#%C3%A0-propos)
-- [API Documentation](https://laravel.com/docs/12.x/eloquent-resources)
+- [API Documentation (Swagger)](yowl-project/backend/API_ENDPOINTS.md)
 - [Figma - Maquettes](https://www.figma.com/design/OkaBhCHpHKQAkcJbVHUcub/Yowl?node-id=1-2&t=tfsTIMOekjqZwbp6-1)
 
 ---
