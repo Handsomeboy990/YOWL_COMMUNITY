@@ -6,9 +6,9 @@
       <div class="mb-6">
         <h3 class="font-roboto font-medium text-white mb-4 text-lg sm:text-base">Filtrer par</h3>
         <div class="space-y-3">
-          <BaseCheckbox v-model="filters.noAnswers" dark label="Sans réponses" />
-          <BaseCheckbox v-model="filters.noViews" dark label="Sans vues" />
-          <BaseCheckbox v-model="filters.noLikes" dark label="Sans likes" />
+          <div><BaseCheckbox v-model="filters.noAnswers" dark label="Sans réponses" /></div>
+          <div><BaseCheckbox v-model="filters.noViews" dark label="Sans vues" /></div>
+          <div><BaseCheckbox v-model="filters.noLikes" dark label="Sans likes" /></div>
         </div>
       </div>
 
@@ -16,9 +16,9 @@
       <div class="mb-6">
         <h3 class="font-roboto font-medium text-white mb-4 text-lg sm:text-base">Trier par</h3>
         <div class="space-y-3">
-          <BaseRadio v-model="sortBy" value="newest" name="sort" dark label="Plus récentes" />
-          <BaseRadio v-model="sortBy" value="older" name="sort" dark label="Plus anciennes" />
-          <BaseRadio v-model="sortBy" value="highestLike" name="sort" dark label="Plus aimées" />
+          <div><BaseRadio v-model="sortBy" value="newest" name="sort" dark label="Plus récentes" /></div>
+          <div><BaseRadio v-model="sortBy" value="older" name="sort" dark label="Plus anciennes" /></div>
+          <div><BaseRadio v-model="sortBy" value="highestLike" name="sort" dark label="Plus aimées" /></div>
         </div>
       </div>
 

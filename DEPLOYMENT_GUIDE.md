@@ -51,7 +51,26 @@ CACHE_STORE=database
 QUEUE_CONNECTION=database
 
 LOG_LEVEL=error
+
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=chasakry@gmail.com
+MAIL_PASSWORD=VOTRE_MOT_DE_PASSE_APPLICATION
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=chasakry@gmail.com
+MAIL_FROM_NAME="YOWL Community"
 ```
+
+**IMPORTANT : mot de passe d'application Gmail**
+
+Gmail refuse le mot de passe du compte pour SMTP. Il faut un **mot de passe d'application** (16 caractères) :
+
+1. Activez la validation en deux étapes sur le compte Google
+2. Allez sur [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
+3. Créez un mot de passe d'application « YOWL » et copiez-le dans `MAIL_PASSWORD`
+
+Limite : Gmail autorise environ 500 emails/jour, suffisant pour un MVP. Pour aller au-delà, prévoir Brevo ou Resend.
 
 ** IMPORTANT : Générer APP_KEY**
 
