@@ -47,6 +47,16 @@ class ReviewReactionController extends Controller
         $review->nb_dislike = ReviewReaction::where('review_id', $id)->where('reaction', 'dislike')->count();
         $review->save();
 
+        // Notifier l'auteur de la review quand quelqu'un ajoute un "j'aime"
+        if ($userReaction === 'like' && ! $existingReaction && $review->user_id !== $userId) {
+            app(\App\Services\PushNotificationService::class)->sendToUser(
+                $review->user,
+                'Nouvelle réaction',
+                Auth::user()->username." a aimé ta review.",
+                '/reviews/'.$review->id
+            );
+        }
+
         return response()->json([
             'nb_like' => $review->nb_like,
             'nb_dislike' => $review->nb_dislike,

@@ -81,6 +81,15 @@ All routes are prefixed with `/api`.
 | DELETE | `/users/{id}` | token, self | Deactivate the account and revoke all tokens |
 | GET | `/users/{id}/activity` | token, self | Recent activity (reviews, comments, reactions) |
 
+### Push notifications
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| POST | `/push/subscribe` | token | Register a Web Push subscription (endpoint + p256dh/auth keys) |
+| POST | `/push/unsubscribe` | token | Remove a Web Push subscription |
+
+Notifications are sent when someone comments on your review, replies to your comment or likes your review. Configure `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` and `VAPID_SUBJECT` on the backend and `VITE_VAPID_PUBLIC_KEY` on the frontend.
+
 ### Administration (role `admin` required)
 
 | Method | Endpoint | Description |

@@ -2047,6 +2047,140 @@
                 }
             }
         },
+        "/push/subscribe": {
+            "post": {
+                "operationId": "pushSubscription.store",
+                "summary": "Register (or refresh) a push subscription for the authenticated user",
+                "tags": [
+                    "PushSubscription"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "endpoint": {
+                                        "type": "string",
+                                        "maxLength": 2000
+                                    },
+                                    "keys": {
+                                        "type": "object",
+                                        "properties": {
+                                            "p256dh": {
+                                                "type": "string"
+                                            },
+                                            "auth": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "p256dh",
+                                            "auth"
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "endpoint",
+                                    "keys"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Abonnement enregistr\u00e9"
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/push/unsubscribe": {
+            "post": {
+                "operationId": "pushSubscription.destroy",
+                "summary": "Remove a push subscription (logout or user opt-out)",
+                "tags": [
+                    "PushSubscription"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "endpoint": {
+                                        "type": "string",
+                                        "maxLength": 2000
+                                    }
+                                },
+                                "required": [
+                                    "endpoint"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Abonnement supprim\u00e9"
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
         "/register": {
             "post": {
                 "operationId": "register",

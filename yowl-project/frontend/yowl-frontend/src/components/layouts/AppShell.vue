@@ -29,6 +29,16 @@
                         Publier
                     </BaseButton>
 
+                    <!-- Notifications push -->
+                    <button v-if="userStore.isAuthenticated && push.isSupported"
+                        class="w-10 h-10 rounded-full grid place-items-center cursor-pointer transition-colors"
+                        :class="push.isSubscribed.value ? 'bg-orange-primary/10 text-orange-primary' : 'text-gray-400 hover:bg-gray-100 hover:text-blue-night'"
+                        :title="push.isSubscribed.value ? 'Notifications activées' : 'Activer les notifications'"
+                        :aria-label="push.isSubscribed.value ? 'Désactiver les notifications' : 'Activer les notifications'"
+                        @click="togglePush">
+                        <i :class="push.isSubscribed.value ? 'fa-solid fa-bell' : 'fa-regular fa-bell'"></i>
+                    </button>
+
                     <!-- Profil ou connexion -->
                     <div v-if="userStore.isAuthenticated" ref="dropdownRef" class="relative">
                         <button class="flex items-center gap-1.5 cursor-pointer" :aria-expanded="isDropdownOpen" aria-label="Menu du profil" @click="isDropdownOpen = !isDropdownOpen">
@@ -163,6 +173,7 @@ import { getStorageUrl } from '@/config';
 import Swal from 'sweetalert2';
 import BaseButton from '@/components/ui/BaseButton.vue';
 import AddReviewModal from '@/components/layouts/AddReviewModal.vue';
+import { usePushNotifications } from '@/composables/usePushNotifications';
 
 const route = useRoute();
 const router = useRouter();
@@ -278,7 +289,36 @@ const onClickOutside = (event) => {
     }
 };
 
-onMounted(() => document.addEventListener('click', onClickOutside));
+// Notifications push
+const push = usePushNotifications();
+
+const togglePush = async () => {
+    if (push.isSubscribed.value) {
+        await push.unsubscribe();
+        Swal.fire({
+            title: 'Notifications désactivées',
+            icon: 'info',
+            timer: 1800,
+            showConfirmButton: false,
+        });
+    } else {
+        const ok = await push.subscribe();
+        Swal.fire({
+            title: ok ? 'Notifications activées !' : 'Notifications refusées',
+            text: ok
+                ? 'Tu seras prévenu des réactions et commentaires sur tes reviews.'
+                : "Autorise les notifications dans ton navigateur pour les activer.",
+            icon: ok ? 'success' : 'warning',
+            timer: 2500,
+            showConfirmButton: false,
+        });
+    }
+};
+
+onMounted(() => {
+    document.addEventListener('click', onClickOutside);
+    push.refreshState();
+});
 onBeforeUnmount(() => document.removeEventListener('click', onClickOutside));
 </script>
 

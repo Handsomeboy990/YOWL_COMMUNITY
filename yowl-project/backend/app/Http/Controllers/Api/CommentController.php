@@ -35,6 +35,32 @@ class CommentController extends Controller
         $validated['user_id'] = $request->user()->id;
         $comment = Comment::create($validated);
 
+        // Notifier l'auteur de la review et celui du commentaire parent
+        $push = app(\App\Services\PushNotificationService::class);
+        $author = $request->user();
+        $review = $comment->review;
+        $reviewUrl = '/reviews/'.$comment->review_id;
+
+        if ($review && $review->user_id !== $author->id) {
+            $push->sendToUser(
+                $review->user,
+                'Nouveau commentaire',
+                "{$author->username} a commenté ta review.",
+                $reviewUrl
+            );
+        }
+        if ($comment->parent_id) {
+            $parent = Comment::find($comment->parent_id);
+            if ($parent && $parent->user_id !== $author->id && $parent->user_id !== $review?->user_id) {
+                $push->sendToUser(
+                    $parent->user,
+                    'Nouvelle réponse',
+                    "{$author->username} a répondu à ton commentaire.",
+                    $reviewUrl
+                );
+            }
+        }
+
         return response()->json([
             'success' => true,
             'data' => $comment->load(['user', 'children']),

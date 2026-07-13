@@ -50,6 +50,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy']);
     Route::post('/reviews/{review}/react', [ReviewReactionController::class, 'toggleReaction']);
     Route::post('/comments/{comment}/react', [CommentReactionController::class, 'toggleReaction']);
+
+    // Abonnements aux notifications push
+    Route::post('/push/subscribe', [\App\Http\Controllers\Api\PushSubscriptionController::class, 'store']);
+    Route::post('/push/unsubscribe', [\App\Http\Controllers\Api\PushSubscriptionController::class, 'destroy']);
 });
 
 // Admin routes
