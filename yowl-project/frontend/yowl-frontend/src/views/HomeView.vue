@@ -13,8 +13,55 @@
                 </div>
             </details>
 
+            <!-- Chargement -->
+            <div v-if="reviewStore.loading && reviews.length === 0" class="space-y-4 md:space-y-5">
+                <div v-for="n in 3" :key="n"
+                    class="bg-white rounded-xl border border-gray-200 p-4 md:p-6 animate-pulse">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-full bg-gray-200"></div>
+                        <div class="flex-1 space-y-2">
+                            <div class="h-3 w-32 bg-gray-200 rounded"></div>
+                            <div class="h-3 w-24 bg-gray-100 rounded"></div>
+                        </div>
+                    </div>
+                    <div class="mt-4 space-y-2">
+                        <div class="h-3 bg-gray-200 rounded"></div>
+                        <div class="h-3 bg-gray-100 rounded w-4/5"></div>
+                    </div>
+                    <div class="mt-4 h-40 bg-gray-100 rounded-lg"></div>
+                </div>
+            </div>
+
+            <!-- Erreur -->
+            <div v-else-if="reviewStore.error && reviews.length === 0"
+                class="flex flex-col items-center justify-center text-center py-20 px-4">
+                <i class="fa-solid fa-plug-circle-exclamation text-4xl text-gray-300"></i>
+                <h2 class="mt-5 text-xl font-semibold text-gray-800">Le fil n'a pas pu être chargé</h2>
+                <p class="mt-2 text-gray-600 text-sm max-w-md">{{ reviewStore.error }}</p>
+                <button type="button"
+                    class="mt-5 px-4 py-2 rounded-xl bg-orange-primary text-white text-sm font-medium hover:bg-orange-primary-dark transition-colors cursor-pointer"
+                    @click="reviewStore.getReviews(reviewStore.actualPage)">
+                    Réessayer
+                </button>
+            </div>
+
+            <!-- Aucun résultat pour la recherche ou les filtres -->
+            <div v-else-if="reviews.length === 0 && reviewStore.search"
+                class="flex flex-col items-center justify-center text-center py-20 px-4">
+                <i class="fa-solid fa-magnifying-glass text-4xl text-gray-300"></i>
+                <h2 class="mt-5 text-xl font-semibold text-gray-800">Aucun résultat</h2>
+                <p class="mt-2 text-gray-600 text-sm max-w-md">
+                    Aucune review ne correspond à ta recherche ou à tes filtres.
+                </p>
+                <button type="button"
+                    class="mt-5 px-4 py-2 rounded-xl bg-blue-night text-white text-sm font-medium hover:bg-blue-night/90 transition-colors cursor-pointer"
+                    @click="reviewStore.getReviews(1)">
+                    Revenir au fil complet
+                </button>
+            </div>
+
             <!-- Etat vide -->
-            <div v-if="reviews.length === 0 && reviewStore.search == false"
+            <div v-else-if="reviews.length === 0 && reviewStore.search == false"
                 class="flex flex-col items-center justify-center text-center py-20 px-4 animate-fade-in">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-20 h-20 md:w-24 md:h-24 mb-6 text-gray-300 animate-bounce-slow" viewBox="0 0 24 24"
                     fill="none" stroke="currentColor" stroke-width="1.5">

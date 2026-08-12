@@ -8,6 +8,7 @@ export const useReviewStore = defineStore(
   () => {
     const reviews = ref([]);
     const error = ref(null);
+    const loading = ref(false);
     const search = ref(false)
     const pagination = ref({
       current_page: 1,
@@ -42,6 +43,7 @@ export const useReviewStore = defineStore(
 
     //  Récupérer les reviews
     async function getReviews(page = 1) {
+      loading.value = true;
       try {
         const response = await api.get(`/reviews?page=${page}`);
         reviews.value = response.data.data.data;
@@ -54,8 +56,10 @@ export const useReviewStore = defineStore(
         search.value = false
 
       } catch (err) {
-        // Silent error handling
-    }
+        error.value = extractErrorMessage(err, 'Impossible de charger le fil pour le moment.');
+      } finally {
+        loading.value = false;
+      }
       getKPI();
     }
 
@@ -184,6 +188,7 @@ export const useReviewStore = defineStore(
      * @param {*} query
      */
     async function searchReviews(query) {
+      loading.value = true;
       try {
         const response = await api.get(`/reviews?search=${encodeURIComponent(query)}`);
         reviews.value = response.data.data.data || [];
@@ -193,8 +198,10 @@ export const useReviewStore = defineStore(
       } catch (err) {
         error.value = extractErrorMessage(
           err,
-          'Unable to retrieve reviews. Please try again later.'
+          'Impossible de lancer la recherche pour le moment.'
         );
+      } finally {
+        loading.value = false;
       }
     }
 
@@ -203,6 +210,7 @@ export const useReviewStore = defineStore(
      * @param {Object} filters - { noAnswers, noViews, noLikes, sortBy, tags }
      */
     async function filterReviews({ noAnswers, noViews, noLikes, sortBy, tags }) {
+      loading.value = true;
       try {
         // Construction des paramètres de requête
         const params = {};
@@ -216,8 +224,11 @@ export const useReviewStore = defineStore(
         const response = await api.get(`/reviews${queryString ? '?' + queryString : ''}`);
         reviews.value = response.data.data.data || [];
         error.value = null;
+        search.value = true;
       } catch (err) {
-        error.value = extractErrorMessage(err, 'Unable to filter reviews. Please try again later.');
+        error.value = extractErrorMessage(err, 'Impossible d\'appliquer les filtres pour le moment.');
+      } finally {
+        loading.value = false;
       }
     }
 
@@ -251,6 +262,7 @@ export const useReviewStore = defineStore(
       filterReviews,
       reviews,
       error,
+      loading,
       actualPage,
       kpi,
       maxRange,
