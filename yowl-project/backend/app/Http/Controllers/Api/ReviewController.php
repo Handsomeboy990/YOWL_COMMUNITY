@@ -7,11 +7,24 @@ use App\Models\Review;
 use App\Models\ReviewReaction;
 use App\Models\Tag;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 class ReviewController extends Controller
 {
+    /**
+     * Upload rules shared by store and update.
+     *
+     * Images are restricted by extension and by size so a request cannot push
+     * an arbitrary payload, or an unbounded one, into the storage disk.
+     */
+    private const MAX_MEDIAS = 5;
+
+    private const MEDIA_RULES = 'file|mimes:jpeg,jpg,png,webp,gif|max:5120';
+
+    private const CONTENT_MAX = 5000;
+
     /**
      * Display a listing of the resource.
      */
@@ -111,13 +124,14 @@ class ReviewController extends Controller
                 200,
             );
         } catch (\Exception $e) {
+            Log::error('Review listing failed: '.$e->getMessage());
+
             return response()->json(
                 [
                     'success' => false,
-                    'error' => $e->getMessage(),
                     'message' => 'Unable to retrieve reviews. Please try again later.',
                 ],
-                502,
+                500,
             );
         }
     }
@@ -129,11 +143,12 @@ class ReviewController extends Controller
     {
         try {
             $validated = $request->validate([
-                'tags' => 'nullable|array',
-                'content' => 'required|string',
-                'link' => 'nullable|string',
-                'medias' => 'nullable',
-                'medias.*' => 'file|image',
+                'tags' => 'nullable|array|max:10',
+                'tags.*' => 'string|max:30',
+                'content' => 'required|string|max:'.self::CONTENT_MAX,
+                'link' => 'nullable|url:http,https|max:2048',
+                'medias' => 'nullable|array|max:'.self::MAX_MEDIAS,
+                'medias.*' => self::MEDIA_RULES,
             ]);
             $validated['user_id'] = $request->user()->id;
 
@@ -201,8 +216,8 @@ class ReviewController extends Controller
             }
 
             $review->load(['user:id,username,picture', 'tags', 'comments']);
-            $review->nb_views++;
-            $review->save();
+            // Incrément atomique : deux lectures simultanées ne s'écrasent pas
+            $review->increment('nb_views');
 
             $review->user_reaction = $currentUser
                 ? ReviewReaction::where('user_id', $currentUser->id)
@@ -219,13 +234,14 @@ class ReviewController extends Controller
                 200,
             );
         } catch (\Exception $e) {
+            Log::error('Review retrieval failed: '.$e->getMessage());
+
             return response()->json(
                 [
                     'success' => false,
-                    'error' => $e->getMessage(),
                     'message' => 'Unable to retrieve review. Please try again later.',
                 ],
-                502,
+                500,
             );
         }
 
@@ -241,11 +257,14 @@ class ReviewController extends Controller
         }
         try {
             $validated = $request->validate([
-                'content' => 'sometimes|required|string',
-                'link' => 'nullable|string',
-                'tags' => 'nullable|array',
-                'medias.*' => 'nullable|file|image',
+                'content' => 'sometimes|required|string|max:'.self::CONTENT_MAX,
+                'link' => 'nullable|url:http,https|max:2048',
+                'tags' => 'nullable|array|max:10',
+                'tags.*' => 'string|max:30',
+                'medias' => 'nullable|array|max:'.self::MAX_MEDIAS,
+                'medias.*' => self::MEDIA_RULES,
                 'existingMedias' => 'nullable|array',
+                'existingMedias.*' => 'string',
             ]);
 
             // Récupérer les anciennes images à garder
@@ -256,6 +275,10 @@ class ReviewController extends Controller
 
             // Récupérer les anciennes images (le cast "array" décode déjà le JSON)
             $oldMedias = is_array($review->medias) ? $review->medias : [];
+
+            // Ne garder que des chemins appartenant réellement à cette review :
+            // un chemin arbitraire envoyé par le client est ignoré.
+            $existingMedias = array_values(array_intersect($existingMedias, $oldMedias));
 
             // Supprimer physiquement les images retirées
             $toDelete = array_diff($oldMedias, $existingMedias);
@@ -272,7 +295,18 @@ class ReviewController extends Controller
             }
 
             // Fusionner les anciennes à garder et les nouvelles
-            $validated['medias'] = array_values(array_merge($existingMedias, $newMediaPaths));
+            $merged = array_values(array_merge($existingMedias, $newMediaPaths));
+            if (count($merged) > self::MAX_MEDIAS) {
+                foreach ($newMediaPaths as $justUploaded) {
+                    Storage::disk('public')->delete($justUploaded);
+                }
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Une review ne peut pas dépasser '.self::MAX_MEDIAS.' images.',
+                ], 422);
+            }
+            $validated['medias'] = $merged;
             unset($validated['existingMedias']);
 
             // Modifier les tags
@@ -310,13 +344,14 @@ class ReviewController extends Controller
                 422,
             );
         } catch (\Exception $e) {
+            Log::error('Review update failed: '.$e->getMessage());
+
             return response()->json(
                 [
                     'success' => false,
-                    'error' => $e->getMessage(),
                     'message' => 'Unable to update review. Please try again later.',
                 ],
-                502,
+                500,
             );
         }
     }
@@ -347,13 +382,14 @@ class ReviewController extends Controller
                 200,
             );
         } catch (\Exception $error) {
+            Log::error('Review deletion failed: '.$error->getMessage());
+
             return response()->json(
                 [
                     'success' => false,
-                    'error' => $error->getMessage(),
                     'message' => 'Unable to delete review. Please try again later.',
                 ],
-                502,
+                500,
             );
         }
     }
