@@ -17,8 +17,8 @@
         placeholder="Écris ta suggestion ici..." required />
 
       <div class="flex justify-end">
-        <BaseButton type="submit" variant="primary" icon="fa-regular fa-paper-plane">
-          Envoyer
+        <BaseButton type="submit" variant="primary" icon="fa-regular fa-paper-plane" :disabled="isSending">
+          {{ isSending ? 'Envoi en cours...' : 'Envoyer' }}
         </BaseButton>
       </div>
     </form>
@@ -33,6 +33,7 @@ import BaseInput from '@/components/ui/BaseInput.vue';
 import BaseTextarea from '@/components/ui/BaseTextarea.vue';
 import BaseButton from '@/components/ui/BaseButton.vue';
 import Swal from 'sweetalert2';
+import api from '@/services/apiService';
 
 const form = ref({
   name: '',
@@ -40,7 +41,9 @@ const form = ref({
   message: '',
 });
 
-const submit = () => {
+const isSending = ref(false);
+
+const submit = async () => {
   if (!form.value.message.trim()) {
     Swal.fire({
       icon: 'error',
@@ -51,20 +54,34 @@ const submit = () => {
     return;
   }
 
-  // Pas encore d'endpoint dédié : la suggestion part par email au support
-  const subject = encodeURIComponent('Suggestion YOWL Community');
-  const body = encodeURIComponent(
-    `Nom : ${form.value.name || 'Anonyme'}\nEmail : ${form.value.email || 'Non renseigné'}\n\n${form.value.message}`
-  );
-  window.location.href = `mailto:support@yowl.community?subject=${subject}&body=${body}`;
+  isSending.value = true;
+  try {
+    const response = await api.post('/suggestions', {
+      name: form.value.name || null,
+      email: form.value.email || null,
+      message: form.value.message,
+    });
 
-  Swal.fire({
-    icon: 'success',
-    title: 'Merci !',
-    text: 'Ta messagerie va s\'ouvrir pour finaliser l\'envoi de ta suggestion.',
-    timer: 3000,
-    showConfirmButton: false,
-  });
-  form.value = { name: '', email: '', message: '' };
+    Swal.fire({
+      icon: 'success',
+      title: 'Merci !',
+      text: response.data?.message || 'Ta suggestion a bien été enregistrée.',
+      timer: 2500,
+      showConfirmButton: false,
+    });
+    form.value = { name: '', email: '', message: '' };
+  } catch (err) {
+    const errors = err.response?.data?.errors;
+    Swal.fire({
+      icon: 'error',
+      title: 'Envoi impossible',
+      text: errors
+        ? Object.values(errors).flat().join(' ')
+        : err.response?.data?.message || 'Réessaie dans un instant.',
+      confirmButtonColor: '#FF6B35',
+    });
+  } finally {
+    isSending.value = false;
+  }
 };
 </script>
