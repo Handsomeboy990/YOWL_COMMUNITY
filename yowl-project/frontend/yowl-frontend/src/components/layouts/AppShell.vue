@@ -29,15 +29,27 @@
                         Publier
                     </BaseButton>
 
-                    <!-- Notifications push -->
-                    <button v-if="userStore.isAuthenticated && push.isSupported"
-                        class="w-10 h-10 rounded-full grid place-items-center cursor-pointer transition-colors"
-                        :class="push.isSubscribed.value ? 'bg-orange-primary/10 text-orange-primary' : 'text-gray-400 hover:bg-gray-100 hover:text-blue-night'"
-                        :title="push.isSubscribed.value ? 'Notifications activées' : 'Activer les notifications'"
-                        :aria-label="push.isSubscribed.value ? 'Désactiver les notifications' : 'Activer les notifications'"
-                        @click="togglePush">
-                        <i :class="push.isSubscribed.value ? 'fa-solid fa-bell' : 'fa-regular fa-bell'"></i>
-                    </button>
+                    <!-- Centre de notifications -->
+                    <div v-if="userStore.isAuthenticated" ref="notificationsRef" class="relative">
+                        <button
+                            class="relative w-10 h-10 rounded-full grid place-items-center cursor-pointer transition-colors"
+                            :class="isNotificationsOpen ? 'bg-orange-primary/10 text-orange-primary' : 'text-gray-400 hover:bg-gray-100 hover:text-blue-night'"
+                            aria-label="Notifications" :aria-expanded="isNotificationsOpen"
+                            @click="toggleNotifications">
+                            <i :class="notificationStore.hasUnread ? 'fa-solid fa-bell' : 'fa-regular fa-bell'"></i>
+                            <span v-if="notificationStore.hasUnread"
+                                class="absolute top-0.5 right-0.5 min-w-4 h-4 px-1 rounded-full bg-orange-primary text-white text-[10px] font-bold grid place-items-center">
+                                {{ notificationStore.unreadCount > 99 ? '99+' : notificationStore.unreadCount }}
+                            </span>
+                        </button>
+
+                        <Transition name="dropdown">
+                            <div v-if="isNotificationsOpen" class="absolute right-0 mt-3 z-50">
+                                <NotificationPanel :push="push" @close="isNotificationsOpen = false"
+                                    @toggle-push="togglePush" />
+                            </div>
+                        </Transition>
+                    </div>
 
                     <!-- Profil ou connexion -->
                     <div v-if="userStore.isAuthenticated" ref="dropdownRef" class="relative">
@@ -174,16 +186,22 @@ import Swal from 'sweetalert2';
 import BaseButton from '@/components/ui/BaseButton.vue';
 import AddReviewModal from '@/components/layouts/AddReviewModal.vue';
 import { usePushNotifications } from '@/composables/usePushNotifications';
+import { useNotificationStore } from '@/stores/notification';
+import NotificationPanel from '@/components/layouts/NotificationPanel.vue';
 
 const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
 const reviewStore = useReviewStore();
 
+const notificationStore = useNotificationStore();
+
 const searchQuery = ref('');
 const isDropdownOpen = ref(false);
 const isPublishOpen = ref(false);
+const isNotificationsOpen = ref(false);
 const dropdownRef = ref(null);
+const notificationsRef = ref(null);
 
 const mainNav = computed(() => {
     const items = [
@@ -287,6 +305,17 @@ const onClickOutside = (event) => {
     if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
         isDropdownOpen.value = false;
     }
+    if (notificationsRef.value && !notificationsRef.value.contains(event.target)) {
+        isNotificationsOpen.value = false;
+    }
+};
+
+const toggleNotifications = () => {
+    isNotificationsOpen.value = !isNotificationsOpen.value;
+    if (isNotificationsOpen.value) {
+        isDropdownOpen.value = false;
+        notificationStore.fetchNotifications();
+    }
 };
 
 // Notifications push
@@ -315,11 +344,31 @@ const togglePush = async () => {
     }
 };
 
+// Rafraichissement de la pastille : toutes les 60 s et au retour sur l'onglet
+const UNREAD_POLL_MS = 60000;
+let unreadTimer = null;
+
+const refreshUnread = () => {
+    if (userStore.isAuthenticated) notificationStore.fetchUnreadCount();
+};
+
+const onVisibilityChange = () => {
+    if (document.visibilityState === 'visible') refreshUnread();
+};
+
 onMounted(() => {
     document.addEventListener('click', onClickOutside);
+    document.addEventListener('visibilitychange', onVisibilityChange);
     push.refreshState();
+    refreshUnread();
+    unreadTimer = setInterval(refreshUnread, UNREAD_POLL_MS);
 });
-onBeforeUnmount(() => document.removeEventListener('click', onClickOutside));
+
+onBeforeUnmount(() => {
+    document.removeEventListener('click', onClickOutside);
+    document.removeEventListener('visibilitychange', onVisibilityChange);
+    if (unreadTimer) clearInterval(unreadTimer);
+});
 </script>
 
 <style scoped>
