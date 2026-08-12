@@ -60,3 +60,7 @@ yowl-project/frontend/yowl-frontend/src/services/env.js
 Homestead.json
 Homestead.yaml
 Thumbs.db
+.playwright/
+.playwright-cli/
+# Sortie de developpement de vite-plugin-pwa
+dev-dist
