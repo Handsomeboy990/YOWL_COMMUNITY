@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Comment;
 use App\Models\CommentReaction;
+use App\Notifications\CommentLiked;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -47,6 +48,11 @@ class CommentReactionController extends Controller
         $comment->nb_like = CommentReaction::where('comment_id', $id)->where('reaction', 'like')->count();
         $comment->nb_dislike = CommentReaction::where('comment_id', $id)->where('reaction', 'dislike')->count();
         $comment->save();
+
+        // Notifier l'auteur du commentaire quand quelqu'un ajoute un "j'aime"
+        if ($userReaction === 'like' && ! $existingReaction && $comment->user_id !== $userId && $comment->user) {
+            $comment->user->notify(new CommentLiked(Auth::user(), $comment));
+        }
 
         return response()->json([
             'nb_like' => $comment->nb_like,

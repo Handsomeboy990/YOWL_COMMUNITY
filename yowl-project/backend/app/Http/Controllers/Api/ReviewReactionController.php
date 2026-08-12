@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Review;
 use App\Models\ReviewReaction;
+use App\Notifications\ReviewLiked;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -48,13 +49,8 @@ class ReviewReactionController extends Controller
         $review->save();
 
         // Notifier l'auteur de la review quand quelqu'un ajoute un "j'aime"
-        if ($userReaction === 'like' && ! $existingReaction && $review->user_id !== $userId) {
-            app(\App\Services\PushNotificationService::class)->sendToUser(
-                $review->user,
-                'Nouvelle réaction',
-                Auth::user()->username." a aimé ta review.",
-                '/reviews/'.$review->id
-            );
+        if ($userReaction === 'like' && ! $existingReaction && $review->user_id !== $userId && $review->user) {
+            $review->user->notify(new ReviewLiked(Auth::user(), $review));
         }
 
         return response()->json([

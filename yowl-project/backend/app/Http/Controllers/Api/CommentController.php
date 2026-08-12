@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Comment;
+use App\Notifications\CommentReceived;
+use App\Notifications\ReplyReceived;
 use Illuminate\Http\Request;
 
 class CommentController extends Controller
@@ -36,28 +38,16 @@ class CommentController extends Controller
         $comment = Comment::create($validated);
 
         // Notifier l'auteur de la review et celui du commentaire parent
-        $push = app(\App\Services\PushNotificationService::class);
         $author = $request->user();
         $review = $comment->review;
-        $reviewUrl = '/reviews/'.$comment->review_id;
 
-        if ($review && $review->user_id !== $author->id) {
-            $push->sendToUser(
-                $review->user,
-                'Nouveau commentaire',
-                "{$author->username} a commenté ta review.",
-                $reviewUrl
-            );
+        if ($review && $review->user_id !== $author->id && $review->user) {
+            $review->user->notify(new CommentReceived($author, $comment));
         }
         if ($comment->parent_id) {
             $parent = Comment::find($comment->parent_id);
-            if ($parent && $parent->user_id !== $author->id && $parent->user_id !== $review?->user_id) {
-                $push->sendToUser(
-                    $parent->user,
-                    'Nouvelle réponse',
-                    "{$author->username} a répondu à ton commentaire.",
-                    $reviewUrl
-                );
+            if ($parent && $parent->user_id !== $author->id && $parent->user_id !== $review?->user_id && $parent->user) {
+                $parent->user->notify(new ReplyReceived($author, $comment));
             }
         }
 
