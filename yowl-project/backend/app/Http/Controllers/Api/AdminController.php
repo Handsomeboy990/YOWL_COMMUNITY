@@ -4,11 +4,14 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Report;
 use App\Models\Review;
 use App\Models\Comment;
+use App\Models\Suggestion;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class AdminController extends Controller
 {
@@ -142,5 +145,117 @@ class AdminController extends Controller
     {
         $comment->delete();
         return response()->json(['success'=>true,'message'=>'Comment deleted']);
+    }
+
+    /**
+     * The moderation queue, pending reports first.
+     */
+    public function reports(Request $request)
+    {
+        $validated = $request->validate([
+            'status' => ['nullable', Rule::in(Report::STATUSES)],
+        ]);
+
+        $query = Report::with(['user:id,username,picture', 'handler:id,username', 'reportable']);
+        if (! empty($validated['status'])) {
+            $query->where('status', $validated['status']);
+        }
+
+        $reports = $query->orderByRaw("CASE WHEN status = 'pending' THEN 0 ELSE 1 END")
+            ->orderByDesc('created_at')
+            ->paginate(20);
+
+        return response()->json([
+            'success' => true,
+            'data' => $reports,
+            'pending_count' => Report::where('status', Report::STATUS_PENDING)->count(),
+        ]);
+    }
+
+    /**
+     * Close a report, optionally deleting the reported content in the same move.
+     */
+    public function resolveReport(Request $request, Report $report)
+    {
+        $validated = $request->validate([
+            'status' => ['required', Rule::in([Report::STATUS_DISMISSED, Report::STATUS_ACTIONED])],
+            'delete_content' => 'nullable|boolean',
+        ]);
+
+        if ($request->boolean('delete_content')) {
+            $reportable = $report->reportable;
+            if ($reportable instanceof Review) {
+                $this->deleteReview($reportable);
+            } elseif ($reportable instanceof Comment) {
+                $reportable->delete();
+            }
+
+            // Le contenu ayant disparu, les autres signalements qui le visent
+            // n'ont plus d'objet : ils sont clos dans le meme geste.
+            Report::where('reportable_type', $report->reportable_type)
+                ->where('reportable_id', $report->reportable_id)
+                ->where('id', '!=', $report->id)
+                ->where('status', Report::STATUS_PENDING)
+                ->update([
+                    'status' => Report::STATUS_ACTIONED,
+                    'handled_by' => $request->user()->id,
+                    'handled_at' => now(),
+                ]);
+        }
+
+        $report->status = $validated['status'];
+        $report->handled_by = $request->user()->id;
+        $report->handled_at = now();
+        $report->save();
+
+        return response()->json([
+            'success' => true,
+            'data' => $report->fresh(['user:id,username', 'handler:id,username']),
+            'message' => 'Signalement traité',
+        ]);
+    }
+
+    /**
+     * The suggestions sent through the public form, newest first.
+     */
+    public function suggestions(Request $request)
+    {
+        $validated = $request->validate([
+            'status' => ['nullable', Rule::in(Suggestion::STATUSES)],
+        ]);
+
+        $query = Suggestion::with(['user:id,username,picture', 'handler:id,username']);
+        if (! empty($validated['status'])) {
+            $query->where('status', $validated['status']);
+        }
+
+        $suggestions = $query->orderByDesc('created_at')->paginate(20);
+
+        return response()->json([
+            'success' => true,
+            'data' => $suggestions,
+            'new_count' => Suggestion::where('status', Suggestion::STATUS_NEW)->count(),
+        ]);
+    }
+
+    /**
+     * Move a suggestion along its lifecycle: new, read, archived.
+     */
+    public function updateSuggestion(Request $request, Suggestion $suggestion)
+    {
+        $validated = $request->validate([
+            'status' => ['required', Rule::in(Suggestion::STATUSES)],
+        ]);
+
+        $suggestion->status = $validated['status'];
+        $suggestion->handled_by = $request->user()->id;
+        $suggestion->handled_at = now();
+        $suggestion->save();
+
+        return response()->json([
+            'success' => true,
+            'data' => $suggestion->fresh(['user:id,username', 'handler:id,username']),
+            'message' => 'Suggestion mise à jour',
+        ]);
     }
 }

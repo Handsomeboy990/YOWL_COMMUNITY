@@ -3,7 +3,10 @@
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\DashboardKPIController;
+use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\ReviewController;
+use App\Http\Controllers\Api\SuggestionController;
 use App\Http\Controllers\Api\ReviewReactionController;
 use App\Http\Controllers\Api\CommentReactionController;
 use App\Http\Controllers\Api\UserController;
@@ -34,6 +37,9 @@ Route::get('/comments', [CommentController::class, 'index']);
 Route::get('/comments/{comment}', [CommentController::class, 'show']);
 Route::get('/kpi', [DashboardKPIController::class, 'getKPI']);
 
+// Formulaire de suggestion, ouvert aux visiteurs et limité en cadence
+Route::post('/suggestions', [SuggestionController::class, 'store'])->middleware('throttle:5,1');
+
 Route::middleware(['auth:sanctum'])->group(function () {
   Route::get('users/{user}', [UserController::class, 'show']);
   Route::post('users/{user}', [UserController::class, 'update']);
@@ -54,6 +60,16 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // Abonnements aux notifications push
     Route::post('/push/subscribe', [\App\Http\Controllers\Api\PushSubscriptionController::class, 'store']);
     Route::post('/push/unsubscribe', [\App\Http\Controllers\Api\PushSubscriptionController::class, 'destroy']);
+
+    // Centre de notifications
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
+    Route::patch('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
+    Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy']);
+
+    // Signalement de contenu
+    Route::post('/reports', [ReportController::class, 'store'])->middleware('throttle:20,1');
 });
 
 // Admin routes
@@ -69,6 +85,14 @@ Route::middleware(['auth:sanctum','role:admin'])->prefix('admin')->group(functio
   Route::patch('/users/{user}/unban', [AdminController::class, 'unbanUser']);
   Route::patch('/reviews/{review}/publish', [AdminController::class, 'publishReview']);
   Route::patch('/reviews/{review}/unpublish', [AdminController::class, 'unpublishReview']);
+
+  // File de moderation
+  Route::get('/reports', [AdminController::class, 'reports']);
+  Route::patch('/reports/{report}', [AdminController::class, 'resolveReport']);
+
+  // Suggestions envoyees par les membres
+  Route::get('/suggestions', [AdminController::class, 'suggestions']);
+  Route::patch('/suggestions/{suggestion}', [AdminController::class, 'updateSuggestion']);
 });
 
 
