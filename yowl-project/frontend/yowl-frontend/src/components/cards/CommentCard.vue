@@ -21,7 +21,16 @@
                         <i class="fa-solid fa-trash"></i>
                     </button>
                 </div>
+
+                <button v-else-if="canReport" type="button"
+                    class="cursor-pointer text-gray-400 text-[12px] rounded-full p-2 hover:text-red-500 hover:bg-red-50 duration-200"
+                    aria-label="Signaler le commentaire" title="Signaler"
+                    @click="isReportOpen = true">
+                    <i class="fa-solid fa-flag"></i>
+                </button>
             </div>
+
+            <ReportModal :is-open="isReportOpen" type="comment" :id="comment.id" @close="isReportOpen = false" />
 
             <p class="mt-2 text-base text-gray-800">{{ comment.content }}</p>
 
@@ -102,6 +111,7 @@
 <script setup>
 import { computed, ref } from "vue";
 import CommentForm from "../layouts/CommentForm.vue";
+import ReportModal from "../layouts/ReportModal.vue";
 import { useCommentStore } from "@/stores/comment";
 import { useUserStore } from "@/stores/user";
 import Swal from "sweetalert2";
@@ -121,6 +131,12 @@ const isReplying = ref(false);
 const showReplies = ref(false);
 const isEditing = ref(false)
 const content = ref("")
+const isReportOpen = ref(false)
+
+// Un membre connecté signale le commentaire des autres, jamais le sien
+const canReport = computed(
+    () => Boolean(user?.id) && user.id !== props.comment.user?.id
+);
 
 // Toujours résoudre le commentaire courant dans le store (index jamais figé)
 const currentComment = computed(() =>

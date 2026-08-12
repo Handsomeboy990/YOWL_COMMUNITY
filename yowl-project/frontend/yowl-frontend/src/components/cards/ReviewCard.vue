@@ -15,11 +15,33 @@
           <p class="font-roboto text-xs text-gray-500">{{ dateFormatted }}</p>
         </div>
       </div>
-      <div class="flex items-center gap-1 text-gray-500 text-xs md:text-sm">
-        <i class="fa-regular fa-eye"></i>
-        <span>{{ review.nb_views }}</span>
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-1 text-gray-500 text-xs md:text-sm">
+          <i class="fa-regular fa-eye"></i>
+          <span>{{ review.nb_views }}</span>
+        </div>
+
+        <!-- Menu contextuel -->
+        <div v-if="canReport" ref="menuRef" class="relative">
+          <button type="button"
+            class="w-8 h-8 rounded-full grid place-items-center text-gray-400 hover:text-blue-night hover:bg-gray-100 transition-colors cursor-pointer"
+            aria-label="Options de la review" :aria-expanded="isMenuOpen" @click="isMenuOpen = !isMenuOpen">
+            <i class="fa-solid fa-ellipsis"></i>
+          </button>
+
+          <div v-if="isMenuOpen"
+            class="absolute right-0 mt-2 w-44 bg-white rounded-xl shadow-lg shadow-blue-night/10 border border-gray-100 py-1 z-20">
+            <button type="button"
+              class="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-red-500 hover:bg-red-50 cursor-pointer"
+              @click="openReport">
+              <i class="fa-solid fa-flag w-4"></i> Signaler
+            </button>
+          </div>
+        </div>
       </div>
     </header>
+
+    <ReportModal :is-open="isReportOpen" type="review" :id="review.id" @close="isReportOpen = false" />
 
     <!-- Contenu -->
     <p class="font-roboto text-sm md:text-base text-gray-700 mb-3 line-clamp-3">
@@ -35,27 +57,22 @@
     <div class="my-4">
       <ImageCarousel v-if="mediasArray.length && !review.link" :images="mediasArray" />
 
-      <!-- Aperçu du lien -->
-      <div v-if="review.link && !mediasArray.length" class="w-full rounded-lg overflow-hidden">
-        <div class="border border-gray-200 rounded-lg overflow-hidden hover:border-orange-primary transition-colors duration-300">
-          <iframe :src="review.link" class="w-full h-64 md:h-80 border-0" title="Aperçu du contenu"
-            sandbox="allow-same-origin allow-scripts allow-popups" referrerpolicy="no-referrer"></iframe>
-          <a :href="review.link" target="_blank" rel="noopener"
-            class="text-orange-primary text-sm md:text-base flex items-center justify-center gap-2 py-3 bg-gray-50 hover:bg-orange-50 transition-colors duration-200">
-            <i class="fa-solid fa-external-link"></i>
-            Voir le contenu dont je parle
-          </a>
-        </div>
-      </div>
-
       <div v-if="mediasArray.length && review.link">
         <ImageCarousel :images="mediasArray" />
-        <a :href="review.link" target="_blank" rel="noopener"
-          class="text-orange-primary text-sm md:text-base flex items-center justify-center gap-2 py-3 hover:underline mt-2">
-          <i class="fa-solid fa-external-link"></i>
-          Voir le contenu dont je parle
-        </a>
       </div>
+
+      <!-- Lien cité -->
+      <a v-if="safeLink" :href="safeLink" target="_blank" rel="noopener noreferrer"
+        class="group flex items-center gap-3 mt-2 p-3 rounded-xl border border-gray-200 hover:border-orange-primary hover:bg-orange-50/40 transition-colors duration-200">
+        <span class="w-10 h-10 shrink-0 rounded-lg bg-orange-primary/10 grid place-items-center text-orange-primary">
+          <i class="fa-solid fa-link"></i>
+        </span>
+        <span class="min-w-0 flex-1">
+          <span class="block text-sm font-medium text-blue-night truncate">{{ linkHost }}</span>
+          <span class="block text-xs text-gray-400 truncate">{{ safeLink }}</span>
+        </span>
+        <i class="fa-solid fa-arrow-up-right-from-square text-gray-300 group-hover:text-orange-primary transition-colors"></i>
+      </a>
     </div>
 
     <!-- Actions -->
@@ -113,11 +130,12 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { useReviewStore } from '@/stores/review'
 import Swal from 'sweetalert2';
 import ImageCarousel from '../layouts/ImageCarousel.vue'
+import ReportModal from '../layouts/ReportModal.vue'
 import { getStorageUrl } from '@/config'
 
 const props = defineProps({
@@ -129,6 +147,43 @@ const props = defineProps({
 
 const reviewStore = useReviewStore()
 const userStore = useUserStore()
+
+const isMenuOpen = ref(false)
+const isReportOpen = ref(false)
+const menuRef = ref(null)
+
+// Un membre connecté signale le contenu des autres, jamais le sien
+const canReport = computed(
+  () => Boolean(userStore.user?.id) && userStore.user.id !== props.review.user_id
+)
+
+const openReport = () => {
+  isMenuOpen.value = false
+  isReportOpen.value = true
+}
+
+// N'ouvrir que des liens http(s) : un schéma exotique n'est pas rendu
+const safeLink = computed(() => {
+  if (!props.review.link) return ''
+  try {
+    const url = new URL(props.review.link)
+    return ['http:', 'https:'].includes(url.protocol) ? url.href : ''
+  } catch {
+    return ''
+  }
+})
+
+const linkHost = computed(() => {
+  if (!safeLink.value) return ''
+  return new URL(safeLink.value).hostname.replace(/^www\./, '')
+})
+
+const onClickOutside = (event) => {
+  if (menuRef.value && !menuRef.value.contains(event.target)) isMenuOpen.value = false
+}
+
+onMounted(() => document.addEventListener('click', onClickOutside))
+onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
 
 // Date formatée en français
 const dateFormatted = computed(() => {
