@@ -1,55 +1,60 @@
-# Stage 1 : Composer install
-FROM composer:2.7 AS vendor
+# Stage 1 : dependances PHP
+FROM composer:2.8 AS vendor
 WORKDIR /app
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --prefer-dist --no-interaction --no-scripts --optimize-autoloader
 
-# Stage 2 : Runtime PHP CLI (pour Railway)
-FROM php:8.2-cli
+# Stage 2 : execution
+#
+# php-fpm derriere nginx, tenus par supervisord. L'image precedente lancait
+# php artisan serve, le serveur de developpement de Laravel : un seul processus,
+# une seule requete a la fois, sans aucune des protections attendues en
+# production.
+FROM php:8.3-fpm-bookworm
 
-# Dépendances système + PostgreSQL
-RUN apt-get update && apt-get install -y \
-        git \
-        unzip \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        nginx \
+        supervisor \
+        gettext-base \
         libpq-dev \
         libpng-dev \
         libjpeg-dev \
         libfreetype6-dev \
         libonig-dev \
-        libxml2-dev \
         libzip-dev \
+        unzip \
     && rm -rf /var/lib/apt/lists/*
 
-# Extensions PHP avec PostgreSQL
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install \
+    && docker-php-ext-install -j"$(nproc)" \
         pdo \
         pdo_pgsql \
         pgsql \
         mbstring \
         gd \
         zip \
-        pcntl \
-        bcmath
+        bcmath \
+        opcache
+
+COPY docker/php.ini /usr/local/etc/php/conf.d/zz-yowl.ini
+COPY docker/nginx.conf /etc/nginx/templates/default.conf.template
+COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint
+RUN chmod +x /usr/local/bin/entrypoint
 
 WORKDIR /var/www
 
-# Copier les fichiers
 COPY --chown=www-data:www-data . /var/www
-COPY --from=vendor /app/vendor /var/www/vendor
+COPY --from=vendor --chown=www-data:www-data /app/vendor /var/www/vendor
 
-# Préparer les dossiers
-RUN mkdir -p storage/framework/{cache,sessions,views} \
-    && mkdir -p storage/logs \
-    && mkdir -p bootstrap/cache \
+RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
+    && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-# Port Railway
+# php-fpm sert deja sous www-data. nginx et supervisord ont besoin de root pour
+# ouvrir le port et ecrire dans /var/log/nginx ; les processus PHP, eux, ne
+# tournent jamais en root.
 EXPOSE 8000
 
-# Commande de démarrage
-CMD php artisan migrate --force \
-    && php artisan storage:link \
-    && php artisan config:cache \
-    && php artisan route:cache \
-    && php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
+ENTRYPOINT ["entrypoint"]
+CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
