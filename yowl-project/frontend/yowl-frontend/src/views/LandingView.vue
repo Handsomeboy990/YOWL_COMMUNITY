@@ -559,9 +559,9 @@ const displayed = computed(() => ({
 
 const stats = computed(() => [
   { label: 'Membres actifs', value: displayed.value.nbUsers, suffix: '+' },
-  { label: 'Reviews publiées', value: displayed.value.nbReviews, suffix: '' },
+  { label: 'Avis publiés', value: displayed.value.nbReviews, suffix: '' },
   { label: 'Commentaires échangés', value: displayed.value.nbComments, suffix: '' },
-  { label: 'Reviews par jour', value: displayed.value.nbMeanReviewsPerDay, suffix: '' },
+  { label: 'Avis par jour', value: displayed.value.nbMeanReviewsPerDay, suffix: '' },
 ]);
 
 function formatNumber(n) {

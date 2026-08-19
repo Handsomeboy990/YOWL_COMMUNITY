@@ -13,6 +13,7 @@ use App\Models\Tag;
 use Illuminate\Http\Request;
 use App\Support\Media;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules;
 
@@ -138,6 +139,135 @@ class AdminController extends Controller
             'data' => $user,
             'message' => 'Membre créé',
         ], 201);
+    }
+
+    /**
+     * The full record of one member, for the administration detail panel.
+     *
+     * Everything an administrator needs to judge an account without opening
+     * five screens: who they are, what they published, what they received,
+     * and what has been reported about them.
+     */
+    public function showUser(User $user)
+    {
+        $totals = $user->reviews()
+            ->selectRaw('COUNT(*) AS reviews')
+            ->selectRaw('COALESCE(SUM(nb_views), 0) AS views')
+            ->selectRaw('COALESCE(SUM(nb_like), 0) AS likes')
+            ->selectRaw('COALESCE(SUM(nb_dislike), 0) AS dislikes')
+            ->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'user' => [
+                    'id' => $user->id,
+                    'username' => $user->username,
+                    'fullname' => $user->fullname,
+                    'email' => $user->email,
+                    'picture' => $user->picture,
+                    'birthdate' => $user->birthdate?->format('Y-m-d'),
+                    'is_active' => $user->is_active,
+                    'anonymized_at' => $user->anonymized_at,
+                    'email_verified_at' => $user->email_verified_at,
+                    'created_at' => $user->created_at,
+                    'roles' => $user->getRoleNames(),
+                ],
+                'stats' => [
+                    'reviews' => (int) $totals->reviews,
+                    'views' => (int) $totals->views,
+                    'likes_received' => (int) $totals->likes,
+                    'dislikes_received' => (int) $totals->dislikes,
+                    'comments_written' => $user->comments()->count(),
+                    'reactions_given' => $user->reviewReactions()->count(),
+                    'reports_filed' => Report::where('user_id', $user->id)->count(),
+                    'reports_received' => $this->reportsAgainst($user),
+                ],
+                'recent_reviews' => $user->reviews()
+                    ->latest()
+                    ->limit(5)
+                    ->get(['id', 'content', 'nb_like', 'nb_views', 'is_published', 'created_at']),
+                'recent_comments' => $user->comments()
+                    ->with('review:id')
+                    ->latest()
+                    ->limit(5)
+                    ->get(['id', 'review_id', 'content', 'nb_like', 'created_at']),
+            ],
+            'message' => 'Member retrieved successfully.',
+        ]);
+    }
+
+    /**
+     * How many reports target content written by this member.
+     */
+    private function reportsAgainst(User $user): int
+    {
+        $reviewIds = $user->reviews()->pluck('id');
+        $commentIds = $user->comments()->pluck('id');
+
+        return Report::where(function ($query) use ($reviewIds, $commentIds) {
+            $query->where(function ($sub) use ($reviewIds) {
+                $sub->where('reportable_type', Review::class)->whereIn('reportable_id', $reviewIds);
+            })->orWhere(function ($sub) use ($commentIds) {
+                $sub->where('reportable_type', Comment::class)->whereIn('reportable_id', $commentIds);
+            });
+        })->count();
+    }
+
+    /**
+     * Edit the identity of a member from the console.
+     */
+    public function updateUser(Request $request, User $user)
+    {
+        $validated = $request->validate([
+            'username' => ['sometimes', 'string', 'min:3', 'max:255', Rule::unique('users', 'username')->ignore($user->id)],
+            'fullname' => ['sometimes', 'string', 'min:5', 'max:255'],
+            'email' => ['sometimes', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
+            'birthdate' => ['sometimes', 'nullable', 'date', 'before:today'],
+        ]);
+
+        $before = $user->only(array_keys($validated));
+        $user->update($validated);
+
+        AuditLog::record('user.updated', $user, ['from' => $before, 'to' => $validated], $request);
+
+        $user['roles'] = $user->getRoleNames();
+
+        return response()->json([
+            'success' => true,
+            'data' => $user,
+            'message' => 'Membre mis à jour',
+        ]);
+    }
+
+    /**
+     * Issue a new password for a member and return it once.
+     *
+     * The administrator hands it over out of band. Every existing token is
+     * revoked in the same move: a password reset that leaves the old sessions
+     * alive protects nobody.
+     */
+    public function regeneratePassword(Request $request, User $user)
+    {
+        if ($user->anonymized_at) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ce compte a été supprimé.',
+            ], 422);
+        }
+
+        $password = Str::password(16);
+        $user->forceFill(['password' => Hash::make($password)])->save();
+        $user->tokens()->delete();
+
+        AuditLog::record('user.password_regenerated', $user, [], $request);
+
+        return response()->json([
+            'success' => true,
+            // Affiche une seule fois : il n'est stocke nulle part en clair.
+            'data' => ['password' => $password],
+            'message' => 'Mot de passe régénéré. Il ne sera plus affiché.',
+        ]);
     }
 
     /**
@@ -289,11 +419,15 @@ class AdminController extends Controller
     {
         $validated = $request->validate([
             'status' => ['nullable', Rule::in(Suggestion::STATUSES)],
+            'subject' => ['nullable', Rule::in(Suggestion::SUBJECTS)],
         ]);
 
         $query = Suggestion::with(['user:id,username,picture', 'handler:id,username']);
         if (! empty($validated['status'])) {
             $query->where('status', $validated['status']);
+        }
+        if (! empty($validated['subject'])) {
+            $query->where('subject', $validated['subject']);
         }
 
         $suggestions = $query->orderByDesc('created_at')->paginate(20);

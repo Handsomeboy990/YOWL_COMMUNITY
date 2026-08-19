@@ -10,7 +10,7 @@
           </span>
         </p>
         <BaseButton variant="primary" size="sm" icon="fa-solid fa-plus" @click="openCreateModal">
-          Publier une review
+          Publier un avis
         </BaseButton>
       </div>
 
@@ -28,7 +28,7 @@
       <div v-else-if="profileStore.reviewsError"
         class="mt-4 flex flex-col items-center text-center bg-white border border-gray-200 rounded-2xl py-14 px-4">
         <i class="fa-solid fa-plug-circle-exclamation text-4xl text-gray-300"></i>
-        <h2 class="mt-5 text-lg font-semibold text-gray-800">Tes reviews n'ont pas pu être chargées</h2>
+        <h2 class="mt-5 text-lg font-semibold text-gray-800">Tes avis n'ont pas pu être chargés</h2>
         <p class="mt-2 text-sm text-gray-600 max-w-md">{{ profileStore.reviewsError }}</p>
         <BaseButton class="mt-5" variant="primary" size="sm"
           @click="profileStore.fetchReviews(profileStore.pagination.current_page)">
@@ -40,12 +40,12 @@
       <div v-else-if="!profileStore.reviews.length"
         class="mt-4 flex flex-col items-center text-center bg-white border border-gray-200 rounded-2xl py-16 px-4">
         <i class="fa-regular fa-pen-to-square text-5xl text-gray-300"></i>
-        <h2 class="mt-5 text-xl font-semibold text-gray-800">Aucune review pour le moment</h2>
+        <h2 class="mt-5 text-xl font-semibold text-gray-800">Aucun avis pour le moment</h2>
         <p class="mt-2 text-gray-600 text-sm max-w-md">
           Tu n'as encore rien publié. Partage ton premier avis, la communauté t'attend.
         </p>
         <BaseButton class="mt-5" variant="primary" icon="fa-solid fa-plus" @click="openCreateModal">
-          Publier ma première review
+          Publier mon premier avis
         </BaseButton>
       </div>
 
@@ -58,16 +58,16 @@
               <p class="text-sm text-gray-500">{{ formatDate(review.created_at) }}</p>
               <span v-if="!review.is_published"
                 class="inline-flex items-center gap-1.5 mt-1.5 px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 text-xs font-medium">
-                <i class="fa-solid fa-eye-slash"></i> Retirée du fil
+                <i class="fa-solid fa-eye-slash"></i> Retiré du fil
               </span>
             </div>
             <div class="flex gap-2 shrink-0">
-              <button type="button" aria-label="Modifier la review"
+              <button type="button" aria-label="Modifier l'avis"
                 class="w-9 h-9 rounded-full grid place-items-center text-gray-500 hover:text-blue-night hover:bg-gray-100 transition-colors cursor-pointer"
                 @click="openEditModal(review)">
                 <i class="fa-solid fa-pen-to-square"></i>
               </button>
-              <button type="button" aria-label="Supprimer la review"
+              <button type="button" aria-label="Supprimer l'avis"
                 class="w-9 h-9 rounded-full grid place-items-center text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
                 @click="deletePost(review.id)">
                 <i class="fa-solid fa-trash"></i>
@@ -218,8 +218,8 @@ const updatePost = async (id, reviewData) => {
 
 const deletePost = async (reviewId) => {
   const confirmed = await confirm({
-    title: 'Supprimer cette review ?',
-    message: 'Elle disparaîtra du fil, avec ses commentaires et ses réactions.',
+    title: 'Supprimer cet avis ?',
+    message: 'Il disparaîtra du fil, avec ses commentaires et ses réactions.',
     confirmLabel: 'Supprimer',
     tone: 'danger',
   });

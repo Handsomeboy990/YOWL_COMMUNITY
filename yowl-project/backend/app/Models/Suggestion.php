@@ -21,10 +21,25 @@ class Suggestion extends Model
         self::STATUS_ARCHIVED,
     ];
 
+    /**
+     * What a suggestion can be about.
+     *
+     * A fixed list rather than free text: it lets the moderation queue be
+     * filtered, and it tells the sender what kind of message is expected here.
+     */
+    public const SUBJECTS = [
+        'feature',
+        'improvement',
+        'bug',
+        'content',
+        'other',
+    ];
+
     protected $fillable = [
         'user_id',
         'name',
         'email',
+        'subject',
         'message',
     ];
 

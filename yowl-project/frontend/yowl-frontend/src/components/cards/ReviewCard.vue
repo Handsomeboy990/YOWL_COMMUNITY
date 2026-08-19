@@ -25,7 +25,7 @@
         <div v-if="canReport" ref="menuRef" class="relative">
           <button type="button"
             class="w-8 h-8 rounded-full grid place-items-center text-gray-400 hover:text-blue-night hover:bg-gray-100 transition-colors cursor-pointer"
-            aria-label="Options de la review" :aria-expanded="isMenuOpen" @click="isMenuOpen = !isMenuOpen">
+            aria-label="Options de l'avis" :aria-expanded="isMenuOpen" @click="isMenuOpen = !isMenuOpen">
             <i class="fa-solid fa-ellipsis"></i>
           </button>
 

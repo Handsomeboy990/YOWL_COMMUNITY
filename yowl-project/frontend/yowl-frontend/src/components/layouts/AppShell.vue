@@ -107,7 +107,7 @@
 
                 <div class="pt-4">
                     <BaseButton variant="primary" block icon="fa-solid fa-plus" @click="openPublish">
-                        Publier une review
+                        Publier un avis
                     </BaseButton>
                 </div>
 
@@ -173,7 +173,7 @@
                     <i class="fa-solid fa-newspaper text-lg"></i>
                     Reviews
                 </router-link>
-                <button class="flex flex-col items-center justify-center cursor-pointer" aria-label="Publier une review" @click="openPublish">
+                <button class="flex flex-col items-center justify-center cursor-pointer" aria-label="Publier un avis" @click="openPublish">
                     <span class="w-12 h-12 -mt-5 rounded-2xl bg-gradient-to-br from-orange-primary to-[#ff8c5a] grid place-items-center text-white text-xl shadow-lg shadow-orange-primary/40 border-4 border-white">
                         <i class="fa-solid fa-plus"></i>
                     </span>
@@ -233,7 +233,7 @@ const mainNav = computed(() => {
     ];
     if (userStore.isAuthenticated) {
         items.push(
-            { to: '/user/my-reviews', icon: 'fa-solid fa-newspaper', label: 'Mes reviews', name: 'my-reviews' },
+            { to: '/user/my-reviews', icon: 'fa-solid fa-newspaper', label: 'Mes avis', name: 'my-reviews' },
             { to: '/user/activity', icon: 'fa-solid fa-clock-rotate-left', label: 'Activité', name: 'activity' },
             { to: '/user/summary', icon: 'fa-solid fa-chart-pie', label: 'Statistiques', name: 'summary' },
         );
@@ -284,7 +284,7 @@ const handleSearch = async () => {
     if (searchQuery.value.trim()) {
         await reviewStore.searchReviews(searchQuery.value.trim());
         if (reviewStore.reviews.length === 0) {
-            notify.info('Aucun résultat', 'Aucune review ne correspond à ta recherche pour le moment.');
+            notify.info('Aucun résultat', 'Aucun avis ne correspond à ta recherche pour le moment.');
             searchQuery.value = '';
             reviewStore.getReviews();
         }

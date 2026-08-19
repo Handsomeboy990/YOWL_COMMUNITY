@@ -1,6 +1,6 @@
 <template>
   <AppShell>
-    <div class="w-full px-4 md:px-8 py-6 max-w-7xl mx-auto">
+    <div class="w-full px-4 xl:px-6 py-6 pb-24">
       <!-- Bandeau -->
       <header class="mb-6 p-6 bg-blue-night text-white rounded-2xl shadow-lg shadow-blue-night/10">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -17,10 +17,14 @@
         </div>
       </header>
 
-      <!-- Onglets -->
-      <nav class="flex gap-1 mb-6 overflow-x-auto pb-1" aria-label="Sections d'administration">
+      <!-- Onglets.
+           Ils passent a la ligne au lieu de defiler horizontalement : a neuf
+           onglets, la barre demandait plus de largeur que l'ecran et les
+           derniers, dont les reglages, restaient hors champ sans que rien ne
+           l'indique. -->
+      <nav class="flex flex-wrap gap-1 mb-6" aria-label="Sections d'administration">
         <button v-for="tab in tabs" :key="tab.key" type="button"
-          class="shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors cursor-pointer"
+          class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors cursor-pointer"
           :class="activeTab === tab.key
             ? 'bg-orange-primary text-white shadow-md shadow-orange-primary/30'
             : 'text-gray-500 hover:text-blue-night hover:bg-gray-100'"
@@ -56,7 +60,7 @@
           </div>
 
           <div class="mt-6 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-            <h2 class="px-5 py-4 border-b border-gray-100 font-semibold text-blue-night">Dernières reviews</h2>
+            <h2 class="px-5 py-4 border-b border-gray-100 font-semibold text-blue-night">Derniers avis</h2>
             <ul v-if="stats.latest_reviews?.length" class="divide-y divide-gray-50">
               <li v-for="review in stats.latest_reviews" :key="review.id"
                 class="px-5 py-3 flex items-start gap-3 hover:bg-gray-50 transition-colors">
@@ -67,7 +71,7 @@
                 <span class="shrink-0 text-xs text-gray-400">{{ formatDate(review.created_at) }}</span>
               </li>
             </ul>
-            <p v-else class="px-5 py-8 text-center text-sm text-gray-400">Aucune review pour le moment.</p>
+            <p v-else class="px-5 py-8 text-center text-sm text-gray-400">Aucun avis pour le moment.</p>
           </div>
         </div>
 
@@ -106,7 +110,7 @@
                   {{ reportStatusLabel(report.status) }}
                 </span>
                 <span class="text-xs text-gray-400">
-                  {{ report.reportable_type?.includes('Comment') ? 'Commentaire' : 'Review' }}
+                  {{ report.reportable_type?.includes('Comment') ? 'Commentaire' : 'Avis' }}
                   #{{ report.reportable_id }} — signalé par {{ report.user?.username || 'membre supprimé' }}
                   le {{ formatDate(report.created_at) }}
                 </span>
@@ -181,10 +185,23 @@
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-100">
-                <tr v-for="user in users.data" :key="user.id" class="hover:bg-gray-50 transition-colors">
+                <tr v-for="user in users.data" :key="user.id"
+                  class="hover:bg-gray-50 transition-colors cursor-pointer"
+                  tabindex="0" :aria-label="'Ouvrir la fiche de ' + user.username"
+                  @click="openUserDetail(user.id)" @keyup.enter="openUserDetail(user.id)">
                   <td class="px-5 py-3">
-                    <span class="font-medium text-blue-night">{{ user.username }}</span>
-                    <span class="block text-xs text-gray-400">#{{ user.id }}</span>
+                    <div class="flex items-center gap-3">
+                      <img v-if="user.picture" :src="getStorageUrl(user.picture)" alt=""
+                        class="w-9 h-9 rounded-full object-cover shrink-0" />
+                      <span v-else
+                        class="w-9 h-9 rounded-full bg-blue-night grid place-items-center text-white text-xs font-bold shrink-0">
+                        {{ (user.username || '?').slice(0, 2).toUpperCase() }}
+                      </span>
+                      <span class="min-w-0">
+                        <span class="block font-medium text-blue-night truncate">{{ user.username }}</span>
+                        <span class="block text-xs text-gray-400">#{{ user.id }}</span>
+                      </span>
+                    </div>
                   </td>
                   <td class="px-5 py-3 text-gray-500">{{ user.email }}</td>
                   <td class="px-5 py-3">
@@ -199,8 +216,11 @@
                       {{ user.is_active ? 'Actif' : 'Banni' }}
                     </span>
                   </td>
-                  <td class="px-5 py-3">
+                  <td class="px-5 py-3" @click.stop>
                     <div class="flex justify-end gap-2">
+                      <button type="button" :class="actionNeutral" @click="openUserDetail(user.id)">
+                        Voir la fiche
+                      </button>
                       <button v-if="user.is_active" type="button" :class="actionDanger" @click="banUser(user.id)">
                         Bannir
                       </button>
@@ -226,8 +246,8 @@
       <!-- ===== REVIEWS ===== -->
       <section v-else-if="activeTab === 'reviews'" class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
         <div class="flex flex-wrap items-center justify-between gap-3 px-5 py-4 border-b border-gray-100">
-          <h2 class="font-semibold text-blue-night">Reviews</h2>
-          <input v-model="reviewSearch" type="search" placeholder="Rechercher une review..."
+          <h2 class="font-semibold text-blue-night">Avis</h2>
+          <input v-model="reviewSearch" type="search" placeholder="Rechercher un avis..."
             class="w-full sm:w-64 px-3 py-2 text-sm bg-gray-100 focus:bg-white border border-transparent focus:border-orange-primary rounded-lg outline-none transition-colors"
             @keyup.enter="fetchReviews(1)">
         </div>
@@ -279,8 +299,8 @@
           <Pagination v-if="reviews.last_page > 1" :pagination="reviews" @changePage="fetchReviews" />
         </template>
 
-        <EmptyState v-else icon="fa-regular fa-newspaper" title="Aucune review"
-          description="Aucune review ne correspond à cette recherche." />
+        <EmptyState v-else icon="fa-regular fa-newspaper" title="Aucun avis"
+          description="Aucun avis ne correspond à cette recherche." />
       </section>
 
       <!-- ===== COMMENTAIRES ===== -->
@@ -300,7 +320,7 @@
               <thead class="bg-gray-50 text-left text-xs uppercase text-gray-400">
                 <tr>
                   <th class="px-5 py-3 font-medium">Auteur</th>
-                  <th class="px-5 py-3 font-medium">Review</th>
+                  <th class="px-5 py-3 font-medium">Avis</th>
                   <th class="px-5 py-3 font-medium">Contenu</th>
                   <th class="px-5 py-3 font-medium text-right">Actions</th>
                 </tr>
@@ -333,14 +353,33 @@
 
       <!-- ===== SUGGESTIONS ===== -->
       <section v-else-if="activeTab === 'suggestions'" class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-        <div class="flex flex-wrap items-center justify-between gap-3 px-5 py-4 border-b border-gray-100">
-          <h2 class="font-semibold text-blue-night">Suggestions des membres</h2>
-          <div class="flex gap-1">
-            <button v-for="filter in suggestionFilters" :key="filter.value" type="button"
-              class="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer"
-              :class="suggestionStatus === filter.value ? 'bg-blue-night text-white' : 'text-gray-500 hover:bg-gray-100'"
-              @click="changeSuggestionFilter(filter.value)">
-              {{ filter.label }}
+        <div class="px-5 py-4 border-b border-gray-100 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 class="font-semibold text-blue-night">Suggestions des membres</h2>
+              <p class="text-xs text-gray-500 mt-0.5">
+                Idées et retours envoyés par le formulaire. Les signalements de contenu sont dans l'onglet Modération.
+              </p>
+            </div>
+            <div class="flex gap-1">
+              <button v-for="filter in suggestionFilters" :key="filter.value" type="button"
+                class="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer"
+                :class="suggestionStatus === filter.value ? 'bg-blue-night text-white' : 'text-gray-500 hover:bg-gray-100'"
+                @click="changeSuggestionFilter(filter.value)">
+                {{ filter.label }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Filtre par sujet -->
+          <div class="flex flex-wrap gap-1.5">
+            <button v-for="option in subjectFilters" :key="option.value" type="button"
+              class="px-2.5 py-1 rounded-full text-xs font-medium border transition-colors cursor-pointer"
+              :class="suggestionSubject === option.value
+                ? 'border-orange-primary bg-orange-50 text-orange-primary'
+                : 'border-gray-200 text-gray-500 hover:border-gray-300'"
+              @click="changeSuggestionSubject(option.value)">
+              {{ option.label }}
             </button>
           </div>
         </div>
@@ -353,6 +392,10 @@
               <div class="flex flex-wrap items-center gap-2 mb-2">
                 <span class="px-2.5 py-1 rounded-full text-xs font-medium" :class="suggestionStatusTone(suggestion.status)">
                   {{ suggestionStatusLabel(suggestion.status) }}
+                </span>
+                <span v-if="suggestion.subject"
+                  class="px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                  <i :class="subjectIcon(suggestion.subject)" class="mr-1"></i>{{ subjectLabel(suggestion.subject) }}
                 </span>
                 <span class="text-xs text-gray-400">
                   {{ suggestion.user?.username || suggestion.name || 'Anonyme' }}
@@ -394,6 +437,9 @@
 
     <CreateUserModal :is-open="isCreateUserOpen" @close="isCreateUserOpen = false"
       @created="onUserCreated" />
+
+    <UserDetailModal :is-open="detailUserId !== null" :user-id="detailUserId"
+      @close="detailUserId = null" @updated="fetchUsers(users?.current_page || 1)" />
   </AppShell>
 </template>
 
@@ -410,10 +456,15 @@ import AdminSettings from '@/components/admin/AdminSettings.vue';
 import AdminRoles from '@/components/admin/AdminRoles.vue';
 import AdminAuditLog from '@/components/admin/AdminAuditLog.vue';
 import CreateUserModal from '@/components/admin/CreateUserModal.vue';
+import UserDetailModal from '@/components/admin/UserDetailModal.vue';
+import { getStorageUrl } from '@/config';
 import BaseButton from '@/components/ui/BaseButton.vue';
 
 const activeTab = ref('overview');
 const isCreateUserOpen = ref(false);
+const detailUserId = ref(null);
+
+const openUserDetail = (id) => { detailUserId.value = id; };
 
 const onUserCreated = () => {
   fetchUsers(1);
@@ -437,6 +488,7 @@ const reviewSearch = ref('');
 const commentSearch = ref('');
 const reportStatus = ref('pending');
 const suggestionStatus = ref('');
+const suggestionSubject = ref('');
 
 const loading = ref({
   stats: true,
@@ -453,7 +505,7 @@ const tabs = computed(() => [
   { key: 'overview', label: "Vue d'ensemble", icon: 'fa-solid fa-chart-pie' },
   { key: 'reports', label: 'Modération', icon: 'fa-solid fa-flag', badge: pendingReports.value },
   { key: 'users', label: 'Membres', icon: 'fa-solid fa-users' },
-  { key: 'reviews', label: 'Reviews', icon: 'fa-regular fa-newspaper' },
+  { key: 'reviews', label: 'Avis', icon: 'fa-regular fa-newspaper' },
   { key: 'comments', label: 'Commentaires', icon: 'fa-regular fa-comments' },
   { key: 'suggestions', label: 'Suggestions', icon: 'fa-regular fa-lightbulb', badge: newSuggestions.value },
   { key: 'settings', label: 'Réglages', icon: 'fa-solid fa-sliders' },
@@ -463,7 +515,7 @@ const tabs = computed(() => [
 
 const statCards = computed(() => [
   { label: 'Membres', value: stats.value?.users ?? 0, icon: 'fa-solid fa-users text-blue-600', tone: 'bg-blue-50' },
-  { label: 'Reviews', value: stats.value?.reviews ?? 0, icon: 'fa-regular fa-newspaper text-orange-primary', tone: 'bg-orange-50' },
+  { label: 'Avis', value: stats.value?.reviews ?? 0, icon: 'fa-regular fa-newspaper text-orange-primary', tone: 'bg-orange-50' },
   { label: 'Commentaires', value: stats.value?.comments ?? 0, icon: 'fa-regular fa-comments text-emerald-600', tone: 'bg-emerald-50' },
   { label: 'Signalements en attente', value: stats.value?.pending_reports ?? 0, icon: 'fa-solid fa-flag text-red-600', tone: 'bg-red-50' },
 ]);
@@ -474,6 +526,22 @@ const reportFilters = [
   { value: 'dismissed', label: 'Rejetés' },
   { value: '', label: 'Tous' },
 ];
+
+const SUBJECTS = {
+  feature: { label: 'Fonctionnalité', icon: 'fa-solid fa-wand-magic-sparkles' },
+  improvement: { label: 'Amélioration', icon: 'fa-solid fa-arrow-trend-up' },
+  bug: { label: 'Dysfonctionnement', icon: 'fa-solid fa-bug' },
+  content: { label: 'Contenu', icon: 'fa-regular fa-pen-to-square' },
+  other: { label: 'Autre', icon: 'fa-regular fa-comment-dots' },
+};
+
+const subjectFilters = [
+  { value: '', label: 'Tous les sujets' },
+  ...Object.entries(SUBJECTS).map(([value, meta]) => ({ value, label: meta.label })),
+];
+
+const subjectLabel = (value) => SUBJECTS[value]?.label ?? value;
+const subjectIcon = (value) => SUBJECTS[value]?.icon ?? 'fa-regular fa-comment-dots';
 
 const suggestionFilters = [
   { value: '', label: 'Toutes' },
@@ -615,7 +683,11 @@ const fetchReports = async (page = 1) => {
 const fetchSuggestions = async (page = 1) => {
   loading.value.suggestions = true;
   try {
-    const res = await api.get('/admin/suggestions', { params: { page, status: suggestionStatus.value || undefined } });
+    const res = await api.get('/admin/suggestions', { params: {
+      page,
+      status: suggestionStatus.value || undefined,
+      subject: suggestionSubject.value || undefined,
+    } });
     suggestions.value = res.data.data;
     newSuggestions.value = res.data.new_count ?? 0;
     loaded.suggestions = true;
@@ -629,6 +701,11 @@ const fetchSuggestions = async (page = 1) => {
 const changeReportFilter = (value) => {
   reportStatus.value = value;
   fetchReports(1);
+};
+
+const changeSuggestionSubject = (value) => {
+  suggestionSubject.value = value;
+  fetchSuggestions(1);
 };
 
 const changeSuggestionFilter = (value) => {
@@ -673,7 +750,7 @@ const deleteComment = async (id) => {
 const publishReview = async (id) => {
   const confirmed = await confirmAction({
     title: 'Confirmer la publication',
-    text: 'Veux-tu vraiment publier cette review ?',
+    text: 'Veux-tu vraiment publier cet avis ?',
     confirmButtonText: 'Oui, publier',
   });
   if (confirmed) {
@@ -686,7 +763,7 @@ const publishReview = async (id) => {
 const unpublishReview = async (id) => {
   const confirmed = await confirmAction({
     title: 'Confirmer la dépublication',
-    text: 'Veux-tu vraiment dépublier cette review ?',
+    text: 'Veux-tu vraiment dépublier cet avis ?',
     confirmButtonText: 'Oui, dépublier',
   });
   if (confirmed) {
@@ -699,7 +776,7 @@ const unpublishReview = async (id) => {
 const deleteReview = async (id) => {
   const confirmed = await confirmAction({
     title: 'Confirmer la suppression',
-    text: 'Veux-tu vraiment supprimer cette review ? Cette action est irréversible.',
+    text: 'Veux-tu vraiment supprimer cet avis ? Cette action est irréversible.',
     confirmButtonText: 'Oui, supprimer',
   });
   if (confirmed) {

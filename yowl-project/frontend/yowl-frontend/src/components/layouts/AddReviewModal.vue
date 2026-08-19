@@ -1,5 +1,5 @@
 <template>
-    <BaseModal :isOpen="isOpen" :title="form.id ? 'Modifier la review' : 'Publier une review'" size="lg" @close="closeModal">
+    <BaseModal :isOpen="isOpen" :title="form.id ? 'Modifier cet avis' : 'Publier un avis'" size="lg" @close="closeModal">
         <form class="space-y-5 text-blue-night" @submit.prevent="submitReview">
             <!-- Contenu -->
             <BaseTextarea
@@ -275,13 +275,13 @@ const onTagKeydown = (e) => {
 // Soumission
 const submitReview = async () => {
     if (!userStore.isAuthenticated) {
-        notify.info('Connexion requise', 'Tu dois être connecté pour publier une review.');
+        notify.info('Connexion requise', 'Tu dois être connecté pour publier un avis.');
         router.push('/login');
         return;
     }
 
     if (!form.value.content.trim()) {
-        notify.warning('Review vide', 'Impossible de publier une review sans contenu.');
+        notify.warning('Avis vide', 'Impossible de publier un avis sans contenu.');
         return;
     }
 

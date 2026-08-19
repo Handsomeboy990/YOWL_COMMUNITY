@@ -7,7 +7,7 @@
     <div class="space-y-6">
       <div>
         <h2 class="font-semibold text-lg text-orange-primary">1. Qu'est-ce que YOWL Community ?</h2>
-        <p class="text-gray-700">YOWL est une plateforme sociale interactive où les jeunes partagent leurs avis, reviews et expériences tout en échangeant avec les autres dans un cadre sûr.</p>
+        <p class="text-gray-700">YOWL est une plateforme sociale interactive où les jeunes partagent leurs avis et leurs expériences tout en échangeant avec les autres dans un cadre sûr.</p>
       </div>
 
       <div>
@@ -31,7 +31,7 @@
 
       <div>
         <h2 class="font-semibold text-lg text-orange-primary">5. Comment signaler un membre ou une publication ?</h2>
-        <p class="text-gray-700">Une option « Signaler » sera disponible sur chaque review et commentaire ( <strong>V1.2</strong> ). Utilise-la pour prévenir les modérateurs de toute infraction.</p>
+        <p class="text-gray-700">Une option « Signaler » sera disponible sur chaque avis et commentaire ( <strong>V1.2</strong> ). Utilise-la pour prévenir les modérateurs de toute infraction.</p>
       </div>
 
       <div>

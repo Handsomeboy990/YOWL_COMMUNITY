@@ -55,7 +55,7 @@
                 <i class="fa-solid fa-magnifying-glass text-4xl text-gray-300"></i>
                 <h2 class="mt-5 text-xl font-semibold text-gray-800">Aucun résultat</h2>
                 <p class="mt-2 text-gray-600 text-sm max-w-md">
-                    Aucune review ne correspond à ta recherche ou à tes filtres.
+                    Aucun avis ne correspond à ta recherche ou à tes filtres.
                 </p>
                 <button type="button"
                     class="mt-5 px-4 py-2 rounded-xl bg-blue-night text-white text-sm font-medium hover:bg-blue-night/90 transition-colors cursor-pointer"
@@ -71,7 +71,7 @@
                     fill="none" stroke="currentColor" stroke-width="1.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 7h18M3 12h18M3 17h18M8 3v18M16 3v18" />
                 </svg>
-                <h2 class="text-xl md:text-2xl font-semibold text-gray-800 mb-2">Aucune review pour le moment</h2>
+                <h2 class="text-xl md:text-2xl font-semibold text-gray-800 mb-2">Aucun avis pour le moment</h2>
                 <p class="mt-2 text-gray-600 text-sm md:text-base max-w-md">
                     Il n'y a encore rien à afficher. Dès qu'un membre publiera, tu le verras ici.
                 </p>

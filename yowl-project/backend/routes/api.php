@@ -99,8 +99,11 @@ Route::middleware(['auth:sanctum','role:admin'])->prefix('admin')->group(functio
   Route::get('/suggestions', [AdminController::class, 'suggestions']);
   Route::patch('/suggestions/{suggestion}', [AdminController::class, 'updateSuggestion']);
 
-  // Creation de membres depuis la console
+  // Membres : creation, fiche detaillee, edition, mot de passe
   Route::post('/users', [AdminController::class, 'createUser']);
+  Route::get('/users/{user}', [AdminController::class, 'showUser']);
+  Route::patch('/users/{user}', [AdminController::class, 'updateUser']);
+  Route::post('/users/{user}/password', [AdminController::class, 'regeneratePassword']);
 
   // Reglages de la plateforme, sans redeploiement
   Route::get('/settings', [SettingController::class, 'index']);

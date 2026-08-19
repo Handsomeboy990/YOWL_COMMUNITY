@@ -103,7 +103,7 @@ const format = (value) => (value ?? 0).toLocaleString('fr-FR');
 const tiles = computed(() => {
   const stats = profileStore.stats;
   return [
-    { label: 'Reviews', icon: 'fa-solid fa-newspaper', value: format(stats?.reviews) },
+    { label: 'Avis', icon: 'fa-solid fa-newspaper', value: format(stats?.reviews) },
     { label: 'Vues cumulées', icon: 'fa-regular fa-eye', value: format(stats?.views) },
     { label: "J'aime reçus", icon: 'fa-regular fa-thumbs-up', value: format(stats?.likes) },
     { label: 'Commentaires reçus', icon: 'fa-regular fa-comment', value: format(stats?.comments_received) },
@@ -112,7 +112,7 @@ const tiles = computed(() => {
 
 const tabs = [
   { to: '/user/summary', name: 'summary', label: 'Résumé', icon: 'fa-solid fa-chart-pie' },
-  { to: '/user/my-reviews', name: 'my-reviews', label: 'Mes reviews', icon: 'fa-solid fa-newspaper' },
+  { to: '/user/my-reviews', name: 'my-reviews', label: 'Mes avis', icon: 'fa-solid fa-newspaper' },
   { to: '/user/activity', name: 'activity', label: 'Activité', icon: 'fa-solid fa-clock-rotate-left' },
 ];
 </script>

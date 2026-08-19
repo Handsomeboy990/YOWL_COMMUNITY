@@ -95,7 +95,7 @@ const hasEngagement = computed(() => {
 const details = computed(() => {
   const stats = profileStore.stats;
   return [
-    { label: 'Reviews publiées', value: format(stats?.reviews) },
+    { label: 'Avis publiés', value: format(stats?.reviews) },
     { label: 'Vues cumulées', value: format(stats?.views) },
     { label: "J'aime reçus", value: format(stats?.likes) },
     { label: "Je n'aime pas reçus", value: format(stats?.dislikes) },
@@ -117,7 +117,7 @@ const timelineData = computed(() => {
     labels: series.map((point) => monthLabel(point.month)),
     datasets: [
       {
-        label: 'Reviews publiées',
+        label: 'Avis publiés',
         data: series.map((point) => point.count),
         borderColor: '#FF6B35',
         backgroundColor: 'rgba(255, 107, 53, 0.15)',

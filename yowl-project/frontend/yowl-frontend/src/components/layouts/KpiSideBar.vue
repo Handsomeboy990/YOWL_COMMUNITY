@@ -8,7 +8,7 @@
             <span class="font-poppins text-xl text-orange-primary">{{ store.kpi.nbUsers }}</span>
           </div>
           <div class="flex items-center justify-between">
-            <span class="font-roboto text-body text-gray-700">Reviews publiées</span>
+            <span class="font-roboto text-body text-gray-700">Avis publiés</span>
             <span class="font-poppins text-xl text-orange-primary">{{ store.kpi.nbReviews }}</span>
           </div>
           <div class="flex items-center justify-between">
@@ -16,7 +16,7 @@
             <span class="font-poppins text-xl text-orange-primary">{{ store.kpi.nbComments }}</span>
           </div>
           <div class="flex items-center justify-between">
-            <span class="font-roboto text-body text-gray-700">Reviews par jour</span>
+            <span class="font-roboto text-body text-gray-700">Avis par jour</span>
             <span class="font-poppins text-xl text-orange-primary">{{ store.kpi.nbMeanReviewsPerDay }}</span>
           </div>
           <div class="flex items-center justify-between">
