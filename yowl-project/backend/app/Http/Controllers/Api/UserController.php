@@ -3,7 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
+use App\Mail\EmailVerificationCode;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -52,19 +56,47 @@ class UserController extends Controller
             ]);
 
             if ($request->hasFile('picture')) {
-                $path = $request->file('picture')->store('profile', 'public');
-                $validated['picture'] = $path;
+                $previous = $user->picture;
+                $validated['picture'] = $request->file('picture')->store('profile', 'public');
+                if ($previous) {
+                    Storage::disk('public')->delete($previous);
+                }
             }
 
             if (isset($validated['password'])) {
                 $validated['password'] = Hash::make($request->string('password'));
             }
-           $user->update($validated);
-           $user["roles"] = $user->getRoleNames();
+
+            // Changer d'adresse annule la verification : sans cela, on
+            // s'attribuait une adresse qu'on ne controle pas, deja marquee
+            // comme verifiee, et les emails de service partaient dessus.
+            $emailChanged = isset($validated['email']) && $validated['email'] !== $user->email;
+
+            $user->update($validated);
+
+            if ($emailChanged) {
+                // email_verified_at n'est pas assignable en masse : passer par
+                // update() l'aurait ignore en silence, et la nouvelle adresse
+                // serait restee marquee comme verifiee.
+                $code = (string) random_int(100000, 999999);
+                $user->forceFill([
+                    'email_verified_at' => null,
+                    'email_verification_code' => $code,
+                    'email_verification_expires_at' => now()->addMinutes(15),
+                ])->save();
+
+                Mail::to($user->email)->send(new EmailVerificationCode($code));
+            }
+
+            $user['roles'] = $user->getRoleNames();
+
             return response()->json([
                 'success' => true,
                 'data' => $user,
-                'message' => 'Profil mis à jour avec succès',
+                'email_verification_required' => $emailChanged,
+                'message' => $emailChanged
+                    ? 'Profil mis à jour. Un code de vérification a été envoyé à ta nouvelle adresse.'
+                    : 'Profil mis à jour avec succès',
             ]);
         } catch (ValidationException $e) {
             return response()->json(
@@ -98,13 +130,43 @@ class UserController extends Controller
             ], 403);
         }
 
-        $user->is_active = false;
-        $user->save();
+        // La suppression se faisait par un simple is_active a false : l'adresse,
+        // le pseudo, le nom, la photo et la date de naissance restaient en base
+        // indefiniment, alors que le produit annonce une suppression.
+        //
+        // Les donnees personnelles partent, les contributions restent
+        // rattachees a un compte anonyme pour ne pas trouer les discussions
+        // des autres membres.
+        $avatar = $user->picture;
 
-        // Révoquer tous les tokens du compte (toutes sessions confondues)
+        $user->forceFill([
+            'username' => 'membre-supprime-'.$user->id,
+            'fullname' => 'Membre supprimé',
+            'email' => 'supprime-'.$user->id.'@yowl.invalid',
+            'picture' => null,
+            'birthdate' => null,
+            'password' => Hash::make(Str::random(40)),
+            'email_verified_at' => null,
+            'email_verification_code' => null,
+            'email_verification_expires_at' => null,
+            'remember_token' => null,
+            'is_active' => false,
+            'anonymized_at' => now(),
+        ])->save();
+
+        if ($avatar) {
+            Storage::disk('public')->delete($avatar);
+        }
+
         $user->tokens()->delete();
+        $user->notifications()->delete();
+        $user->pushSubscriptions()->delete();
+        $user->syncRoles([]);
 
-        return response()->json(['success'=>true,'message'=>'Compte désactivé avec succès']);
+        return response()->json([
+            'success' => true,
+            'message' => 'Compte supprimé. Tes données personnelles ont été effacées.',
+        ]);
     }
 
     /**

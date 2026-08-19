@@ -15,7 +15,7 @@ class TagController extends Controller
         $search = request('search');
         $query = Tag::query();
         if ($search && is_string($search) && strlen(trim($search))) {
-            $query->where('name', 'like', "%" . trim($search) . "%");
+            $query->whereRaw('LOWER(name) LIKE ?', ['%'.mb_strtolower(trim($search)).'%']);
         }
         $tags = $query->orderBy('name')->limit(50)->get();
 

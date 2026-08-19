@@ -4,19 +4,40 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Comment;
+use App\Models\Review;
 use App\Notifications\CommentReceived;
 use App\Notifications\ReplyReceived;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class CommentController extends Controller
 {
     /**
+     * Restrict a comment query to content the caller is allowed to read.
+     *
+     * A comment inherits the visibility of the review it hangs from. Without
+     * this, a review pulled from the feed by moderation stayed readable
+     * through its comments, which are served on a public route.
+     */
+    private function visibleTo(Builder $query, $user): Builder
+    {
+        return $query->whereHas('review', function ($reviewQuery) use ($user) {
+            $reviewQuery->where('is_published', true);
+            if ($user) {
+                $reviewQuery->orWhere('user_id', $user->id);
+            }
+        });
+    }
+
+    /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Charge tous les commentaires avec leurs relations (auteur, review et réponses enfants)
-        $comments = Comment::with(['user:id,username,picture', 'review:id,user_id', 'children'])
+        $comments = $this->visibleTo(
+            Comment::with(['user:id,username,picture', 'review:id,user_id']),
+            auth('sanctum')->user()
+        )
             ->orderByDesc('created_at')
             ->paginate(10);
 
@@ -33,14 +54,36 @@ class CommentController extends Controller
             'parent_id' => 'nullable|exists:comments,id',
             'content' => 'required|string|min:1|max:1000',
         ]);
-        
-        $validated['user_id'] = $request->user()->id;
+
+        $review = Review::find($validated['review_id']);
+        $author = $request->user();
+
+        // On ne commente pas une review retiree du fil, sauf la sienne.
+        if (! $review->is_published && $review->user_id !== $author->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cette review n\'accepte plus de commentaires.',
+            ], 403);
+        }
+
+        // Une reponse appartient forcement a la meme review que le commentaire
+        // auquel elle repond : sans ce controle, un fil de discussion pouvait
+        // etre greffe sur une review etrangere.
+        if (! empty($validated['parent_id'])) {
+            $parentReviewId = Comment::whereKey($validated['parent_id'])->value('review_id');
+            if ((int) $parentReviewId !== (int) $validated['review_id']) {
+                return response()->json([
+                    'success' => false,
+                    'error' => ['parent_id' => ['Le commentaire parent appartient à une autre review.']],
+                    'message' => 'Réponse invalide.',
+                ], 422);
+            }
+        }
+
+        $validated['user_id'] = $author->id;
         $comment = Comment::create($validated);
 
         // Notifier l'auteur de la review et celui du commentaire parent
-        $author = $request->user();
-        $review = $comment->review;
-
         if ($review && $review->user_id !== $author->id && $review->user) {
             $review->user->notify(new CommentReceived($author, $comment));
         }
@@ -53,7 +96,7 @@ class CommentController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $comment->load(['user', 'children']),
+            'data' => $comment->load(['user']),
             'message' => 'Commentaire créé avec succès',
         ], 201);
     }
@@ -63,7 +106,19 @@ class CommentController extends Controller
      */
     public function show(Comment $comment)
     {
-        $comment->load(['user:id,username,picture', 'review:id,user_id', 'children']);
+        $currentUser = auth('sanctum')->user();
+        $review = $comment->review;
+
+        // Meme regle que pour la liste : un commentaire accroche a une review
+        // depubliee n'est lisible que par l'auteur de cette review.
+        if (! $review || (! $review->is_published && (! $currentUser || $currentUser->id !== $review->user_id))) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Commentaire introuvable.',
+            ], 404);
+        }
+
+        $comment->load(['user:id,username,picture', 'review:id,user_id']);
 
         return response()->json([
             'success' => true,

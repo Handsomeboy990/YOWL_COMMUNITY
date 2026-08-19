@@ -89,14 +89,30 @@ class AdminController extends Controller
         ]);
     }
 
+    /**
+     * Case insensitive contains, portable across the supported engines.
+     *
+     * A plain LIKE is case sensitive on PostgreSQL, which is what production
+     * runs: searching "jean" there never matched "Jean".
+     */
+    private function whereContains($query, string $column, string $search): void
+    {
+        $query->whereRaw('LOWER('.$column.') LIKE ?', ['%'.mb_strtolower($search).'%']);
+    }
+
+    private function orWhereContains($query, string $column, string $search): void
+    {
+        $query->orWhereRaw('LOWER('.$column.') LIKE ?', ['%'.mb_strtolower($search).'%']);
+    }
+
     public function users(Request $request)
     {
         $query = User::query();
-        if ($search = $request->get('search')) {
-            $query->where(function($q) use ($search) {
-                $q->where('username', 'like', "%$search%")
-                  ->orWhere('email', 'like', "%$search%")
-                  ->orWhere('fullname', 'like', "%$search%");
+        if ($search = $request->input('search')) {
+            $query->where(function ($q) use ($search) {
+                $this->whereContains($q, 'username', $search);
+                $this->orWhereContains($q, 'email', $search);
+                $this->orWhereContains($q, 'fullname', $search);
             });
         }
         $users = $query->orderByDesc('created_at')->paginate(20);
@@ -111,8 +127,8 @@ class AdminController extends Controller
     public function reviews(Request $request)
     {
         $query = Review::with('user');
-        if ($search = $request->get('search')) {
-            $query->where('content','like',"%$search%");
+        if ($search = $request->input('search')) {
+            $this->whereContains($query, 'content', $search);
         }
         $reviews = $query->orderByDesc('created_at')->paginate(20);
         return response()->json(['success'=>true,'data'=>$reviews]);
@@ -121,8 +137,8 @@ class AdminController extends Controller
     public function comments(Request $request)
     {
         $query = Comment::with(['user','review']);
-        if ($search = $request->get('search')) {
-            $query->where('content','like',"%$search%");
+        if ($search = $request->input('search')) {
+            $this->whereContains($query, 'content', $search);
         }
         $comments = $query->orderByDesc('created_at')->paginate(30);
         return response()->json(['success'=>true,'data'=>$comments]);

@@ -37,10 +37,17 @@ class Comment extends Model
         return $this->belongsTo(Comment::class, 'parent_id');
     }
 
-    // Sous-commentaires
+    /**
+     * Direct replies.
+     *
+     * This relation used to eager load itself, which walked the whole reply
+     * chain with one query per level and no bound on depth. The client builds
+     * its threads from parent_id on the flat listing and never reads the
+     * nested payload, so the recursion cost nothing but queries.
+     */
     public function children()
     {
-        return $this->hasMany(Comment::class, 'parent_id')->with('children');
+        return $this->hasMany(Comment::class, 'parent_id');
     }
 
     // Réactions sur le commentaire

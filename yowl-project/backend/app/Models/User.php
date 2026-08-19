@@ -58,6 +58,7 @@ class User extends Authenticatable
             'birthdate' => 'date',
             'email_verification_expires_at' => 'datetime',
             'is_active' => 'boolean',
+            'anonymized_at' => 'datetime',
         ];
     }
 
@@ -83,6 +84,22 @@ class User extends Authenticatable
     public function comments()
     {
         return $this->hasMany(Comment::class);
+    }
+
+    /**
+     * Browser push subscriptions registered by this user.
+     */
+    public function pushSubscriptions()
+    {
+        return $this->hasMany(PushSubscription::class);
+    }
+
+    /**
+     * An account whose personal data has been erased on request.
+     */
+    public function isAnonymized(): bool
+    {
+        return $this->anonymized_at !== null;
     }
 
     /**
