@@ -10,6 +10,7 @@ use App\Models\ReviewReaction;
 use App\Models\Suggestion;
 use App\Models\Tag;
 use App\Models\User;
+use App\Support\PlaceholderImage;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -93,6 +94,7 @@ class CommunitySeeder extends Seeder
                 'password' => $hashed,
                 // Une communaute a des ages varies, pas une seule generation.
                 'birthdate' => now()->subYears(rand(15, 34))->subDays(rand(0, 364))->format('Y-m-d'),
+                'picture' => rand(0, 100) < 80 ? self::avatarUrl($handle) : null,
                 'created_at' => now()->subDays(rand(30, 400)),
             ]);
             $members[$index]->forceFill(['email_verified_at' => now()])->save();
@@ -100,6 +102,23 @@ class CommunitySeeder extends Seeder
         }
 
         return $members;
+    }
+
+    /**
+     * A stable illustration for a given seed, drawn and stored locally.
+     */
+    private static function illustrationUrl(string $seed, string $label = ''): string
+    {
+        return PlaceholderImage::make($seed, $label !== '' ? $label : $seed);
+    }
+
+    /**
+     * Give the seeded members an avatar, so the feed does not show forty
+     * identical initials.
+     */
+    private static function avatarUrl(string $seed): string
+    {
+        return PlaceholderImage::make('avatar-'.$seed, mb_substr($seed, 0, 2));
     }
 
     /**
@@ -130,6 +149,32 @@ class CommunitySeeder extends Seeder
      */
     private function createReviews(array $members, array $tags): array
     {
+        // Illustrations de demonstration, dessinees et ecrites sur le disque
+        // des medias. Elles ne sont pas versionnees et ne dependent d'aucun
+        // service tiers, donc le fil reste illustre hors ligne comme en ligne.
+        $illustrations = [
+            'cinema' => ['film-1', 'film-2', 'cinema-hall'],
+            'serie' => ['series-1', 'series-2'],
+            'musique' => ['concert-1', 'vinyl-1', 'studio-1'],
+            'jeuxvideo' => ['gaming-1', 'gaming-2'],
+            'tech' => ['desk-1', 'laptop-1', 'circuit-1'],
+            'ia' => ['neural-1', 'server-1'],
+            'cuisine' => ['food-1', 'food-2', 'kitchen-1'],
+            'voyage' => ['travel-1', 'travel-2', 'city-1'],
+            'sport' => ['stadium-1', 'running-1'],
+            'football' => ['football-1'],
+            'livre' => ['books-1', 'books-2'],
+            'podcast' => ['mic-1'],
+            'streaming' => ['screen-1'],
+            'photo' => ['camera-1', 'camera-2'],
+            'mode' => ['fashion-1', 'fashion-2'],
+            'sante' => ['health-1'],
+            'ecologie' => ['forest-1', 'ocean-1'],
+            'science' => ['lab-1'],
+            'humour' => ['comedy-1'],
+            'actualite' => ['news-1'],
+        ];
+
         $posts = [
             ['Le montage de ce documentaire est remarquable, mais la dernière demi-heure traîne franchement. À voir pour la première partie.', 'https://www.arte.tv', ['cinema', 'actualite']],
             ['Trois épisodes et je suis accroché. L\'écriture des dialogues est au-dessus du lot cette année.', 'https://www.imdb.com', ['serie']],
@@ -174,11 +219,30 @@ class CommunitySeeder extends Seeder
                 $daysAgo = (int) round(self::HISTORY_DAYS * (rand(0, 100) / 100) ** 2);
                 $createdAt = now()->subDays($daysAgo)->subMinutes(rand(0, 1439));
 
+                // Deux publications sur trois portent une illustration, comme
+                // sur un fil reel ou le texte seul reste minoritaire.
+                $medias = [];
+                if (rand(0, 100) < 66) {
+                    $pool = [];
+                    foreach ($tagNames as $name) {
+                        foreach ($illustrations[$name] ?? [] as $seed) {
+                            $pool[] = $seed;
+                        }
+                    }
+                    if ($pool) {
+                        shuffle($pool);
+                        $topic = $tagNames[0] ?? 'yowl';
+                        foreach (array_slice($pool, 0, rand(1, min(3, count($pool)))) as $seed) {
+                            $medias[] = self::illustrationUrl($seed, $topic);
+                        }
+                    }
+                }
+
                 $review = Review::create([
                     'user_id' => $member->id,
                     'content' => $content,
                     'link' => rand(0, 10) > 2 ? $link : null,
-                    'medias' => [],
+                    'medias' => $medias,
                     'nb_views' => rand(3, 480),
                     'is_published' => rand(0, 20) > 0,
                     'created_at' => $createdAt,

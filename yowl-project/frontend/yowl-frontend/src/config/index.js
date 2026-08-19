@@ -15,6 +15,15 @@ export const config = {
  */
 export function getStorageUrl(path) {
   if (!path) return '';
+
+  // Une adresse deja absolue est rendue telle quelle. Sans cela, un media
+  // servi par un stockage objet ou par une source externe se retrouvait
+  // prefixe par l'URL locale, donnant une adresse impossible et une image
+  // cassee sans rien dans la console.
+  if (/^(https?:)?\/\//i.test(path) || path.startsWith('data:')) {
+    return path;
+  }
+
   // Remove leading slash if present
   const cleanPath = path.startsWith('/') ? path.substring(1) : path;
   return `${config.storageBaseUrl}/${cleanPath}`;
