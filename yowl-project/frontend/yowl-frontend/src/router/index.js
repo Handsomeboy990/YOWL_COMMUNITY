@@ -11,6 +11,7 @@ import Summary from '@/components/pages/profil/Summary.vue'
 import Activity from '@/components/pages/profil/Activity.vue'
 import MyPost from '@/components/pages/profil/MyPost.vue'
 import Saved from '@/components/pages/profil/Saved.vue'
+import Onboarding from '@/components/pages/Onboarding.vue'
 import About from '@/components/pages/About.vue'
 import Faq from '@/components/pages/Faq.vue'
 import Suggestion from '@/components/pages/Suggestion.vue'
@@ -76,6 +77,12 @@ const router = createRouter({
             path: '/user/activity',
             name: 'activity',
             component: Activity,
+            meta: { requiresAuth: true }
+        },
+        {
+            path: '/bienvenue',
+            name: 'onboarding',
+            component: Onboarding,
             meta: { requiresAuth: true }
         },
         {

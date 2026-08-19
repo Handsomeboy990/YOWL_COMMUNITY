@@ -127,6 +127,7 @@
 import { ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
+import { useFollowStore } from '@/stores/follow';
 import MailVerificationModal from '@/components/layouts/MailVerificationModal.vue';
 import BaseInput from '@/components/ui/BaseInput.vue';
 import BaseButton from '@/components/ui/BaseButton.vue';
@@ -135,6 +136,7 @@ import BaseCheckbox from '@/components/ui/BaseCheckbox.vue';
 const router = useRouter();
 const route = useRoute();
 const userStore = useUserStore();
+const followStore = useFollowStore();
 
 const identifier = ref('');
 const password = ref('');
@@ -160,7 +162,13 @@ const submitForm = async () => {
       password: password.value,
       rememberMe: rememberMe.value,
     });
-    router.push(route.query.redirect || '/feed');
+    // Un membre qui ne suit encore rien a un fil personnalisé vide : on
+    // l'emmène choisir ses sujets plutôt que de le laisser devant du vide.
+    if (!route.query.redirect && (await followStore.isEmpty())) {
+      router.push('/bienvenue');
+    } else {
+      router.push(route.query.redirect || '/feed');
+    }
   } catch (err) {
     errorMessage.value = err.message || 'Connexion impossible. Réessaie.';
     if (err.message === 'This account has not been verified yet.') {

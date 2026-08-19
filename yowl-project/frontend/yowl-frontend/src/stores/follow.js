@@ -64,6 +64,12 @@ export const useFollowStore = defineStore('follows', () => {
     }
   }
 
+  /** Vrai quand le membre ne suit ni personne ni aucun sujet. */
+  async function isEmpty() {
+    await load();
+    return users.value.size === 0 && tags.value.size === 0;
+  }
+
   function reset() {
     users.value = new Set();
     tags.value = new Set();
@@ -71,5 +77,5 @@ export const useFollowStore = defineStore('follows', () => {
     loaded.value = false;
   }
 
-  return { users, tags, suggestions, loaded, isFollowingUser, isFollowingTag, load, loadSuggestions, toggle, reset };
+  return { users, tags, suggestions, loaded, isFollowingUser, isFollowingTag, load, loadSuggestions, toggle, isEmpty, reset };
 });
