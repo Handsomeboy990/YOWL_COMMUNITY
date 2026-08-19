@@ -18,8 +18,8 @@
           <h1 class="font-poppins font-extrabold text-2xl sm:text-3xl text-white leading-tight truncate">
             {{ user?.fullname || 'Membre YOWL' }}
           </h1>
-          <p class="text-white/60 text-sm mt-0.5">@{{ user?.username }}</p>
-          <p class="text-white/50 text-sm mt-2">
+          <p class="text-white/75 text-sm mt-0.5">@{{ user?.username }}</p>
+          <p class="text-white/70 text-sm mt-2">
             <i class="fa-regular fa-calendar mr-1.5"></i>
             Membre depuis {{ memberSince }}
           </p>
@@ -36,7 +36,7 @@
       <div v-for="tile in tiles" :key="tile.label"
         class="bg-white border border-gray-200 rounded-xl px-4 py-4 transition-shadow hover:shadow-md">
         <div class="flex items-center gap-2 text-gray-500 text-xs sm:text-sm">
-          <i :class="[tile.icon, 'text-orange-primary']"></i>
+          <i :class="[tile.icon, 'text-orange-text']"></i>
           {{ tile.label }}
         </div>
         <p v-if="loading" class="mt-2 h-8 w-16 rounded skeleton"></p>
@@ -51,7 +51,7 @@
       <router-link v-for="tab in tabs" :key="tab.to" :to="tab.to"
         class="relative px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors"
         :class="route.name === tab.name
-          ? 'text-orange-primary'
+          ? 'text-orange-text'
           : 'text-gray-500 hover:text-blue-night'">
         <i :class="[tab.icon, 'mr-2']"></i>{{ tab.label }}
         <span v-if="route.name === tab.name"

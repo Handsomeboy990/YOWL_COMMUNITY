@@ -22,7 +22,7 @@
               <button
                 v-if="closable"
                 type="button"
-                class="grid place-items-center w-9 h-9 rounded-full text-gray-400 hover:text-blue-night hover:bg-gray-100 transition-colors cursor-pointer"
+                class="grid place-items-center w-9 h-9 rounded-full text-gray-500 hover:text-blue-night hover:bg-gray-100 transition-colors cursor-pointer"
                 aria-label="Fermer"
                 @click="$emit('close')"
               >

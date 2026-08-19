@@ -23,7 +23,7 @@
                 </div>
 
                 <button v-else-if="canReport" type="button"
-                    class="cursor-pointer text-gray-400 text-[12px] rounded-full p-2 hover:text-red-500 hover:bg-red-50 duration-200"
+                    class="cursor-pointer text-gray-500 text-[12px] rounded-full p-2 hover:text-red-500 hover:bg-red-50 duration-200"
                     aria-label="Signaler le commentaire" title="Signaler"
                     @click="isReportOpen = true">
                     <i class="fa-solid fa-flag"></i>
@@ -41,8 +41,8 @@
                     <button :class="[
                         'cursor-pointer hover:-translate-y-0.5 flex items-center space-x-1 transition-all duration-200',
                         currentComment?.user_reaction === 'like'
-                            ? 'text-orange-primary font-semibold'
-                            : 'text-gray-500 hover:text-orange-primary'
+                            ? 'text-orange-text font-semibold'
+                            : 'text-gray-500 hover:text-orange-text'
                     ]" @click="toggleReaction('like')">
                         <span class="w-8 h-8 bg-orange-primary mr-2 rounded-full grid place-items-center">
                             <i :class="[

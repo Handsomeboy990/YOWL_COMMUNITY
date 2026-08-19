@@ -5,7 +5,7 @@
       <div class="flex flex-col items-center gap-3">
         <img :src="form.picturePreview" alt="Avatar" class="w-24 h-24 rounded-full object-cover border-2 border-orange-primary/30" />
         <label
-          class="cursor-pointer inline-flex items-center gap-2 text-sm font-medium text-orange-primary hover:text-orange-primary-dark transition-colors"
+          class="cursor-pointer inline-flex items-center gap-2 text-sm font-medium text-orange-text hover:text-orange-primary-dark transition-colors"
         >
           <i class="fa-solid fa-camera"></i>
           Changer ma photo

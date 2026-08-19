@@ -5,7 +5,7 @@
 
       <!-- Retour au fil -->
       <router-link to="/feed"
-        class="inline-flex items-center gap-2 text-gray-600 hover:text-orange-primary mb-6 transition-colors font-medium">
+        class="inline-flex items-center gap-2 text-gray-600 hover:text-orange-text mb-6 transition-colors font-medium">
         <i class="fa-solid fa-arrow-left"></i>
         <span>Retour au fil</span>
       </router-link>
@@ -75,7 +75,7 @@
               <!-- Tags -->
               <div v-if="review.tags?.length" class="mt-5 flex flex-wrap gap-2">
                 <span v-for="tag in review.tags" :key="tag.id"
-                  class="text-xs font-medium bg-orange-primary/10 text-orange-primary rounded-full px-3 py-1">
+                  class="text-xs font-medium bg-orange-primary/10 text-orange-text rounded-full px-3 py-1">
                   #{{ tag.name }}
                 </span>
               </div>
@@ -89,8 +89,8 @@
               <button :class="[
                 'group flex items-center gap-2 transition-all duration-300 hover:scale-110 cursor-pointer',
                 review.user_reaction === 'like'
-                  ? 'text-orange-primary'
-                  : 'text-gray-600 hover:text-orange-primary'
+                  ? 'text-orange-text'
+                  : 'text-gray-600 hover:text-orange-text'
               ]" @click="toggleReaction('like')">
                 <div class="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-orange-primary to-[#ff8c5a] rounded-full grid place-items-center shadow-sm group-hover:shadow-md transition-all group-active:scale-95">
                   <i :class="[

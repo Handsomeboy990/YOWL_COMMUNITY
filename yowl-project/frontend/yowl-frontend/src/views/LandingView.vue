@@ -16,10 +16,10 @@
         </router-link>
 
         <div class="hidden md:flex items-center gap-8 font-medium" :class="scrolled ? 'text-blue-night' : 'text-white/90'">
-          <a href="#fonctionnalites" class="hover:text-orange-primary transition-colors">Fonctionnalités</a>
-          <a href="#comment-ca-marche" class="hover:text-orange-primary transition-colors">Comment ça marche</a>
-          <a href="#partage" class="hover:text-orange-primary transition-colors">Partage rapide</a>
-          <a href="#communaute" class="hover:text-orange-primary transition-colors">Communauté</a>
+          <a href="#fonctionnalites" class="hover:text-orange-text transition-colors">Fonctionnalités</a>
+          <a href="#comment-ca-marche" class="hover:text-orange-text transition-colors">Comment ça marche</a>
+          <a href="#partage" class="hover:text-orange-text transition-colors">Partage rapide</a>
+          <a href="#communaute" class="hover:text-orange-text transition-colors">Communauté</a>
         </div>
 
         <div class="flex items-center gap-3">
@@ -87,7 +87,7 @@
             </BaseButton>
           </div>
 
-          <div class="mt-12 flex items-center gap-4 text-white/60 text-sm animate-fade-in-up animation-delay-400">
+          <div class="mt-12 flex items-center gap-4 text-white/75 text-sm animate-fade-in-up animation-delay-400">
             <div class="flex -space-x-3" aria-hidden="true">
               <span v-for="(color, i) in avatarColors" :key="i"
                 class="w-10 h-10 rounded-full border-2 border-blue-night grid place-items-center font-poppins font-bold text-white text-xs"
@@ -117,15 +117,15 @@
                 >
                 <div>
                   <p class="font-semibold text-blue-night">{{ card.author }}</p>
-                  <p class="text-xs text-gray-400">{{ card.time }}</p>
+                  <p class="text-xs text-gray-500">{{ card.time }}</p>
                 </div>
                 <span class="ml-auto text-xs font-semibold px-3 py-1 rounded-full" :style="{ backgroundColor: card.color + '18', color: card.color }">
                   #{{ card.tag }}
                 </span>
               </div>
               <p class="text-blue-night/80 text-[15px] leading-relaxed mb-4">{{ card.content }}</p>
-              <div class="flex items-center gap-5 text-sm text-gray-400 border-t border-gray-100 pt-3.5">
-                <span class="flex items-center gap-1.5 text-orange-primary font-semibold">
+              <div class="flex items-center gap-5 text-sm text-gray-500 border-t border-gray-100 pt-3.5">
+                <span class="flex items-center gap-1.5 text-orange-text font-semibold">
                   <i class="fa-solid fa-thumbs-up"></i> {{ card.likes }}
                 </span>
                 <span class="flex items-center gap-1.5"><i class="fa-regular fa-comment"></i> {{ card.comments }}</span>
@@ -154,7 +154,7 @@
           <span
             v-for="tag in marqueeTags"
             :key="n + tag"
-            class="whitespace-nowrap px-5 py-2.5 rounded-full border border-gray-200 text-blue-night/70 font-medium text-sm hover:border-orange-primary hover:text-orange-primary transition-colors cursor-default"
+            class="whitespace-nowrap px-5 py-2.5 rounded-full border border-gray-200 text-blue-night/70 font-medium text-sm hover:border-orange-primary hover:text-orange-text transition-colors cursor-default"
           >
             #{{ tag }}
           </span>
@@ -169,9 +169,9 @@
         <div class="relative grid grid-cols-2 lg:grid-cols-4 gap-10 text-center">
           <div v-for="stat in stats" :key="stat.label" class="reveal">
             <p class="font-poppins font-extrabold text-4xl md:text-5xl text-white">
-              {{ stat.value }}<span class="text-orange-primary">{{ stat.suffix }}</span>
+              {{ stat.value }}<span class="text-orange-text">{{ stat.suffix }}</span>
             </p>
-            <p class="mt-2 text-white/60 text-sm md:text-base">{{ stat.label }}</p>
+            <p class="mt-2 text-white/75 text-sm md:text-base">{{ stat.label }}</p>
           </div>
         </div>
       </div>
@@ -180,7 +180,7 @@
     <!-- ====== FONCTIONNALITES ====== -->
     <section id="fonctionnalites" class="w-full px-6 md:px-12 py-24 bg-gradient-to-b from-white to-orange-50/40">
       <div class="text-center max-w-3xl mx-auto reveal">
-        <span class="text-orange-primary font-poppins font-semibold uppercase tracking-widest text-sm">Fonctionnalités</span>
+        <span class="text-orange-text font-poppins font-semibold uppercase tracking-widest text-sm">Fonctionnalités</span>
         <h2 class="mt-3 font-poppins font-extrabold text-blue-night" style="font-size: clamp(1.8rem, 4vw, 3rem)">
           Tout ce qu'il faut pour t'exprimer
         </h2>
@@ -210,7 +210,7 @@
     <!-- ====== COMMENT CA MARCHE ====== -->
     <section id="comment-ca-marche" class="w-full px-6 md:px-12 py-24">
       <div class="text-center max-w-3xl mx-auto reveal">
-        <span class="text-orange-primary font-poppins font-semibold uppercase tracking-widest text-sm">Simple et rapide</span>
+        <span class="text-orange-text font-poppins font-semibold uppercase tracking-widest text-sm">Simple et rapide</span>
         <h2 class="mt-3 font-poppins font-extrabold text-blue-night" style="font-size: clamp(1.8rem, 4vw, 3rem)">
           Comment ça marche ?
         </h2>
@@ -233,7 +233,7 @@
           <p class="mt-3 text-gray-500 leading-relaxed">{{ step.text }}</p>
           <i
             v-if="i < steps.length - 1"
-            class="hidden md:block fa-solid fa-arrow-right-long absolute top-8 -right-7 text-orange-primary/40 text-2xl"
+            class="hidden md:block fa-solid fa-arrow-right-long absolute top-8 -right-7 text-orange-text/40 text-2xl"
             aria-hidden="true"
           ></i>
         </div>
@@ -243,7 +243,7 @@
     <!-- ====== PARTAGE RAPIDE ====== -->
     <section id="partage" class="w-full px-6 md:px-12 py-24 bg-gradient-to-b from-orange-50/40 to-white">
       <div class="text-center max-w-3xl mx-auto reveal">
-        <span class="text-orange-primary font-poppins font-semibold uppercase tracking-widest text-sm">Partage en 10 secondes</span>
+        <span class="text-orange-text font-poppins font-semibold uppercase tracking-widest text-sm">Partage en 10 secondes</span>
         <h2 class="mt-3 font-poppins font-extrabold text-blue-night" style="font-size: clamp(1.8rem, 4vw, 3rem)">
           Partage depuis n'importe où
         </h2>
@@ -285,13 +285,13 @@
             Un clic depuis n'importe quelle page ouvre le composeur YOWL pré-rempli.
           </p>
           <a :href="bookmarkletHref" draggable="true"
-            class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#7C5CFC] text-white font-semibold text-sm shadow-lg shadow-[#7C5CFC]/30 cursor-grab active:cursor-grabbing select-none"
+            class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#5B3FD4] text-white font-semibold text-sm shadow-lg shadow-[#5B3FD4]/30 cursor-grab active:cursor-grabbing select-none"
             title="Glisse-moi dans ta barre de favoris"
             @click.prevent>
             <i class="fa-solid fa-bolt"></i>
             Partager sur YOWL
           </a>
-          <p class="mt-4 text-xs text-gray-400">
+          <p class="mt-4 text-xs text-gray-500">
             Astuce : affiche la barre de favoris avec Ctrl+Maj+B puis glisse le bouton dessus.
           </p>
         </article>
@@ -319,7 +319,7 @@
     <section class="w-full px-6 md:px-12 py-24 bg-blue-night relative overflow-hidden">
       <div class="blob blob-testimonials" aria-hidden="true"></div>
       <div class="relative text-center max-w-3xl mx-auto reveal">
-        <span class="text-orange-primary font-poppins font-semibold uppercase tracking-widest text-sm">Ils en parlent</span>
+        <span class="text-orange-text font-poppins font-semibold uppercase tracking-widest text-sm">Ils en parlent</span>
         <h2 class="mt-3 font-poppins font-extrabold text-white" style="font-size: clamp(1.8rem, 4vw, 3rem)">
           La communauté a la parole
         </h2>
@@ -331,7 +331,7 @@
           :key="quote.author"
           class="reveal bg-white/5 border border-white/10 backdrop-blur-sm rounded-2xl p-8 hover:bg-white/10 transition-colors duration-500"
         >
-          <div class="flex gap-1 text-orange-primary mb-5" aria-hidden="true">
+          <div class="flex gap-1 text-orange-text mb-5" aria-hidden="true">
             <i v-for="s in 5" :key="s" class="fa-solid fa-star text-sm"></i>
           </div>
           <p class="text-white/80 leading-relaxed italic">« {{ quote.text }} »</p>
@@ -343,7 +343,7 @@
             >
             <div>
               <p class="text-white font-semibold text-sm">{{ quote.author }}</p>
-              <p class="text-white/50 text-xs">{{ quote.role }}</p>
+              <p class="text-white/70 text-xs">{{ quote.role }}</p>
             </div>
           </footer>
         </blockquote>
@@ -381,29 +381,29 @@
             <img src="@/assets/logo.png" alt="Logo YOWL" class="w-9 h-9" />
             <span class="font-poppins font-extrabold text-xl">YOWL</span>
           </div>
-          <p class="text-white/60 max-w-md leading-relaxed">
+          <p class="text-white/75 max-w-md leading-relaxed">
             La plateforme communautaire où les 13-35 ans partagent, commentent et réagissent
             sur les contenus du web. Ton avis compte.
           </p>
         </div>
         <div>
           <h3 class="font-poppins font-bold mb-4">Navigation</h3>
-          <ul class="space-y-2.5 text-white/60">
-            <li><router-link to="/feed" class="hover:text-orange-primary transition-colors">Le fil</router-link></li>
-            <li><router-link to="/about" class="hover:text-orange-primary transition-colors">À propos</router-link></li>
-            <li><router-link to="/faq" class="hover:text-orange-primary transition-colors">FAQ</router-link></li>
-            <li><router-link to="/suggestion" class="hover:text-orange-primary transition-colors">Suggestions</router-link></li>
+          <ul class="space-y-2.5 text-white/75">
+            <li><router-link to="/feed" class="hover:text-orange-text transition-colors">Le fil</router-link></li>
+            <li><router-link to="/about" class="hover:text-orange-text transition-colors">À propos</router-link></li>
+            <li><router-link to="/faq" class="hover:text-orange-text transition-colors">FAQ</router-link></li>
+            <li><router-link to="/suggestion" class="hover:text-orange-text transition-colors">Suggestions</router-link></li>
           </ul>
         </div>
         <div>
           <h3 class="font-poppins font-bold mb-4">Légal</h3>
-          <ul class="space-y-2.5 text-white/60">
-            <li><router-link to="/policy" class="hover:text-orange-primary transition-colors">Charte de la communauté</router-link></li>
-            <li><router-link to="/policy" class="hover:text-orange-primary transition-colors">Confidentialité</router-link></li>
+          <ul class="space-y-2.5 text-white/75">
+            <li><router-link to="/policy" class="hover:text-orange-text transition-colors">Charte de la communauté</router-link></li>
+            <li><router-link to="/policy" class="hover:text-orange-text transition-colors">Confidentialité</router-link></li>
           </ul>
         </div>
       </div>
-      <div class="border-t border-white/10 py-5 text-center text-sm text-white/50">
+      <div class="border-t border-white/10 py-5 text-center text-sm text-white/70">
         © {{ new Date().getFullYear() }} YOWL Community — Réalisé par LONG Corp
       </div>
     </footer>

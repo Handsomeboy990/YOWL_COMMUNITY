@@ -33,7 +33,7 @@
                 <label
                     class="group flex flex-col items-center justify-center gap-2 w-full rounded-xl border-2 border-dashed border-gray-300 hover:border-orange-primary bg-gray-50 hover:bg-orange-50/50 px-4 py-6 cursor-pointer transition-colors"
                 >
-                    <i class="fa-solid fa-cloud-arrow-up text-2xl text-gray-400 group-hover:text-orange-primary transition-colors"></i>
+                    <i class="fa-solid fa-cloud-arrow-up text-2xl text-gray-500 group-hover:text-orange-text transition-colors"></i>
                     <span class="text-sm text-gray-500">Clique ou dépose tes images ici</span>
                     <input type="file" accept="image/*" multiple class="hidden" @change="submitMedia" />
                 </label>
@@ -72,7 +72,7 @@
 
                 <div v-if="form.tags.length" class="flex flex-wrap gap-2 mb-2">
                     <span v-for="(tag, index) in form.tags" :key="'tag-' + index"
-                        class="inline-flex items-center gap-2 bg-orange-primary/10 text-orange-primary text-sm font-medium rounded-full pl-3.5 pr-2 py-1.5">
+                        class="inline-flex items-center gap-2 bg-orange-primary/10 text-orange-text text-sm font-medium rounded-full pl-3.5 pr-2 py-1.5">
                         #{{ tag }}
                         <button type="button"
                             class="w-5 h-5 grid place-items-center rounded-full hover:bg-orange-primary/20 cursor-pointer"
@@ -95,7 +95,7 @@
                         <ul v-if="showSuggestions && suggestions.length"
                             class="absolute z-50 mt-2 w-full max-h-40 overflow-auto rounded-xl border border-gray-100 bg-white py-1.5 shadow-xl shadow-blue-night/10">
                             <li v-for="(suggest, index) in suggestions" :key="'sugg-' + index"
-                                class="mx-1.5 rounded-lg px-3 py-2 text-sm text-blue-night hover:bg-orange-primary/10 hover:text-orange-primary cursor-pointer transition-colors"
+                                class="mx-1.5 rounded-lg px-3 py-2 text-sm text-blue-night hover:bg-orange-primary/10 hover:text-orange-text cursor-pointer transition-colors"
                                 @click="addTag(suggest)">
                                 #{{ suggest }}
                             </li>

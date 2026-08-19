@@ -44,59 +44,26 @@ export default defineConfig({
   },
 
   /* Configure projects for major browsers */
-  projects: [
-    {
-      name: 'chromium',
-      use: {
-        ...devices['Desktop Chrome'],
-      },
-    },
-    {
-      name: 'firefox',
-      use: {
-        ...devices['Desktop Firefox'],
-      },
-    },
-    {
-      name: 'webkit',
-      use: {
-        ...devices['Desktop Safari'],
-      },
-    },
+  /*
+   * Un seul navigateur par defaut, le Chrome installe sur la machine.
+   * Telecharger les trois moteurs de Playwright represente plusieurs
+   * centaines de megaoctets que personne n'a demandes pour lancer une suite
+   * d'accessibilite. PLAYWRIGHT_ALL_BROWSERS=1 remet les trois quand on veut
+   * verifier le rendu ailleurs.
+   */
+  projects: process.env.PLAYWRIGHT_ALL_BROWSERS
+    ? [
+        { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+        { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
+        { name: 'webkit', use: { ...devices['Desktop Safari'] } },
+      ]
+    : [
+        {
+          name: 'chrome',
+          use: { ...devices['Desktop Chrome'], channel: 'chrome' },
+        },
+      ],
 
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: {
-    //     ...devices['Pixel 5'],
-    //   },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: {
-    //     ...devices['iPhone 12'],
-    //   },
-    // },
-
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: {
-    //     channel: 'msedge',
-    //   },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: {
-    //     channel: 'chrome',
-    //   },
-    // },
-  ],
-
-  /* Folder for test artifacts such as screenshots, videos, traces, etc. */
-  // outputDir: 'test-results/',
-
-  /* Run your local dev server before starting the tests */
   webServer: {
     /**
      * Use the dev server by default for faster feedback loop.

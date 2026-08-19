@@ -9,7 +9,7 @@
     </div>
 
     <div v-else-if="error" class="py-10 text-center">
-      <i class="fa-solid fa-plug-circle-exclamation text-3xl text-gray-300"></i>
+      <i class="fa-solid fa-plug-circle-exclamation text-3xl text-gray-400" aria-hidden="true"></i>
       <p class="mt-4 text-sm text-gray-600">{{ error }}</p>
       <BaseButton class="mt-4" size="sm" variant="primary" @click="load">Réessayer</BaseButton>
     </div>
@@ -29,7 +29,7 @@
           <p class="mt-1 text-sm text-gray-700 break-all">{{ detail.user.email }}</p>
           <div class="mt-2 flex flex-wrap gap-1.5">
             <span v-for="role in detail.user.roles" :key="role"
-              class="px-2.5 py-0.5 rounded-full bg-orange-50 text-orange-primary text-xs font-medium">{{ role }}</span>
+              class="px-2.5 py-0.5 rounded-full bg-orange-50 text-orange-text text-xs font-medium">{{ role }}</span>
             <span class="px-2.5 py-0.5 rounded-full text-xs font-medium"
               :class="detail.user.is_active ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'">
               {{ detail.user.is_active ? 'Actif' : 'Banni' }}
@@ -75,14 +75,14 @@
           <li v-for="review in detail.recent_reviews" :key="review.id" class="px-3 py-2.5 flex items-start gap-3">
             <span class="shrink-0 mt-0.5 px-2 py-0.5 rounded bg-gray-100 text-[11px] text-gray-500">#{{ review.id }}</span>
             <p class="flex-1 min-w-0 text-sm text-gray-700">{{ truncate(review.content, 90) }}</p>
-            <span class="shrink-0 text-xs text-gray-400">
+            <span class="shrink-0 text-xs text-gray-500">
               <i class="fa-solid fa-thumbs-up mr-1"></i>{{ review.nb_like }}
               <i v-if="!review.is_published" class="fa-solid fa-eye-slash ml-2 text-amber-500"
                 title="Retiré du fil"></i>
             </span>
           </li>
         </ul>
-        <p v-else class="text-sm text-gray-400">Aucun avis publié.</p>
+        <p v-else class="text-sm text-gray-500">Aucun avis publié.</p>
       </section>
 
       <!-- Derniers commentaires -->
@@ -91,10 +91,10 @@
         <ul v-if="detail.recent_comments.length" class="divide-y divide-gray-50 border border-gray-100 rounded-xl">
           <li v-for="comment in detail.recent_comments" :key="comment.id" class="px-3 py-2.5 flex items-start gap-3">
             <p class="flex-1 min-w-0 text-sm text-gray-700">{{ truncate(comment.content, 90) }}</p>
-            <span class="shrink-0 text-xs text-gray-400">{{ formatDate(comment.created_at) }}</span>
+            <span class="shrink-0 text-xs text-gray-500">{{ formatDate(comment.created_at) }}</span>
           </li>
         </ul>
-        <p v-else class="text-sm text-gray-400">Aucun commentaire.</p>
+        <p v-else class="text-sm text-gray-500">Aucun commentaire.</p>
       </section>
 
       <!-- Edition -->

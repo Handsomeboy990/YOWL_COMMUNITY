@@ -38,7 +38,7 @@
     </div>
 
     <div v-else-if="error" class="bg-white rounded-2xl border border-gray-200 p-8 text-center">
-      <i class="fa-solid fa-plug-circle-exclamation text-3xl text-gray-300"></i>
+      <i class="fa-solid fa-plug-circle-exclamation text-3xl text-gray-400" aria-hidden="true"></i>
       <p class="mt-4 text-sm text-gray-600">{{ error }}</p>
       <BaseButton class="mt-4" size="sm" variant="primary" @click="load">Réessayer</BaseButton>
     </div>
@@ -59,7 +59,7 @@
           </p>
         </div>
         <button v-if="!role.protected" type="button"
-          class="w-9 h-9 rounded-full grid place-items-center text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+          class="w-9 h-9 rounded-full grid place-items-center text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
           aria-label="Supprimer le rôle" @click="removeRole(role)">
           <i class="fa-solid fa-trash"></i>
         </button>
@@ -69,7 +69,7 @@
         <label v-for="permission in permissions" :key="permission"
           class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm cursor-pointer transition-colors"
           :class="role.permissions.includes(permission)
-            ? 'border-orange-primary bg-orange-50 text-orange-primary'
+            ? 'border-orange-primary bg-orange-50 text-orange-text'
             : 'border-gray-200 text-gray-500 hover:border-gray-300'">
           <input type="checkbox" class="sr-only" :checked="role.permissions.includes(permission)"
             @change="togglePermission(role, permission)" />
@@ -77,7 +77,7 @@
           {{ permission }}
         </label>
       </div>
-      <p v-else class="mt-4 text-sm text-gray-400">
+      <p v-else class="mt-4 text-sm text-gray-500">
         Aucun droit défini pour le moment.
       </p>
     </article>

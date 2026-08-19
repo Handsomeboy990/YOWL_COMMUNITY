@@ -31,7 +31,7 @@
 
           <!-- Ce que ce formulaire n'est pas : la confusion la plus frequente -->
           <aside class="mt-5 flex gap-3 p-4 rounded-2xl bg-orange-50 border border-orange-200">
-            <i class="fa-solid fa-circle-info text-orange-primary mt-0.5"></i>
+            <i class="fa-solid fa-circle-info text-orange-text mt-0.5"></i>
             <p class="text-sm text-gray-700 leading-relaxed">
               Pour signaler le message d'un membre, n'utilise pas ce formulaire :
               passe par le bouton <span class="font-medium">Signaler</span> sur l'avis ou le commentaire concerné,
@@ -47,7 +47,7 @@
                 <label v-for="option in subjects" :key="option.value"
                   class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border text-sm cursor-pointer transition-colors"
                   :class="form.subject === option.value
-                    ? 'border-orange-primary bg-orange-50 text-orange-primary'
+                    ? 'border-orange-primary bg-orange-50 text-orange-text'
                     : 'border-gray-200 text-gray-600 hover:border-gray-300'">
                   <input v-model="form.subject" type="radio" :value="option.value" class="sr-only" />
                   <i :class="option.icon"></i>
@@ -61,10 +61,10 @@
               <BaseTextarea v-model="form.message" label="Ta suggestion" :rows="6" :maxlength="2000"
                 placeholder="Décris ton idée. Un exemple concret aide beaucoup." required />
               <div class="mt-1.5 flex items-center justify-between text-xs">
-                <span :class="tooShort ? 'text-red-500' : 'text-gray-400'">
+                <span :class="tooShort ? 'text-red-500' : 'text-gray-500'">
                   {{ tooShort ? 'Au moins 5 caractères' : 'Sois aussi précis que possible' }}
                 </span>
-                <span class="text-gray-400">{{ form.message.length }} / 2000</span>
+                <span class="text-gray-500">{{ form.message.length }} / 2000</span>
               </div>
             </div>
 

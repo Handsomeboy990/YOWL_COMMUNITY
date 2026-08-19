@@ -17,7 +17,7 @@
               class="mt-1 accent-orange-primary">
             <span>
               <span class="block text-sm font-medium text-blue-night">{{ option.label }}</span>
-              <span class="block text-xs text-gray-400">{{ option.hint }}</span>
+              <span class="block text-xs text-gray-500">{{ option.hint }}</span>
             </span>
           </label>
         </div>

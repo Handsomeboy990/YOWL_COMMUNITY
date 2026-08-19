@@ -1,0 +1,100 @@
+{
+  "common": {
+    "appName": "YOWL Community",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "save": "Enregistrer",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "close": "Fermer",
+    "retry": "Réessayer",
+    "back": "Retour",
+    "loading": "Chargement",
+    "search": "Rechercher sur YOWL...",
+    "publish": "Publier",
+    "login": "Connexion",
+    "logout": "Déconnexion",
+    "signup": "Créer mon compte",
+    "haveAccount": "J'ai déjà un compte"
+  },
+  "nav": {
+    "feed": "Fil",
+    "myReviews": "Mes avis",
+    "saved": "Enregistrés",
+    "activity": "Activité",
+    "stats": "Statistiques",
+    "admin": "Administration",
+    "about": "À propos",
+    "faq": "FAQ",
+    "policy": "Charte",
+    "suggestions": "Suggestions",
+    "profile": "Mon profil",
+    "publishReview": "Publier un avis"
+  },
+  "feed": {
+    "all": "Tout",
+    "following": "Mes abonnements",
+    "empty": "Aucun avis pour le moment",
+    "emptyHint": "Il n'y a encore rien à afficher. Dès qu'un membre publiera, tu le verras ici.",
+    "noResults": "Aucun résultat",
+    "noResultsHint": "Aucun avis ne correspond à ta recherche ou à tes filtres.",
+    "clearFilters": "Effacer la recherche et les filtres",
+    "loadError": "Le fil n'a pas pu être chargé",
+    "seeMore": "Voir plus",
+    "reply": "Répondre",
+    "views": "{count} vue | {count} vues",
+    "comments": "{count} commentaire | {count} commentaires"
+  },
+  "filters": {
+    "filterBy": "Filtrer par",
+    "noAnswers": "Sans réponses",
+    "noViews": "Sans vues",
+    "noLikes": "Sans likes",
+    "sortBy": "Trier par",
+    "relevant": "Les plus pertinentes",
+    "newest": "Plus récentes",
+    "oldest": "Plus anciennes",
+    "mostLiked": "Plus aimées",
+    "withTags": "Avec les tags",
+    "tagsPlaceholder": "ex : gaming, musique",
+    "reset": "Réinitialiser",
+    "live": "Les filtres s'appliquent au fur et à mesure."
+  },
+  "review": {
+    "follow": "Suivre",
+    "following": "Abonné",
+    "unfollow": "Se désabonner",
+    "save": "Enregistrer cet avis",
+    "unsave": "Retirer des enregistrements",
+    "report": "Signaler",
+    "block": "Bloquer {name}",
+    "helpfulQuestion": "Cet avis t'a aidé ?",
+    "helpfulYes": "Oui",
+    "helpfulNo": "Pas vraiment",
+    "loginToReact": "Tu dois être connecté pour réagir."
+  },
+  "poll": {
+    "votes": "{count} vote | {count} votes",
+    "closed": "sondage terminé",
+    "voteToSee": "vote pour voir les résultats",
+    "loginToVote": "Tu dois être connecté pour voter."
+  },
+  "profile": {
+    "member": "Membre YOWL",
+    "memberSince": "Membre depuis {date}",
+    "editProfile": "Modifier le profil",
+    "reviews": "Avis",
+    "views": "Vues cumulées",
+    "likes": "J'aime reçus",
+    "commentsReceived": "Commentaires reçus",
+    "summary": "Résumé",
+    "savedEmpty": "Rien d'enregistré pour l'instant",
+    "savedEmptyHint": "Le signet sur un avis le met de côté ici, pour le relire quand tu veux."
+  },
+  "settings": {
+    "language": "Langue",
+    "french": "Français",
+    "english": "English",
+    "digest": "Résumé hebdomadaire par email"
+  }
+}

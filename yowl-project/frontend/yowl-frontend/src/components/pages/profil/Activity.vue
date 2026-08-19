@@ -11,7 +11,7 @@
       <div v-else>
         <template v-if="!groups.length">
           <div class="flex flex-col items-center text-center py-12">
-            <i class="fa-regular fa-clock text-4xl text-gray-300"></i>
+            <i class="fa-regular fa-clock text-4xl text-gray-400" aria-hidden="true"></i>
             <h2 class="mt-4 text-lg font-semibold text-gray-800">Aucune activité récente</h2>
             <p class="mt-2 text-sm text-gray-600 max-w-md">
               Publie, commente ou réagis : tout ce que tu fais apparaîtra ici.

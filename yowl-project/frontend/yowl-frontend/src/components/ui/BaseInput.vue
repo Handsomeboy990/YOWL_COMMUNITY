@@ -2,7 +2,7 @@
   <div class="w-full">
     <label v-if="label" :for="inputId" class="block text-sm font-medium text-blue-night mb-1.5">
       {{ label }}
-      <span v-if="required" class="text-orange-primary">*</span>
+      <span v-if="required" class="text-orange-text">*</span>
     </label>
 
     <div
@@ -18,7 +18,7 @@
       <span
         v-if="icon"
         class="pl-4 text-sm transition-colors duration-300"
-        :class="focused ? 'text-orange-primary' : 'text-gray-400'"
+        :class="focused ? 'text-orange-text' : 'text-gray-500'"
         aria-hidden="true"
       >
         <i :class="icon"></i>
@@ -33,9 +33,11 @@
         :autocomplete="autocomplete"
         :disabled="disabled"
         :readonly="readonly"
+        :aria-invalid="error ? 'true' : undefined"
+        :aria-describedby="describedBy"
         :min="min"
         :max="max"
-        class="peer w-full bg-transparent px-4 py-3 text-blue-night placeholder-gray-400 outline-none disabled:cursor-not-allowed disabled:text-gray-400 read-only:text-gray-500"
+        class="peer w-full bg-transparent px-4 py-3 text-blue-night placeholder-gray-400 outline-none disabled:cursor-not-allowed disabled:text-gray-500 read-only:text-gray-500"
         @input="$emit('update:modelValue', $event.target.value)"
         @focus="focused = true"
         @blur="focused = false"
@@ -45,7 +47,7 @@
       <button
         v-if="isPassword"
         type="button"
-        class="pr-4 text-gray-400 hover:text-blue-night transition-colors cursor-pointer"
+        class="pr-4 text-gray-500 hover:text-blue-night transition-colors cursor-pointer"
         :aria-label="revealed ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
         @click="revealed = !revealed"
       >
@@ -53,11 +55,12 @@
       </button>
     </div>
 
-    <p v-if="error" class="mt-1.5 text-sm text-red-500 flex items-center gap-1.5">
+    <p v-if="error" :id="inputId + '-error'" role="alert"
+      class="mt-1.5 text-sm text-red-500 flex items-center gap-1.5">
       <i class="fa-solid fa-circle-exclamation text-xs" aria-hidden="true"></i>
       {{ error }}
     </p>
-    <p v-else-if="hint" class="mt-1.5 text-xs text-gray-400">{{ hint }}</p>
+    <p v-else-if="hint" :id="inputId + '-hint'" class="mt-1.5 text-xs text-gray-500">{{ hint }}</p>
   </div>
 </template>
 
@@ -83,6 +86,14 @@ const props = defineProps({
 defineEmits(['update:modelValue', 'enter']);
 
 const inputId = useId();
+
+// Le champ pointe vers son message d'erreur, sinon vers son aide : sans ce
+// lien, un lecteur d'écran annonce le champ sans dire ce qui ne va pas.
+const describedBy = computed(() => {
+  if (props.error) return inputId + '-error';
+  if (props.hint) return inputId + '-hint';
+  return undefined;
+});
 const focused = ref(false);
 const revealed = ref(false);
 const inputRef = ref(null);

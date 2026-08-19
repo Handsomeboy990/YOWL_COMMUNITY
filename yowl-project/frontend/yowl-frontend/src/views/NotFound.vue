@@ -4,7 +4,7 @@
     <div class="relative text-center max-w-lg">
       <p class="font-poppins font-extrabold text-[9rem] leading-none gradient-text">404</p>
       <h1 class="font-poppins font-bold text-2xl text-white mt-2">Page introuvable</h1>
-      <p class="mt-4 text-white/60 leading-relaxed">
+      <p class="mt-4 text-white/75 leading-relaxed">
         La page que vous cherchez n'existe pas ou a été déplacée.
         Retournez sur le fil pour continuer à explorer les avis de la communauté.
       </p>

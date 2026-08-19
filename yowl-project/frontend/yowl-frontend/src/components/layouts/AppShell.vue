@@ -1,5 +1,9 @@
 <template>
     <div class="min-h-screen bg-gray-50 w-full">
+        <!-- Lien d'evitement : au clavier, la premiere tabulation permet de
+             sauter la navigation au lieu de la traverser a chaque page. -->
+        <a href="#contenu-principal" class="skip-link">Aller au contenu</a>
+
         <!-- ===== HEADER ===== -->
         <header class="fixed top-0 left-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
             <div class="w-full px-3 md:px-6 h-16 flex items-center gap-3 md:gap-6">
@@ -14,10 +18,10 @@
                 <!-- Recherche -->
                 <div class="flex-1 max-w-xl mx-auto">
                     <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-500">
                             <i class="fas fa-search text-sm"></i>
                         </span>
-                        <input v-model="searchQuery" type="text" placeholder="Rechercher sur YOWL..."
+                        <input v-model="searchQuery" type="text" :placeholder="t('common.search')"
                             class="pl-10 pr-4 py-2.5 w-full bg-gray-100 hover:bg-gray-200/70 focus:bg-white border border-transparent focus:border-orange-primary rounded-full text-gray-900 text-sm focus:outline-none transition-all duration-200"
                             @input="handleSearch" @keyup.enter="handleSearch" />
                     </div>
@@ -26,14 +30,14 @@
                 <!-- Actions -->
                 <div class="flex items-center gap-2 md:gap-3 shrink-0">
                     <BaseButton class="hidden md:inline-flex" variant="primary" size="sm" icon="fa-solid fa-plus" @click="openPublish">
-                        Publier
+                        {{ t('common.publish') }}
                     </BaseButton>
 
                     <!-- Centre de notifications -->
                     <div v-if="userStore.isAuthenticated" ref="notificationsRef" class="relative">
                         <button
                             class="relative w-10 h-10 rounded-full grid place-items-center cursor-pointer transition-colors"
-                            :class="isNotificationsOpen ? 'bg-orange-primary/10 text-orange-primary' : 'text-gray-400 hover:bg-gray-100 hover:text-blue-night'"
+                            :class="isNotificationsOpen ? 'bg-orange-primary/10 text-orange-text' : 'text-gray-500 hover:bg-gray-100 hover:text-blue-night'"
                             aria-label="Notifications" :aria-expanded="isNotificationsOpen"
                             @click="toggleNotifications">
                             <i :class="notificationStore.hasUnread ? 'fa-solid fa-bell' : 'fa-regular fa-bell'"></i>
@@ -68,26 +72,26 @@
                                 class="absolute right-0 mt-3 w-56 bg-white text-gray-800 rounded-2xl shadow-xl shadow-blue-night/10 py-2 border border-gray-100">
                                 <div class="px-4 py-2.5 border-b border-gray-100">
                                     <p class="font-semibold text-blue-night text-sm truncate">{{ userStore.user?.fullname }}</p>
-                                    <p class="text-xs text-gray-400 truncate">@{{ userStore.user?.username }}</p>
+                                    <p class="text-xs text-gray-500 truncate">@{{ userStore.user?.username }}</p>
                                 </div>
                                 <router-link to="/user/activity" class="flex items-center gap-2.5 px-4 py-2.5 text-sm hover:bg-gray-50" @click="isDropdownOpen = false">
-                                    <i class="fa-regular fa-user text-gray-400 w-4"></i> Mon profil
+                                    <i class="fa-regular fa-user text-gray-500 w-4"></i> {{ t('nav.profile') }}
                                 </router-link>
                                 <router-link to="/user/summary" class="flex items-center gap-2.5 px-4 py-2.5 text-sm hover:bg-gray-50" @click="isDropdownOpen = false">
-                                    <i class="fa-solid fa-chart-pie text-gray-400 w-4"></i> Mes statistiques
+                                    <i class="fa-solid fa-chart-pie text-gray-500 w-4"></i> {{ t('nav.stats') }}
                                 </router-link>
                                 <router-link v-if="userStore.isAdmin" to="/admin" class="flex items-center gap-2.5 px-4 py-2.5 text-sm hover:bg-gray-50" @click="isDropdownOpen = false">
-                                    <i class="fa-solid fa-gauge-high text-gray-400 w-4"></i> Administration
+                                    <i class="fa-solid fa-gauge-high text-gray-500 w-4"></i> {{ t('nav.admin') }}
                                 </router-link>
                                 <button class="w-full flex items-center gap-2.5 text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 cursor-pointer" @click="logout">
-                                    <i class="fa-solid fa-arrow-right-from-bracket w-4"></i> Déconnexion
+                                    <i class="fa-solid fa-arrow-right-from-bracket w-4"></i> {{ t('common.logout') }}
                                 </button>
                             </div>
                         </Transition>
                     </div>
 
                     <BaseButton v-else :tag="'router-link'" :to="'/login'" variant="night" size="sm" :shine="false">
-                        <span class="hidden sm:inline">Connexion</span>
+                        <span class="hidden sm:inline">{{ t('common.login') }}</span>
                         <i class="sm:hidden fa-solid fa-right-to-bracket"></i>
                     </BaseButton>
                 </div>
@@ -100,7 +104,7 @@
             <div class="flex-1 space-y-1 overflow-y-auto">
                 <router-link v-for="item in mainNav" :key="item.to" :to="item.to"
                     class="flex items-center gap-3.5 px-4 py-3 rounded-xl font-medium transition-all duration-200"
-                    :class="isActive(item) ? 'bg-orange-primary/10 text-orange-primary' : 'text-blue-night hover:bg-gray-100'">
+                    :class="isActive(item) ? 'bg-orange-primary/10 text-orange-text' : 'text-blue-night hover:bg-gray-100'">
                     <i :class="[item.icon, 'w-5 text-center text-lg']"></i>
                     {{ item.label }}
                 </router-link>
@@ -136,7 +140,10 @@
                     <i :class="[item.icon, 'w-4 text-center']"></i>
                     {{ item.label }}
                 </router-link>
-                <p class="px-4 pt-3 text-[11px] text-gray-400">
+                <div class="pt-2">
+                    <LanguageSwitcher />
+                </div>
+                <p class="px-4 pt-3 text-[11px] text-gray-500">
                     © {{ new Date().getFullYear() }} YOWL — LONG Corp
                 </p>
             </div>
@@ -148,7 +155,7 @@
              qui supprime la gouttiere vide entre le fil et les options. -->
         <div class="pt-16 w-full lg:pl-60 xl:pl-64 2xl:pl-68"
             :class="$slots.rail ? 'xl:pr-80 2xl:pr-96' : ''">
-            <main class="w-full min-h-[calc(100vh-4rem)] pb-24 lg:pb-8">
+            <main id="contenu-principal" tabindex="-1" class="w-full min-h-[calc(100vh-4rem)] pb-24 lg:pb-8">
                 <slot />
             </main>
         </div>
@@ -164,12 +171,12 @@
             aria-label="Navigation mobile">
             <div class="grid grid-cols-5 h-16">
                 <router-link to="/feed" class="flex flex-col items-center justify-center gap-1 text-[11px]"
-                    :class="route.name === 'home' ? 'text-orange-primary font-semibold' : 'text-gray-500'">
+                    :class="route.name === 'home' ? 'text-orange-text font-semibold' : 'text-gray-500'">
                     <i class="fa-solid fa-house text-lg"></i>
                     Fil
                 </router-link>
                 <router-link to="/user/my-reviews" class="flex flex-col items-center justify-center gap-1 text-[11px]"
-                    :class="route.name === 'my-reviews' ? 'text-orange-primary font-semibold' : 'text-gray-500'">
+                    :class="route.name === 'my-reviews' ? 'text-orange-text font-semibold' : 'text-gray-500'">
                     <i class="fa-solid fa-newspaper text-lg"></i>
                     Reviews
                 </router-link>
@@ -179,13 +186,13 @@
                     </span>
                 </button>
                 <router-link to="/user/activity" class="flex flex-col items-center justify-center gap-1 text-[11px]"
-                    :class="route.name === 'activity' ? 'text-orange-primary font-semibold' : 'text-gray-500'">
+                    :class="route.name === 'activity' ? 'text-orange-text font-semibold' : 'text-gray-500'">
                     <i class="fa-solid fa-clock-rotate-left text-lg"></i>
                     Activité
                 </router-link>
                 <router-link :to="userStore.isAuthenticated ? '/user/summary' : '/login'"
                     class="flex flex-col items-center justify-center gap-1 text-[11px]"
-                    :class="route.name === 'summary' || route.name === 'login' ? 'text-orange-primary font-semibold' : 'text-gray-500'">
+                    :class="route.name === 'summary' || route.name === 'login' ? 'text-orange-text font-semibold' : 'text-gray-500'">
                     <i class="fa-regular fa-user text-lg"></i>
                     Profil
                 </router-link>
@@ -202,6 +209,9 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useNotify } from '@/composables/useNotify';
 import { useConfirm } from '@/composables/useConfirm';
+import { useI18n } from 'vue-i18n';
+import LanguageSwitcher from '@/components/ui/LanguageSwitcher.vue';
+import { connectRealtime, disconnectRealtime, isRealtimeConfigured } from '@/services/realtime';
 import { useUserStore } from '@/stores/user';
 import { useReviewStore } from '@/stores/review';
 import { getStorageUrl } from '@/config';
@@ -213,6 +223,7 @@ import NotificationPanel from '@/components/layouts/NotificationPanel.vue';
 
 const route = useRoute();
 const router = useRouter();
+const { t } = useI18n();
 const userStore = useUserStore();
 const notify = useNotify();
 const confirm = useConfirm();
@@ -229,18 +240,18 @@ const notificationsRef = ref(null);
 
 const mainNav = computed(() => {
     const items = [
-        { to: '/feed', icon: 'fa-solid fa-house', label: 'Fil', name: 'home' },
+        { to: '/feed', icon: 'fa-solid fa-house', label: t('nav.feed'), name: 'home' },
     ];
     if (userStore.isAuthenticated) {
         items.push(
-            { to: '/user/my-reviews', icon: 'fa-solid fa-newspaper', label: 'Mes avis', name: 'my-reviews' },
-            { to: '/user/saved', icon: 'fa-regular fa-bookmark', label: 'Enregistrés', name: 'saved' },
-            { to: '/user/activity', icon: 'fa-solid fa-clock-rotate-left', label: 'Activité', name: 'activity' },
-            { to: '/user/summary', icon: 'fa-solid fa-chart-pie', label: 'Statistiques', name: 'summary' },
+            { to: '/user/my-reviews', icon: 'fa-solid fa-newspaper', label: t('nav.myReviews'), name: 'my-reviews' },
+            { to: '/user/saved', icon: 'fa-regular fa-bookmark', label: t('nav.saved'), name: 'saved' },
+            { to: '/user/activity', icon: 'fa-solid fa-clock-rotate-left', label: t('nav.activity'), name: 'activity' },
+            { to: '/user/summary', icon: 'fa-solid fa-chart-pie', label: t('nav.stats'), name: 'summary' },
         );
     }
     if (userStore.isAdmin) {
-        items.push({ to: '/admin', icon: 'fa-solid fa-gauge-high', label: 'Administration', name: 'admin-dashboard' });
+        items.push({ to: '/admin', icon: 'fa-solid fa-gauge-high', label: t('nav.admin'), name: 'admin-dashboard' });
     }
     return items;
 });
@@ -342,8 +353,11 @@ const togglePush = async () => {
     }
 };
 
-// Rafraichissement de la pastille : toutes les 60 s et au retour sur l'onglet
+// Rafraichissement de la pastille. En temps reel quand la diffusion est
+// configuree, par sondage sinon : sans cette bascule, chaque onglet ouvert
+// interrogeait l'API toutes les soixante secondes pour rien.
 const UNREAD_POLL_MS = 60000;
+const realtime = isRealtimeConfigured();
 let unreadTimer = null;
 
 const refreshUnread = () => {
@@ -359,13 +373,19 @@ onMounted(() => {
     document.addEventListener('visibilitychange', onVisibilityChange);
     push.refreshState();
     refreshUnread();
-    unreadTimer = setInterval(refreshUnread, UNREAD_POLL_MS);
+
+    if (realtime) {
+        connectRealtime();
+    } else {
+        unreadTimer = setInterval(refreshUnread, UNREAD_POLL_MS);
+    }
 });
 
 onBeforeUnmount(() => {
     document.removeEventListener('click', onClickOutside);
     document.removeEventListener('visibilitychange', onVisibilityChange);
     if (unreadTimer) clearInterval(unreadTimer);
+    disconnectRealtime();
 });
 </script>
 

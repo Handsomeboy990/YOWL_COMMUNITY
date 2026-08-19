@@ -10,7 +10,7 @@
 
       <div v-else-if="error"
         class="mt-6 flex flex-col items-center text-center bg-white border border-gray-200 rounded-2xl py-14 px-4">
-        <i class="fa-solid fa-plug-circle-exclamation text-4xl text-gray-300"></i>
+        <i class="fa-solid fa-plug-circle-exclamation text-4xl text-gray-400" aria-hidden="true"></i>
         <h2 class="mt-5 text-lg font-semibold text-gray-800">Tes enregistrements n'ont pas pu être chargés</h2>
         <p class="mt-2 text-sm text-gray-600 max-w-md">{{ error }}</p>
         <BaseButton class="mt-5" variant="primary" size="sm" @click="load(pagination.current_page)">
@@ -20,7 +20,7 @@
 
       <div v-else-if="!reviews.length"
         class="mt-6 flex flex-col items-center text-center bg-white border border-gray-200 rounded-2xl py-16 px-4">
-        <i class="fa-regular fa-bookmark text-5xl text-gray-300"></i>
+        <i class="fa-regular fa-bookmark text-5xl text-gray-400" aria-hidden="true"></i>
         <h2 class="mt-5 text-xl font-semibold text-gray-800">Rien d'enregistré pour l'instant</h2>
         <p class="mt-2 text-gray-600 text-sm max-w-md">
           Le signet sur un avis le met de côté ici, pour le relire quand tu veux.

@@ -10,12 +10,12 @@
 
     <div class="flex items-start gap-3 p-3">
       <span v-if="!preview?.image || imageFailed"
-        class="w-10 h-10 shrink-0 rounded-lg bg-orange-primary/10 grid place-items-center text-orange-primary">
+        class="w-10 h-10 shrink-0 rounded-lg bg-orange-primary/10 grid place-items-center text-orange-text">
         <i class="fa-solid fa-link"></i>
       </span>
 
       <span class="min-w-0 flex-1">
-        <span class="block text-[11px] uppercase tracking-wide text-gray-400">{{ site }}</span>
+        <span class="block text-[11px] uppercase tracking-wide text-gray-500">{{ site }}</span>
         <span v-if="preview?.title" class="block font-medium text-blue-night leading-snug line-clamp-2 mt-0.5">
           {{ preview.title }}
         </span>
@@ -25,7 +25,7 @@
         </span>
       </span>
 
-      <i class="fa-solid fa-arrow-up-right-from-square text-gray-300 group-hover:text-orange-primary transition-colors mt-1"></i>
+      <i class="fa-solid fa-arrow-up-right-from-square text-gray-300 group-hover:text-orange-text transition-colors mt-1"></i>
     </div>
   </a>
 </template>

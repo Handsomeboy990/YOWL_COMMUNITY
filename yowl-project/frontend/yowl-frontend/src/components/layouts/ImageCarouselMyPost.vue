@@ -5,13 +5,13 @@
       class="w-full h-50 object-cover rounded-lg cursor-pointer" @click= "openModal = true"/>
 
     <!-- left button -->
-    <button v-if="images.length > 1" @click="prev"
+    <button aria-label="Image précédente" v-if="images.length > 1" @click="prev"
       class="cursor-pointer absolute top-1/2 left-2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full hover:bg-[#FF6B35] transition">
       <i class="fa-solid fa-chevron-left"></i>
     </button>
 
     <!-- right button -->
-    <button v-if="images.length > 1" @click="next"
+    <button aria-label="Image suivante" v-if="images.length > 1" @click="next"
       class="cursor-pointer absolute top-1/2 right-2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full hover:bg-[#FF6B35] transition">
       <i class="fa-solid fa-chevron-right "></i>
     </button>
@@ -25,20 +25,20 @@
 
       <!-- preview modal -->
     <div v-if="openModal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50">
-      <button @click="openModal = false" class="absolute top-4 right-4 text-white text-2xl">
+      <button aria-label="Fermer l'aperçu" @click="openModal = false" class="absolute top-4 right-4 text-white text-2xl">
 
-        <i class="fa-solid fa-xmark cursor-pointer"></i>
+        <i class="fa-solid fa-xmark cursor-pointer" aria-hidden="true"></i>
       </button>
 
       <div class=" w-3/12 md:w-3/4 lg:w-1/2">
         <img :src="getStorageUrl(images[currentIndex])" class="w-full h-auto rounded-lg" />
 
         <!-- buttons -->
-        <button v-if="images.length > 1" @click="prev"
+        <button aria-label="Image précédente" v-if="images.length > 1" @click="prev"
           class="absolute top-1/2 left-2 transform -translate-y-1/2 bg-black/40 text-white p-3 rounded-full">
           ‹
         </button>
-        <button v-if="images.length > 1" @click="next"
+        <button aria-label="Image suivante" v-if="images.length > 1" @click="next"
           class="absolute top-1/2 right-2 transform -translate-y-1/2 bg-black/40 text-white p-3 rounded-full">
           ›
         </button>

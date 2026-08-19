@@ -50,14 +50,14 @@
           </div>
           <h1 class="font-poppins font-extrabold text-2xl text-blue-night">Email envoyé !</h1>
           <p class="text-gray-500 mt-3 text-sm leading-relaxed">
-            Si un compte existe pour <span class="font-semibold text-orange-primary">{{ email }}</span>,
+            Si un compte existe pour <span class="font-semibold text-orange-text">{{ email }}</span>,
             un lien de réinitialisation vient de lui être envoyé. Pense à vérifier tes spams.
           </p>
         </div>
       </template>
 
       <p class="mt-6 text-center text-sm text-gray-500">
-        <router-link to="/login" class="text-orange-primary font-semibold hover:underline">
+        <router-link to="/login" class="text-orange-text font-semibold hover:underline">
           <i class="fa-solid fa-arrow-left text-xs mr-1"></i>
           Retour à la connexion
         </router-link>

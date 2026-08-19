@@ -20,13 +20,13 @@
       @keydown.enter.prevent="selectHighlighted"
       @keydown.esc="open = false"
     >
-      <span class="flex items-center gap-2 truncate" :class="selected ? 'text-blue-night' : 'text-gray-400'">
-        <i v-if="selected?.icon" :class="selected.icon" class="text-orange-primary" aria-hidden="true"></i>
+      <span class="flex items-center gap-2 truncate" :class="selected ? 'text-blue-night' : 'text-gray-500'">
+        <i v-if="selected?.icon" :class="selected.icon" class="text-orange-text" aria-hidden="true"></i>
         {{ selected ? selected.label : placeholder }}
       </span>
       <i
-        class="fa-solid fa-chevron-down text-xs text-gray-400 transition-transform duration-300"
-        :class="open ? 'rotate-180 text-orange-primary' : ''"
+        class="fa-solid fa-chevron-down text-xs text-gray-500 transition-transform duration-300"
+        :class="open ? 'rotate-180 text-orange-text' : ''"
         aria-hidden="true"
       ></i>
     </button>
@@ -43,7 +43,7 @@
           class="mx-1.5 flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm cursor-pointer transition-colors duration-150"
           :class="[
             option.value === modelValue
-              ? 'bg-orange-primary/10 text-orange-primary font-semibold'
+              ? 'bg-orange-primary/10 text-orange-text font-semibold'
               : index === highlighted
                 ? 'bg-gray-50 text-blue-night'
                 : 'text-blue-night hover:bg-gray-50',

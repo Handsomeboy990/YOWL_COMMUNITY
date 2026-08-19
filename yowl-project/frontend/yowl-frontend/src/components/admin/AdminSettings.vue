@@ -12,7 +12,7 @@
     </div>
 
     <div v-else-if="error" class="p-8 text-center">
-      <i class="fa-solid fa-plug-circle-exclamation text-3xl text-gray-300"></i>
+      <i class="fa-solid fa-plug-circle-exclamation text-3xl text-gray-400" aria-hidden="true"></i>
       <p class="mt-4 text-sm text-gray-600">{{ error }}</p>
       <BaseButton class="mt-4" size="sm" variant="primary" @click="load">Réessayer</BaseButton>
     </div>
@@ -26,7 +26,7 @@
             class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 py-3 border-b border-gray-50 last:border-0">
             <label :for="field.key" class="flex-1 text-sm text-gray-700">
               {{ field.label }}
-              <span class="block text-xs text-gray-400 mt-0.5 font-mono">{{ field.key }}</span>
+              <span class="block text-xs text-gray-500 mt-0.5 font-mono">{{ field.key }}</span>
             </label>
 
             <!-- Interrupteur -->

@@ -7,7 +7,7 @@
       <!-- Erreur de chargement -->
       <div v-if="profileStore.statsError"
         class="mt-6 flex flex-col items-center text-center bg-white border border-gray-200 rounded-2xl py-14 px-4">
-        <i class="fa-solid fa-plug-circle-exclamation text-4xl text-gray-300"></i>
+        <i class="fa-solid fa-plug-circle-exclamation text-4xl text-gray-400" aria-hidden="true"></i>
         <h2 class="mt-5 text-lg font-semibold text-gray-800">Statistiques indisponibles</h2>
         <p class="mt-2 text-sm text-gray-600 max-w-md">{{ profileStore.statsError }}</p>
         <BaseButton class="mt-5" variant="primary" size="sm" @click="profileStore.fetchStats()">
@@ -20,7 +20,7 @@
         <section class="xl:col-span-2 bg-white border border-gray-200 rounded-2xl p-5">
           <header class="flex items-center justify-between mb-4">
             <h2 class="font-poppins font-bold text-blue-night">Tes publications</h2>
-            <span class="text-xs text-gray-400">6 derniers mois</span>
+            <span class="text-xs text-gray-500">6 derniers mois</span>
           </header>
           <div class="h-64">
             <LineChart v-if="!profileStore.loadingStats" :data="timelineData" :options="lineOptions" />
@@ -33,7 +33,7 @@
           <h2 class="font-poppins font-bold text-blue-night mb-4">Réactions reçues</h2>
           <div class="h-64 grid place-items-center">
             <DoughnutChart v-if="hasEngagement" :data="reactionData" :options="doughnutOptions" />
-            <p v-else class="text-sm text-gray-400 text-center px-4">
+            <p v-else class="text-sm text-gray-500 text-center px-4">
               Personne n'a encore réagi à tes reviews. Publie, ça viendra.
             </p>
           </div>

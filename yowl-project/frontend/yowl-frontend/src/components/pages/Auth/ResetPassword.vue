@@ -13,7 +13,7 @@
         <h1 class="font-poppins font-extrabold text-2xl text-blue-night">Nouveau mot de passe</h1>
         <p class="text-gray-500 mt-2 mb-6 text-sm leading-relaxed">
           Choisis un nouveau mot de passe pour
-          <span class="font-semibold text-orange-primary break-all">{{ email }}</span>.
+          <span class="font-semibold text-orange-text break-all">{{ email }}</span>.
         </p>
 
         <form class="space-y-5" @submit.prevent="submit">
@@ -69,7 +69,7 @@
       </template>
 
       <p v-if="!done" class="mt-6 text-center text-sm text-gray-500">
-        <router-link to="/login" class="text-orange-primary font-semibold hover:underline">
+        <router-link to="/login" class="text-orange-text font-semibold hover:underline">
           <i class="fa-solid fa-arrow-left text-xs mr-1"></i>
           Retour à la connexion
         </router-link>

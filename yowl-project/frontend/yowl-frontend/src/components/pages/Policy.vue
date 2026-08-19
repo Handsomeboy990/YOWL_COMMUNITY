@@ -10,20 +10,20 @@
       Tout manquement peut entraîner une <strong>suspension ou une suppression définitive du compte</strong>.
     </p>
 
-    <h2 class="font-semibold text-lg text-orange-primary mt-6">1. Limite d'âge</h2>
+    <h2 class="font-semibold text-lg text-orange-text mt-6">1. Limite d'âge</h2>
     <p class="text-gray-700 mb-4">
       La plateforme est strictement réservée aux 13-35 ans. Les membres qui mentent sur leur âge ou
       dépassent la limite seront retirés sans préavis. Cette règle garantit des conversations pertinentes
       pour notre public.
     </p>
 
-    <h2 class="font-semibold text-lg text-orange-primary mt-6">2. Communication respectueuse</h2>
+    <h2 class="font-semibold text-lg text-orange-text mt-6">2. Communication respectueuse</h2>
     <p class="text-gray-700 mb-4">
       Les discours haineux, le harcèlement, la discrimination et tout contenu offensant sont interdits.
       Chaque membre doit échanger avec respect et contribuer à un environnement accueillant.
     </p>
 
-    <h2 class="font-semibold text-lg text-orange-primary mt-6">3. Partage de contenu</h2>
+    <h2 class="font-semibold text-lg text-orange-text mt-6">3. Partage de contenu</h2>
     <div class="text-gray-700 mb-4">
       Les membres peuvent publier des reviews, images, vidéos et liens externes. Tout contenu doit :
       <ul class="list-disc ml-6 mt-2">
@@ -33,14 +33,14 @@
       </ul>
     </div>
 
-    <h2 class="font-semibold text-lg text-orange-primary mt-6">4. Vie privée et sécurité</h2>
+    <h2 class="font-semibold text-lg text-orange-text mt-6">4. Vie privée et sécurité</h2>
     <p class="text-gray-700 mb-4">
       Chaque membre doit protéger ses informations personnelles. Le partage de données sensibles
       (adresse, numéro de téléphone, coordonnées bancaires) est strictement interdit. YOWL ne te
       demandera jamais ce type d'informations via les reviews ou les publications.
     </p>
 
-    <h2 class="font-semibold text-lg text-orange-primary mt-6">5. Modération</h2>
+    <h2 class="font-semibold text-lg text-orange-text mt-6">5. Modération</h2>
     <div class="text-gray-700 mb-4">
       YOWL se réserve le droit de :
       <ul class="list-disc ml-6 mt-2">
@@ -50,7 +50,7 @@
       </ul>
     </div>
 
-    <h2 class="font-semibold text-lg text-orange-primary mt-6">6. Le mot de la fin</h2>
+    <h2 class="font-semibold text-lg text-orange-text mt-6">6. Le mot de la fin</h2>
     <p class="text-gray-700">
       En participant à YOWL Community, tu t'engages à maintenir un environnement sûr et inspirant pour
       tout le monde. Notre objectif : une plateforme dynamique, respectueuse et enrichissante pour les jeunes.

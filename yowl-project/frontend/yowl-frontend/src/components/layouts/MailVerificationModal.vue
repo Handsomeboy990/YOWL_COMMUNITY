@@ -11,7 +11,7 @@
 
       <p class="text-gray-500 mb-6 text-sm leading-relaxed">
         Saisis le <span class="font-semibold text-blue-night">code à 6 chiffres</span> envoyé à
-        <span class="font-semibold text-orange-primary break-all">{{ email }}</span>
+        <span class="font-semibold text-orange-text break-all">{{ email }}</span>
       </p>
 
       <!-- Champs du code -->
@@ -45,7 +45,7 @@
         </BaseButton>
       </div>
 
-      <p class="mt-4 text-xs text-gray-400">
+      <p class="mt-4 text-xs text-gray-500">
         Le code est valable 15 minutes. Pense à vérifier tes spams.
       </p>
     </div>

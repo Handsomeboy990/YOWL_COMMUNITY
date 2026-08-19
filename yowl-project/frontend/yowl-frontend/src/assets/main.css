@@ -3,6 +3,10 @@
 
 @theme {
     --color-orange-primary: #ff6b35;
+    /* L'orange de marque tombe à 2,83 pour 1 sur blanc, sous le minimum de
+       4,5 exigé pour du texte courant. Cette variante plus sombre atteint
+       4,9 et sert partout où l'orange porte du texte. */
+    --color-orange-text: #c2410c;
     --color-orange-primary-dark: #e75a27;
     --color-blue-night: #1e2a38;
     --color-blue-night-light: #344155;
@@ -329,4 +333,61 @@ html {
         transition-duration: 0.01ms !important;
         scroll-behavior: auto !important;
     }
+}
+
+
+/* ========== ACCESSIBILITE ========== */
+
+/* Lien d'evitement : invisible tant qu'il n'a pas le focus, puis bien
+   visible. Sans lui, atteindre le contenu au clavier demande de traverser
+   toute la navigation a chaque page. */
+.skip-link {
+    position: absolute;
+    left: 0.5rem;
+    top: -4rem;
+    z-index: 100;
+    padding: 0.75rem 1.25rem;
+    border-radius: 0.75rem;
+    background: #FF6B35;
+    color: #ffffff;
+    font-weight: 500;
+    text-decoration: none;
+    transition: top 0.15s ease;
+}
+
+.skip-link:focus {
+    top: 0.5rem;
+}
+
+/* Un anneau de focus visible sur tout element interactif. Le style par
+   defaut du navigateur disparaissait sous les regles Tailwind d'outline. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible,
+[tabindex]:focus-visible {
+    outline: 2px solid #FF6B35;
+    outline-offset: 2px;
+    border-radius: 0.375rem;
+}
+
+/* Le conteneur principal recoit le focus par le lien d'evitement, sans
+   afficher d'anneau autour de la page entiere. */
+main:focus {
+    outline: none;
+}
+
+/* Reserve aux lecteurs d'ecran : lu, jamais affiche. */
+.sr-only-text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
 }

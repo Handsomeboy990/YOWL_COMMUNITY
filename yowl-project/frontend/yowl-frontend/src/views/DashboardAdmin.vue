@@ -6,7 +6,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h1 class="text-2xl md:text-3xl font-poppins font-bold">Administration</h1>
-            <p class="mt-1 text-sm text-white/60">Gestion de la communauté YOWL</p>
+            <p class="mt-1 text-sm text-white/75">Gestion de la communauté YOWL</p>
           </div>
           <div v-if="pendingReports" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-orange-primary/20 text-orange-200">
             <i class="fa-solid fa-flag"></i>
@@ -33,7 +33,7 @@
           {{ tab.label }}
           <span v-if="tab.badge"
             class="min-w-5 h-5 px-1.5 rounded-full text-[11px] font-bold grid place-items-center"
-            :class="activeTab === tab.key ? 'bg-white text-orange-primary' : 'bg-orange-primary text-white'">
+            :class="activeTab === tab.key ? 'bg-white text-orange-text' : 'bg-orange-primary text-white'">
             {{ tab.badge }}
           </span>
         </button>
@@ -68,16 +68,16 @@
                   #{{ review.id }}
                 </span>
                 <p class="flex-1 min-w-0 text-sm text-gray-700">{{ truncate(review.content, 110) }}</p>
-                <span class="shrink-0 text-xs text-gray-400">{{ formatDate(review.created_at) }}</span>
+                <span class="shrink-0 text-xs text-gray-500">{{ formatDate(review.created_at) }}</span>
               </li>
             </ul>
-            <p v-else class="px-5 py-8 text-center text-sm text-gray-400">Aucun avis pour le moment.</p>
+            <p v-else class="px-5 py-8 text-center text-sm text-gray-500">Aucun avis pour le moment.</p>
           </div>
         </div>
 
-        <p v-else class="py-10 text-center text-sm text-gray-400">
+        <p v-else class="py-10 text-center text-sm text-gray-500">
           Statistiques indisponibles.
-          <button type="button" class="text-orange-primary hover:underline cursor-pointer" @click="fetchStats">
+          <button type="button" class="text-orange-text hover:underline cursor-pointer" @click="fetchStats">
             Réessayer
           </button>
         </p>
@@ -109,7 +109,7 @@
                 <span class="px-2.5 py-1 rounded-full text-xs font-medium" :class="reportStatusTone(report.status)">
                   {{ reportStatusLabel(report.status) }}
                 </span>
-                <span class="text-xs text-gray-400">
+                <span class="text-xs text-gray-500">
                   {{ report.reportable_type?.includes('Comment') ? 'Commentaire' : 'Avis' }}
                   #{{ report.reportable_id }} — signalé par {{ report.user?.username || 'membre supprimé' }}
                   le {{ formatDate(report.created_at) }}
@@ -143,7 +143,7 @@
                   Marquer traité
                 </button>
               </div>
-              <p v-else class="mt-3 text-xs text-gray-400">
+              <p v-else class="mt-3 text-xs text-gray-500">
                 Traité par {{ report.handler?.username || 'un administrateur' }}
                 {{ report.handled_at ? 'le ' + formatDate(report.handled_at) : '' }}
               </p>
@@ -175,7 +175,7 @@
         <template v-else-if="users?.data?.length">
           <div class="overflow-x-auto">
             <table class="min-w-full text-sm">
-              <thead class="bg-gray-50 text-left text-xs uppercase text-gray-400">
+              <thead class="bg-gray-50 text-left text-xs uppercase text-gray-500">
                 <tr>
                   <th class="px-5 py-3 font-medium">Membre</th>
                   <th class="px-5 py-3 font-medium">Email</th>
@@ -199,7 +199,7 @@
                       </span>
                       <span class="min-w-0">
                         <span class="block font-medium text-blue-night truncate">{{ user.username }}</span>
-                        <span class="block text-xs text-gray-400">#{{ user.id }}</span>
+                        <span class="block text-xs text-gray-500">#{{ user.id }}</span>
                       </span>
                     </div>
                   </td>
@@ -257,7 +257,7 @@
         <template v-else-if="reviews?.data?.length">
           <div class="overflow-x-auto">
             <table class="min-w-full text-sm">
-              <thead class="bg-gray-50 text-left text-xs uppercase text-gray-400">
+              <thead class="bg-gray-50 text-left text-xs uppercase text-gray-500">
                 <tr>
                   <th class="px-5 py-3 font-medium">Auteur</th>
                   <th class="px-5 py-3 font-medium">Contenu</th>
@@ -269,7 +269,7 @@
                 <tr v-for="review in reviews.data" :key="review.id" class="hover:bg-gray-50 transition-colors">
                   <td class="px-5 py-3">
                     <span class="font-medium text-blue-night">{{ review.user?.username || '-' }}</span>
-                    <span class="block text-xs text-gray-400">#{{ review.id }}</span>
+                    <span class="block text-xs text-gray-500">#{{ review.id }}</span>
                   </td>
                   <td class="px-5 py-3 text-gray-600 max-w-md">{{ truncate(review.content, 90) }}</td>
                   <td class="px-5 py-3">
@@ -317,7 +317,7 @@
         <template v-else-if="comments?.data?.length">
           <div class="overflow-x-auto">
             <table class="min-w-full text-sm">
-              <thead class="bg-gray-50 text-left text-xs uppercase text-gray-400">
+              <thead class="bg-gray-50 text-left text-xs uppercase text-gray-500">
                 <tr>
                   <th class="px-5 py-3 font-medium">Auteur</th>
                   <th class="px-5 py-3 font-medium">Avis</th>
@@ -329,7 +329,7 @@
                 <tr v-for="comment in comments.data" :key="comment.id" class="hover:bg-gray-50 transition-colors">
                   <td class="px-5 py-3">
                     <span class="font-medium text-blue-night">{{ comment.user?.username || '-' }}</span>
-                    <span class="block text-xs text-gray-400">#{{ comment.id }}</span>
+                    <span class="block text-xs text-gray-500">#{{ comment.id }}</span>
                   </td>
                   <td class="px-5 py-3 text-gray-500">#{{ comment.review_id }}</td>
                   <td class="px-5 py-3 text-gray-600 max-w-md">{{ truncate(comment.content, 90) }}</td>
@@ -376,7 +376,7 @@
             <button v-for="option in subjectFilters" :key="option.value" type="button"
               class="px-2.5 py-1 rounded-full text-xs font-medium border transition-colors cursor-pointer"
               :class="suggestionSubject === option.value
-                ? 'border-orange-primary bg-orange-50 text-orange-primary'
+                ? 'border-orange-primary bg-orange-50 text-orange-text'
                 : 'border-gray-200 text-gray-500 hover:border-gray-300'"
               @click="changeSuggestionSubject(option.value)">
               {{ option.label }}
@@ -397,7 +397,7 @@
                   class="px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
                   <i :class="subjectIcon(suggestion.subject)" class="mr-1"></i>{{ subjectLabel(suggestion.subject) }}
                 </span>
-                <span class="text-xs text-gray-400">
+                <span class="text-xs text-gray-500">
                   {{ suggestion.user?.username || suggestion.name || 'Anonyme' }}
                   <template v-if="suggestion.email">— {{ suggestion.email }}</template>
                   — {{ formatDate(suggestion.created_at) }}
@@ -515,7 +515,7 @@ const tabs = computed(() => [
 
 const statCards = computed(() => [
   { label: 'Membres', value: stats.value?.users ?? 0, icon: 'fa-solid fa-users text-blue-600', tone: 'bg-blue-50' },
-  { label: 'Avis', value: stats.value?.reviews ?? 0, icon: 'fa-regular fa-newspaper text-orange-primary', tone: 'bg-orange-50' },
+  { label: 'Avis', value: stats.value?.reviews ?? 0, icon: 'fa-regular fa-newspaper text-orange-text', tone: 'bg-orange-50' },
   { label: 'Commentaires', value: stats.value?.comments ?? 0, icon: 'fa-regular fa-comments text-emerald-600', tone: 'bg-emerald-50' },
   { label: 'Signalements en attente', value: stats.value?.pending_reports ?? 0, icon: 'fa-solid fa-flag text-red-600', tone: 'bg-red-50' },
 ]);
@@ -598,7 +598,7 @@ const suggestionStatusLabel = (status) =>
 
 const suggestionStatusTone = (status) =>
   ({
-    new: 'bg-orange-50 text-orange-primary',
+    new: 'bg-orange-50 text-orange-text',
     read: 'bg-blue-50 text-blue-600',
     archived: 'bg-gray-100 text-gray-500',
   })[status] || 'bg-gray-100 text-gray-500';

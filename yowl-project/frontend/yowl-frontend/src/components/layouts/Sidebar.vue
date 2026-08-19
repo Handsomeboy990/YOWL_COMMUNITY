@@ -4,32 +4,32 @@
     <div class="bg-blue-night text-white rounded-lg p-4 sm:p-6">
       <!-- Filtres -->
       <div class="mb-6">
-        <h3 class="font-roboto font-medium text-white mb-4 text-lg sm:text-base">Filtrer par</h3>
+        <h3 class="font-roboto font-medium text-white mb-4 text-lg sm:text-base">{{ t('filters.filterBy') }}</h3>
         <div class="space-y-3">
-          <div><BaseCheckbox v-model="noAnswers" dark label="Sans réponses" /></div>
-          <div><BaseCheckbox v-model="noViews" dark label="Sans vues" /></div>
-          <div><BaseCheckbox v-model="noLikes" dark label="Sans likes" /></div>
+          <div><BaseCheckbox v-model="noAnswers" dark :label="t('filters.noAnswers')" /></div>
+          <div><BaseCheckbox v-model="noViews" dark :label="t('filters.noViews')" /></div>
+          <div><BaseCheckbox v-model="noLikes" dark :label="t('filters.noLikes')" /></div>
         </div>
       </div>
 
       <!-- Tri -->
       <div class="mb-6">
-        <h3 class="font-roboto font-medium text-white mb-4 text-lg sm:text-base">Trier par</h3>
+        <h3 class="font-roboto font-medium text-white mb-4 text-lg sm:text-base">{{ t('filters.sortBy') }}</h3>
         <div class="space-y-3">
-          <div><BaseRadio v-model="sortBy" value="relevant" name="sort" dark label="Les plus pertinentes" /></div>
-          <div><BaseRadio v-model="sortBy" value="newest" name="sort" dark label="Plus récentes" /></div>
-          <div><BaseRadio v-model="sortBy" value="older" name="sort" dark label="Plus anciennes" /></div>
-          <div><BaseRadio v-model="sortBy" value="highestLike" name="sort" dark label="Plus aimées" /></div>
+          <div><BaseRadio v-model="sortBy" value="relevant" name="sort" dark :label="t('filters.relevant')" /></div>
+          <div><BaseRadio v-model="sortBy" value="newest" name="sort" dark :label="t('filters.newest')" /></div>
+          <div><BaseRadio v-model="sortBy" value="older" name="sort" dark :label="t('filters.oldest')" /></div>
+          <div><BaseRadio v-model="sortBy" value="highestLike" name="sort" dark :label="t('filters.mostLiked')" /></div>
         </div>
       </div>
 
       <!-- Tags -->
       <div class="mb-6">
-        <h3 class="font-roboto font-medium text-white mb-4 text-lg sm:text-base">Avec les tags</h3>
+        <h3 class="font-roboto font-medium text-white mb-4 text-lg sm:text-base">{{ t('filters.withTags') }}</h3>
         <input
           v-model="tagInput"
           type="text"
-          placeholder="ex : gaming, musique"
+          :placeholder="t('filters.tagsPlaceholder')"
           class="w-full px-3.5 py-2.5 bg-white/95 rounded-xl text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-orange-primary transition-shadow"
         >
       </div>
@@ -39,10 +39,10 @@
            remettre a zero. -->
       <BaseButton v-if="hasActiveFilters" variant="ghost" block :shine="false"
         icon="fa-solid fa-arrow-rotate-left" @click="resetAll">
-        Réinitialiser
+        {{ t('filters.reset') }}
       </BaseButton>
-      <p v-else class="text-white/50 text-xs text-center">
-        Les filtres s'appliquent au fur et à mesure.
+      <p v-else class="text-white/70 text-xs text-center">
+        {{ t('filters.live') }}
       </p>
     </div>
   </aside>
@@ -50,11 +50,13 @@
 
 <script setup>
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useReviewStore } from '@/stores/review';
 import BaseCheckbox from '@/components/ui/BaseCheckbox.vue';
 import BaseRadio from '@/components/ui/BaseRadio.vue';
 import BaseButton from '@/components/ui/BaseButton.vue';
 
+const { t } = useI18n();
 const reviewStore = useReviewStore();
 
 /**

@@ -21,7 +21,7 @@
 
         <ul class="mt-10 space-y-4 animate-fade-in-up animation-delay-400">
           <li v-for="perk in perks" :key="perk" class="flex items-center gap-3 text-white/80">
-            <span class="w-7 h-7 rounded-full bg-orange-primary/20 text-orange-primary grid place-items-center text-xs">
+            <span class="w-7 h-7 rounded-full bg-orange-primary/20 text-orange-text grid place-items-center text-xs">
               <i class="fa-solid fa-check"></i>
             </span>
             {{ perk }}
@@ -43,7 +43,7 @@
         </h1>
         <p class="text-gray-500 mt-3 mb-8">
           Déjà membre ?
-          <router-link to="/login" class="text-orange-primary font-semibold hover:underline">
+          <router-link to="/login" class="text-orange-text font-semibold hover:underline">
             Connecte-toi
           </router-link>
         </p>
@@ -130,7 +130,7 @@
 
           <BaseCheckbox v-model="form.agreeTerms">
             J'ai lu et j'accepte la
-            <router-link to="/policy" class="text-orange-primary font-semibold hover:underline">
+            <router-link to="/policy" class="text-orange-text font-semibold hover:underline">
               charte de la communauté
             </router-link>
           </BaseCheckbox>

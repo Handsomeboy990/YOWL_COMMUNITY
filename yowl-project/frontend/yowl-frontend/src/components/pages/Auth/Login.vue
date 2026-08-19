@@ -14,7 +14,7 @@
         </h1>
         <p class="text-gray-500 mt-3 mb-8">
           Pas encore de compte ?
-          <router-link to="/signup" class="text-orange-primary font-semibold hover:underline">
+          <router-link to="/signup" class="text-orange-text font-semibold hover:underline">
             Inscris-toi maintenant
           </router-link>
         </p>
@@ -55,7 +55,7 @@
 
           <div class="flex items-center justify-between">
             <BaseCheckbox v-model="rememberMe" label="Se souvenir de moi" />
-            <router-link to="/forgot-password" class="text-sm text-orange-primary font-medium hover:underline">
+            <router-link to="/forgot-password" class="text-sm text-orange-text font-medium hover:underline">
               Mot de passe oublié ?
             </router-link>
           </div>
@@ -87,15 +87,15 @@
         </p>
 
         <blockquote class="mt-10 bg-white/5 border border-white/10 backdrop-blur-sm rounded-2xl p-6 text-left animate-fade-in-up animation-delay-400">
-          <div class="flex gap-1 text-orange-primary mb-3 text-xs" aria-hidden="true">
+          <div class="flex gap-1 text-orange-text mb-3 text-xs" aria-hidden="true">
             <i v-for="s in 5" :key="s" class="fa-solid fa-star"></i>
           </div>
           <p class="text-white/80 text-sm italic leading-relaxed">
             « La communauté YOWL est devenue mon réflexe avant chaque découverte sur le web. »
           </p>
           <footer class="mt-4 flex items-center gap-3">
-            <span class="w-9 h-9 rounded-full bg-[#7C5CFC] grid place-items-center text-white text-xs font-poppins font-bold">SA</span>
-            <span class="text-white/60 text-xs">Sarah, membre depuis 6 mois</span>
+            <span class="w-9 h-9 rounded-full bg-[#5B3FD4] grid place-items-center text-white text-xs font-poppins font-bold">SA</span>
+            <span class="text-white/75 text-xs">Sarah, membre depuis 6 mois</span>
           </footer>
         </blockquote>
       </div>

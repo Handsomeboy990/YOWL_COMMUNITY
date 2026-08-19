@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Models\User;
 use App\Notifications\Channels\WebPushChannel;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
 
 /**
@@ -23,7 +24,27 @@ abstract class ActivityNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['database', WebPushChannel::class];
+        return ['database', 'broadcast', WebPushChannel::class];
+    }
+
+    /**
+     * Same payload as the stored row, pushed over the socket.
+     *
+     * The bell used to poll every sixty seconds per connected member. The
+     * socket makes the counter move when something happens instead.
+     */
+    public function toBroadcast(object $notifiable): BroadcastMessage
+    {
+        return new BroadcastMessage($this->toArray($notifiable));
+    }
+
+    // Pas de broadcastOn ici : Laravel diffuse par defaut sur le canal prive
+    // du destinataire. Le redefinir envoyait la notification sur le canal de
+    // celui qui l'a declenchee, c'est-a-dire a la mauvaise personne.
+
+    public function broadcastType(): string
+    {
+        return $this->type();
     }
 
     /**

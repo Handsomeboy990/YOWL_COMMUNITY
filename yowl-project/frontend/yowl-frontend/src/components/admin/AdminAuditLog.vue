@@ -12,13 +12,13 @@
     </div>
 
     <div v-else-if="error" class="p-8 text-center">
-      <i class="fa-solid fa-plug-circle-exclamation text-3xl text-gray-300"></i>
+      <i class="fa-solid fa-plug-circle-exclamation text-3xl text-gray-400" aria-hidden="true"></i>
       <p class="mt-4 text-sm text-gray-600">{{ error }}</p>
       <BaseButton class="mt-4" size="sm" variant="primary" @click="load()">Réessayer</BaseButton>
     </div>
 
     <div v-else-if="!entries.length" class="p-12 text-center">
-      <i class="fa-regular fa-clipboard text-4xl text-gray-300"></i>
+      <i class="fa-regular fa-clipboard text-4xl text-gray-400" aria-hidden="true"></i>
       <p class="mt-4 text-sm text-gray-600">Aucune action enregistrée pour le moment.</p>
     </div>
 
@@ -36,7 +36,7 @@
             {{ summarise(entry.context) }}
           </p>
         </div>
-        <time class="text-xs text-gray-400 whitespace-nowrap shrink-0">{{ formatDate(entry.created_at) }}</time>
+        <time class="text-xs text-gray-500 whitespace-nowrap shrink-0">{{ formatDate(entry.created_at) }}</time>
       </li>
     </ul>
 

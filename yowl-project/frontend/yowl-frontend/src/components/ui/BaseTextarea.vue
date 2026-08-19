@@ -2,7 +2,7 @@
   <div class="w-full">
     <label v-if="label" :for="textareaId" class="block text-sm font-medium text-blue-night mb-1.5">
       {{ label }}
-      <span v-if="required" class="text-orange-primary">*</span>
+      <span v-if="required" class="text-orange-text">*</span>
     </label>
 
     <div
@@ -17,6 +17,8 @@
     >
       <textarea
         :id="textareaId"
+        :aria-invalid="error ? 'true' : undefined"
+        :aria-describedby="describedBy"
         :value="modelValue"
         :placeholder="placeholder"
         :rows="rows"
@@ -31,13 +33,14 @@
       <span
         v-if="maxlength"
         class="absolute bottom-2 right-3 text-xs"
-        :class="remaining < 20 ? 'text-orange-primary' : 'text-gray-300'"
+        :class="remaining < 20 ? 'text-orange-text' : 'text-gray-500'"
       >
         {{ remaining }}
       </span>
     </div>
 
-    <p v-if="error" class="mt-1.5 text-sm text-red-500 flex items-center gap-1.5">
+    <p v-if="error" :id="textareaId + '-error'" role="alert"
+      class="mt-1.5 text-sm text-red-500 flex items-center gap-1.5">
       <i class="fa-solid fa-circle-exclamation text-xs" aria-hidden="true"></i>
       {{ error }}
     </p>
@@ -61,6 +64,13 @@ const props = defineProps({
 defineEmits(['update:modelValue']);
 
 const textareaId = useId();
+
+// Le champ pointe vers son message d'erreur, sinon vers son aide.
+const describedBy = computed(() => {
+  if (props.error) return textareaId + '-error';
+  if (props.hint) return textareaId + '-hint';
+  return undefined;
+});
 const focused = ref(false);
 const remaining = computed(() =>
   props.maxlength ? props.maxlength - (props.modelValue?.length || 0) : 0

@@ -10,7 +10,7 @@
               :class="index <= step ? 'bg-orange-primary text-white' : 'bg-gray-200 text-gray-500'">
               {{ index + 1 }}
             </span>
-            <span class="text-sm" :class="index === step ? 'text-blue-night font-medium' : 'text-gray-400'">
+            <span class="text-sm" :class="index === step ? 'text-blue-night font-medium' : 'text-gray-500'">
               {{ label }}
             </span>
             <i v-if="index < steps.length - 1" class="fa-solid fa-chevron-right text-gray-300 text-xs ml-1"></i>
@@ -33,7 +33,7 @@
             <button v-for="tag in tags" :key="tag.id" type="button"
               class="px-4 py-2 rounded-full border text-sm transition-colors cursor-pointer"
               :class="chosenTags.has(tag.id)
-                ? 'border-orange-primary bg-orange-50 text-orange-primary font-medium'
+                ? 'border-orange-primary bg-orange-50 text-orange-text font-medium'
                 : 'border-gray-200 text-gray-600 hover:border-gray-300'"
               :aria-pressed="chosenTags.has(tag.id)" @click="toggleTag(tag.id)">
               <i v-if="chosenTags.has(tag.id)" class="fa-solid fa-check mr-1.5"></i>#{{ tag.name }}

@@ -1,0 +1,100 @@
+{
+  "common": {
+    "appName": "YOWL Community",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "retry": "Try again",
+    "back": "Back",
+    "loading": "Loading",
+    "search": "Search YOWL...",
+    "publish": "Post",
+    "login": "Sign in",
+    "logout": "Sign out",
+    "signup": "Create my account",
+    "haveAccount": "I already have an account"
+  },
+  "nav": {
+    "feed": "Feed",
+    "myReviews": "My reviews",
+    "saved": "Saved",
+    "activity": "Activity",
+    "stats": "Statistics",
+    "admin": "Administration",
+    "about": "About",
+    "faq": "FAQ",
+    "policy": "Guidelines",
+    "suggestions": "Suggestions",
+    "profile": "My profile",
+    "publishReview": "Post a review"
+  },
+  "feed": {
+    "all": "Everything",
+    "following": "Following",
+    "empty": "Nothing here yet",
+    "emptyHint": "There is nothing to show yet. As soon as somebody posts, it will appear here.",
+    "noResults": "No results",
+    "noResultsHint": "No review matches your search or your filters.",
+    "clearFilters": "Clear search and filters",
+    "loadError": "The feed could not be loaded",
+    "seeMore": "Read more",
+    "reply": "Reply",
+    "views": "{count} view | {count} views",
+    "comments": "{count} comment | {count} comments"
+  },
+  "filters": {
+    "filterBy": "Filter by",
+    "noAnswers": "Without replies",
+    "noViews": "Without views",
+    "noLikes": "Without likes",
+    "sortBy": "Sort by",
+    "relevant": "Most relevant",
+    "newest": "Newest",
+    "oldest": "Oldest",
+    "mostLiked": "Most liked",
+    "withTags": "With tags",
+    "tagsPlaceholder": "e.g. gaming, music",
+    "reset": "Reset",
+    "live": "Filters apply as you go."
+  },
+  "review": {
+    "follow": "Follow",
+    "following": "Following",
+    "unfollow": "Unfollow",
+    "save": "Save this review",
+    "unsave": "Remove from saved",
+    "report": "Report",
+    "block": "Block {name}",
+    "helpfulQuestion": "Was this review helpful?",
+    "helpfulYes": "Yes",
+    "helpfulNo": "Not really",
+    "loginToReact": "You need to be signed in to react."
+  },
+  "poll": {
+    "votes": "{count} vote | {count} votes",
+    "closed": "poll closed",
+    "voteToSee": "vote to see the results",
+    "loginToVote": "You need to be signed in to vote."
+  },
+  "profile": {
+    "member": "YOWL member",
+    "memberSince": "Member since {date}",
+    "editProfile": "Edit profile",
+    "reviews": "Reviews",
+    "views": "Total views",
+    "likes": "Likes received",
+    "commentsReceived": "Comments received",
+    "summary": "Summary",
+    "savedEmpty": "Nothing saved yet",
+    "savedEmptyHint": "The bookmark on a review keeps it here, to read whenever you want."
+  },
+  "settings": {
+    "language": "Language",
+    "french": "Français",
+    "english": "English",
+    "digest": "Weekly email digest"
+  }
+}

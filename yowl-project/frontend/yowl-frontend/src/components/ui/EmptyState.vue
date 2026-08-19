@@ -4,7 +4,7 @@
       <i :class="[icon, 'text-2xl text-gray-300']"></i>
     </span>
     <p class="mt-4 font-semibold text-blue-night">{{ title }}</p>
-    <p v-if="description" class="mt-1 text-sm text-gray-400 max-w-sm mx-auto">{{ description }}</p>
+    <p v-if="description" class="mt-1 text-sm text-gray-500 max-w-sm mx-auto">{{ description }}</p>
     <div v-if="$slots.action" class="mt-5">
       <slot name="action" />
     </div>

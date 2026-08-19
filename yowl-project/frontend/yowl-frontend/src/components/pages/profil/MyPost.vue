@@ -27,7 +27,7 @@
       <!-- Erreur -->
       <div v-else-if="profileStore.reviewsError"
         class="mt-4 flex flex-col items-center text-center bg-white border border-gray-200 rounded-2xl py-14 px-4">
-        <i class="fa-solid fa-plug-circle-exclamation text-4xl text-gray-300"></i>
+        <i class="fa-solid fa-plug-circle-exclamation text-4xl text-gray-400" aria-hidden="true"></i>
         <h2 class="mt-5 text-lg font-semibold text-gray-800">Tes avis n'ont pas pu être chargés</h2>
         <p class="mt-2 text-sm text-gray-600 max-w-md">{{ profileStore.reviewsError }}</p>
         <BaseButton class="mt-5" variant="primary" size="sm"
@@ -39,7 +39,7 @@
       <!-- Etat vide -->
       <div v-else-if="!profileStore.reviews.length"
         class="mt-4 flex flex-col items-center text-center bg-white border border-gray-200 rounded-2xl py-16 px-4">
-        <i class="fa-regular fa-pen-to-square text-5xl text-gray-300"></i>
+        <i class="fa-regular fa-pen-to-square text-5xl text-gray-400" aria-hidden="true"></i>
         <h2 class="mt-5 text-xl font-semibold text-gray-800">Aucun avis pour le moment</h2>
         <p class="mt-2 text-gray-600 text-sm max-w-md">
           Tu n'as encore rien publié. Partage ton premier avis, la communauté t'attend.
@@ -88,20 +88,20 @@
                laissait la page encadree retirer son propre bac a sable. -->
           <a v-if="safeLink(review)" :href="safeLink(review)" target="_blank" rel="noopener noreferrer"
             class="group mt-4 flex items-center gap-3 p-3 rounded-xl border border-gray-200 hover:border-orange-primary hover:bg-orange-50/40 transition-colors">
-            <span class="w-9 h-9 shrink-0 rounded-lg bg-orange-primary/10 grid place-items-center text-orange-primary">
+            <span class="w-9 h-9 shrink-0 rounded-lg bg-orange-primary/10 grid place-items-center text-orange-text">
               <i class="fa-solid fa-link"></i>
             </span>
             <span class="min-w-0 flex-1">
               <span class="block text-sm font-medium text-blue-night truncate">{{ linkHost(review) }}</span>
-              <span class="block text-xs text-gray-400 truncate">{{ safeLink(review) }}</span>
+              <span class="block text-xs text-gray-500 truncate">{{ safeLink(review) }}</span>
             </span>
-            <i class="fa-solid fa-arrow-up-right-from-square text-gray-300 group-hover:text-orange-primary transition-colors"></i>
+            <i class="fa-solid fa-arrow-up-right-from-square text-gray-300 group-hover:text-orange-text transition-colors"></i>
           </a>
 
           <footer class="mt-auto pt-4 flex items-center justify-between border-t border-gray-100 text-sm">
             <div class="flex items-center gap-4 text-gray-600">
               <span class="flex items-center gap-1.5">
-                <i class="fa-solid fa-thumbs-up text-orange-primary"></i>{{ review.nb_like }}
+                <i class="fa-solid fa-thumbs-up text-orange-text"></i>{{ review.nb_like }}
               </span>
               <span class="flex items-center gap-1.5">
                 <i class="fa-solid fa-thumbs-down"></i>{{ review.nb_dislike }}
@@ -111,7 +111,7 @@
               </span>
             </div>
             <router-link :to="{ name: 'review-detail', params: { id: review.id } }"
-              class="text-blue-night hover:text-orange-primary transition-colors">
+              class="text-blue-night hover:text-orange-text transition-colors">
               {{ review.comments_count ?? 0 }} commentaire<span v-if="(review.comments_count ?? 0) > 1">s</span>
             </router-link>
           </footer>

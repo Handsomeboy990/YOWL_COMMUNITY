@@ -13,7 +13,7 @@
           <label v-for="role in roles" :key="role"
             class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm cursor-pointer transition-colors"
             :class="form.roles.includes(role)
-              ? 'border-orange-primary bg-orange-50 text-orange-primary'
+              ? 'border-orange-primary bg-orange-50 text-orange-text'
               : 'border-gray-200 text-gray-500 hover:border-gray-300'">
             <input v-model="form.roles" type="checkbox" :value="role" class="sr-only" />
             <i :class="form.roles.includes(role) ? 'fa-solid fa-check' : 'fa-regular fa-square'"></i>

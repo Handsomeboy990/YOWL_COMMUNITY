@@ -4,7 +4,7 @@
     <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100">
       <h2 class="font-semibold text-blue-night text-sm">Notifications</h2>
       <button v-if="store.hasUnread" type="button"
-        class="text-xs text-orange-primary hover:underline cursor-pointer"
+        class="text-xs text-orange-text hover:underline cursor-pointer"
         @click="store.markAllAsRead()">
         Tout marquer comme lu
       </button>
@@ -18,7 +18,7 @@
       <button type="button"
         class="shrink-0 text-xs font-medium px-2.5 py-1 rounded-full cursor-pointer transition-colors"
         :class="push.isSubscribed.value
-          ? 'bg-orange-primary/10 text-orange-primary hover:bg-orange-primary/20'
+          ? 'bg-orange-primary/10 text-orange-text hover:bg-orange-primary/20'
           : 'bg-blue-night text-white hover:bg-blue-night/90'"
         @click="$emit('toggle-push')">
         {{ push.isSubscribed.value ? 'Désactiver' : 'Activer' }}
@@ -40,9 +40,9 @@
 
       <!-- Erreur -->
       <div v-else-if="store.error" class="px-4 py-8 text-center">
-        <i class="fa-solid fa-triangle-exclamation text-2xl text-gray-300"></i>
+        <i class="fa-solid fa-triangle-exclamation text-2xl text-gray-400"></i>
         <p class="mt-2 text-sm text-gray-500">{{ store.error }}</p>
-        <button type="button" class="mt-3 text-xs text-orange-primary hover:underline cursor-pointer"
+        <button type="button" class="mt-3 text-xs text-orange-text hover:underline cursor-pointer"
           @click="store.fetchNotifications()">
           Réessayer
         </button>
@@ -50,9 +50,9 @@
 
       <!-- Vide -->
       <div v-else-if="!store.items.length" class="px-4 py-10 text-center">
-        <i class="fa-regular fa-bell-slash text-3xl text-gray-200"></i>
+        <i class="fa-regular fa-bell-slash text-3xl text-gray-200" aria-hidden="true"></i>
         <p class="mt-3 text-sm font-medium text-blue-night">Aucune notification</p>
-        <p class="mt-1 text-xs text-gray-400">
+        <p class="mt-1 text-xs text-gray-500">
           Les réactions et réponses à tes reviews apparaîtront ici.
         </p>
       </div>
@@ -80,7 +80,7 @@
                 <span class="block text-sm text-blue-night leading-snug">
                   {{ notification.data?.body }}
                 </span>
-                <span class="block mt-0.5 text-[11px] text-gray-400">
+                <span class="block mt-0.5 text-[11px] text-gray-500">
                   {{ relativeDate(notification.created_at) }}
                 </span>
               </span>
