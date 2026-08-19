@@ -19,9 +19,20 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [env('FRONTEND_URL', 'http://localhost:5173')],
+    /*
+     * Origins are listed one by one. FRONTEND_URLS accepts a comma separated
+     * list so a preview deployment can be added explicitly when it is needed.
+     *
+     * There is deliberately no pattern here: matching every *.vercel.app host
+     * while credentials are allowed would let any site deployed on Vercel talk
+     * to this API on behalf of a signed in member.
+     */
+    'allowed_origins' => array_values(array_filter(array_map(
+        'trim',
+        explode(',', (string) env('FRONTEND_URLS', env('FRONTEND_URL', 'http://localhost:5173')))
+    ))),
 
-    'allowed_origins_patterns' => ['/\.vercel\.app$/'],
+    'allowed_origins_patterns' => [],
 
     'allowed_headers' => ['*'],
 
