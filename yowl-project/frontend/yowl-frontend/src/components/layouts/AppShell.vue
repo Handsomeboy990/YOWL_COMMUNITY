@@ -2,7 +2,7 @@
     <div class="min-h-screen bg-gray-50 w-full">
         <!-- ===== HEADER ===== -->
         <header class="fixed top-0 left-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
-            <div class="w-full px-3 lg:px-6 h-16 flex items-center gap-3 md:gap-6">
+            <div class="w-full px-3 md:px-6 h-16 flex items-center gap-3 md:gap-6">
                 <!-- Logo -->
                 <router-link to="/feed" class="flex items-center gap-2 shrink-0" @click="refreshFeed">
                     <span class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-primary to-[#ff8c5a] grid place-items-center shadow-md shadow-orange-primary/30">
@@ -94,82 +94,49 @@
             </div>
         </header>
 
-        <!-- ===== CORPS =====
-             Une seule grille centree gouverne les trois colonnes. Les rails
-             sont colles en sticky plutot que fixes : plus de marge magique a
-             tenir synchronisee avec leur largeur, et la colonne centrale
-             occupe reellement la place disponible au lieu de flotter entre
-             deux gouttieres vides. -->
-        <div class="w-full px-0 lg:px-6 pt-16">
-            <!-- Pleine largeur : les colonnes laterales s'elargissent avec
-                 l'ecran pour que la colonne centrale reste lisible sans
-                 laisser de gouttiere vide entre elle et les rails. -->
-            <div class="grid grid-cols-1 gap-0 lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-6 2xl:grid-cols-[17rem_minmax(0,1fr)]"
-                :class="$slots.rail ? 'xl:grid-cols-[16rem_minmax(0,1fr)_20rem] 2xl:grid-cols-[17rem_minmax(0,1fr)_22rem]' : ''">
+        <!-- ===== NAVIGATION GAUCHE (desktop) ===== -->
+        <nav class="hidden lg:flex flex-col fixed left-0 top-16 bottom-0 w-60 xl:w-64 bg-white border-r border-gray-200 px-3 py-5 z-40"
+            aria-label="Navigation principale">
+            <div class="flex-1 space-y-1 overflow-y-auto">
+                <router-link v-for="item in mainNav" :key="item.to" :to="item.to"
+                    class="flex items-center gap-3.5 px-4 py-3 rounded-xl font-medium transition-all duration-200"
+                    :class="isActive(item) ? 'bg-orange-primary/10 text-orange-primary' : 'text-blue-night hover:bg-gray-100'">
+                    <i :class="[item.icon, 'w-5 text-center text-lg']"></i>
+                    {{ item.label }}
+                </router-link>
 
-                <!-- Navigation gauche (desktop).
-                     Hauteur naturelle, pas de flex-1 qui repousserait le pied
-                     de colonne en bas de l'ecran et creuserait un vide au
-                     milieu quand le menu est court. -->
-                <nav class="hidden lg:block sticky top-16 max-h-[calc(100vh-4rem)] overflow-y-auto py-5"
-                    aria-label="Navigation principale">
-                    <div class="space-y-1">
-                        <router-link v-for="item in mainNav" :key="item.to" :to="item.to"
-                            class="flex items-center gap-3.5 px-4 py-3 rounded-xl font-medium transition-all duration-200"
-                            :class="isActive(item) ? 'bg-orange-primary/10 text-orange-primary' : 'text-blue-night hover:bg-gray-100'">
-                            <i :class="[item.icon, 'w-5 text-center text-lg']"></i>
-                            {{ item.label }}
-                        </router-link>
-
-                        <div class="pt-4">
-                            <BaseButton variant="primary" block icon="fa-solid fa-plus" @click="openPublish">
-                                Publier une review
-                            </BaseButton>
-                        </div>
-                    </div>
-
-                    <!-- Invitation pour un visiteur : la colonne serait vide
-                         autrement, puisqu'elle ne porte qu'un seul lien. -->
-                    <div v-if="!userStore.isAuthenticated"
-                        class="mt-5 rounded-2xl border border-orange-200 bg-gradient-to-br from-orange-50 to-white p-4">
-                        <p class="font-poppins font-bold text-blue-night">Rejoins YOWL</p>
-                        <p class="mt-1 text-sm text-gray-600">
-                            Publie tes avis, réagis et suis les sujets qui comptent pour toi.
-                        </p>
-                        <BaseButton class="mt-3" :tag="'router-link'" :to="'/signup'" variant="primary" size="sm" block>
-                            Créer mon compte
-                        </BaseButton>
-                        <router-link to="/login"
-                            class="mt-2 block text-center text-sm text-gray-500 hover:text-blue-night transition-colors">
-                            J'ai déjà un compte
-                        </router-link>
-                    </div>
-
-                    <!-- Liens secondaires -->
-                    <div class="mt-6 pt-4 border-t border-gray-100 space-y-0.5">
-                        <router-link v-for="item in secondaryNav" :key="item.to" :to="item.to"
-                            class="flex items-center gap-3 px-4 py-2 rounded-lg text-sm text-gray-500 hover:text-blue-night hover:bg-gray-50 transition-colors">
-                            <i :class="[item.icon, 'w-4 text-center']"></i>
-                            {{ item.label }}
-                        </router-link>
-                        <p class="px-4 pt-3 text-[11px] text-gray-400">
-                            © {{ new Date().getFullYear() }} YOWL — LONG Corp
-                        </p>
-                    </div>
-                </nav>
-
-                <!-- Contenu -->
-                <main class="min-w-0 min-h-[calc(100vh-4rem)] pb-24 lg:pb-8">
-                    <slot />
-                </main>
-
-                <!-- Rail droit (optionnel) -->
-                <aside v-if="$slots.rail"
-                    class="hidden xl:block sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto py-5">
-                    <slot name="rail" />
-                </aside>
+                <div class="pt-4">
+                    <BaseButton variant="primary" block icon="fa-solid fa-plus" @click="openPublish">
+                        Publier une review
+                    </BaseButton>
+                </div>
             </div>
+
+            <!-- Liens secondaires -->
+            <div class="pt-4 border-t border-gray-100 space-y-0.5">
+                <router-link v-for="item in secondaryNav" :key="item.to" :to="item.to"
+                    class="flex items-center gap-3 px-4 py-2 rounded-lg text-sm text-gray-500 hover:text-blue-night hover:bg-gray-50 transition-colors">
+                    <i :class="[item.icon, 'w-4 text-center']"></i>
+                    {{ item.label }}
+                </router-link>
+                <p class="px-4 pt-3 text-[11px] text-gray-400">
+                    © {{ new Date().getFullYear() }} YOWL — LONG Corp
+                </p>
+            </div>
+        </nav>
+
+        <!-- ===== CONTENU ===== -->
+        <div class="pt-16 lg:pl-60 xl:pl-64 w-full" :class="$slots.rail ? 'xl:pr-80' : ''">
+            <main class="w-full min-h-[calc(100vh-4rem)] pb-24 lg:pb-8">
+                <slot />
+            </main>
         </div>
+
+        <!-- ===== RAIL DROIT (optionnel) ===== -->
+        <aside v-if="$slots.rail"
+            class="hidden xl:block fixed right-0 top-16 bottom-0 w-80 border-l border-gray-200 bg-white overflow-y-auto p-5 z-40">
+            <slot name="rail" />
+        </aside>
 
         <!-- ===== NAVIGATION BASSE (mobile) ===== -->
         <nav class="lg:hidden fixed bottom-0 left-0 w-full z-50 bg-white/95 backdrop-blur-md border-t border-gray-200 pb-[env(safe-area-inset-bottom)]"

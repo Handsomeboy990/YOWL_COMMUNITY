@@ -1,10 +1,7 @@
 <template>
     <AppShell>
-        <!-- Colonne centrale du fil.
-             La largeur est donnee par la grille du shell : plus de max-w ni de
-             mx-auto ici, qui reduisaient le fil a une bande etroite flottant
-             entre les deux rails. -->
-        <div class="w-full px-4 lg:px-0 py-6">
+        <!-- Colonne centrale du fil -->
+        <div class="w-full max-w-2xl mx-auto px-4 py-6">
             <!-- Filtres (mobile / tablette : repliables) -->
             <details class="xl:hidden mb-4 bg-white rounded-xl border border-gray-200 overflow-hidden">
                 <summary class="px-4 py-3 font-medium text-blue-night cursor-pointer select-none flex items-center gap-2">
@@ -76,16 +73,13 @@
                 </p>
             </div>
 
-            <!-- Fil des reviews.
-                 Une colonne jusqu'au grand ecran, deux au dela : au dela de
-                 1536 px une colonne unique etirerait les cartes sur plus de
-                 1200 px, illisible, et la place gagnee retomberait en vide.
-                 TransitionGroup n'accepte pas "mode", d'ou l'attribut retire. -->
-            <TransitionGroup tag="div" name="feed"
-                class="grid grid-cols-1 gap-4 md:gap-5 2xl:grid-cols-2 2xl:items-start">
-                <ReviewCard v-for="(review, index) in reviews" :key="review.id" :review="review"
-                    class="animate-fade-in-up" :style="{ animationDelay: `${Math.min(index, 6) * 60}ms` }" />
-            </TransitionGroup>
+            <!-- Fil des reviews -->
+            <div class="space-y-4 md:space-y-5">
+                <TransitionGroup name="feed" mode="out-in">
+                    <ReviewCard v-for="review in reviews" :key="review.id" :review="review"
+                        class="animate-fade-in-up" />
+                </TransitionGroup>
+            </div>
 
             <!-- Pagination -->
             <div class="mt-8">
