@@ -10,7 +10,7 @@ use App\Models\Comment;
 use App\Models\Suggestion;
 use App\Models\Tag;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use App\Support\Media;
 use Illuminate\Validation\Rule;
 
 class AdminController extends Controller
@@ -149,7 +149,7 @@ class AdminController extends Controller
         // Supprimer physiquement les médias associés
         if (is_array($review->medias)) {
             foreach ($review->medias as $mediaPath) {
-                Storage::disk('public')->delete($mediaPath);
+                Media::delete($mediaPath);
             }
         }
 

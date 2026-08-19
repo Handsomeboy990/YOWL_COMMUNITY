@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Storage;
+use App\Support\Media;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
 use App\Mail\EmailVerificationCode;
@@ -57,9 +57,9 @@ class UserController extends Controller
 
             if ($request->hasFile('picture')) {
                 $previous = $user->picture;
-                $validated['picture'] = $request->file('picture')->store('profile', 'public');
+                $validated['picture'] = Media::store($request->file('picture'), 'profile');
                 if ($previous) {
-                    Storage::disk('public')->delete($previous);
+                    Media::delete($previous);
                 }
             }
 
@@ -155,7 +155,7 @@ class UserController extends Controller
         ])->save();
 
         if ($avatar) {
-            Storage::disk('public')->delete($avatar);
+            Media::delete($avatar);
         }
 
         $user->tokens()->delete();

@@ -28,6 +28,21 @@ return [
     |
     */
 
+    /*
+    |--------------------------------------------------------------------------
+    | Member Uploaded Media
+    |--------------------------------------------------------------------------
+    |
+    | Disk holding avatars and review images. It stays on the local public disk
+    | in development, and points at object storage in production, where the
+    | container filesystem does not survive a restart. Set MEDIA_DISK to s3 and
+    | fill the AWS_* variables, which also drive an S3 compatible service such
+    | as Cloudflare R2 through AWS_ENDPOINT.
+    |
+    */
+
+    'media' => env('MEDIA_DISK', 'public'),
+
     'disks' => [
 
         'local' => [

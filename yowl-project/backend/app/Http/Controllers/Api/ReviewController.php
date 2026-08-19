@@ -8,7 +8,7 @@ use App\Models\ReviewReaction;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
+use App\Support\Media;
 use Illuminate\Validation\ValidationException;
 
 class ReviewController extends Controller
@@ -155,7 +155,7 @@ class ReviewController extends Controller
             $mediaPaths = [];
             if ($request->hasFile('medias')) {
                 foreach ($request->file('medias') as $media) {
-                    $mediaPaths[] = $media->store('reviews', 'public');
+                    $mediaPaths[] = Media::store($media, 'reviews');
                 }
             }
             // Le cast "array" du modèle se charge de l'encodage JSON
@@ -283,14 +283,14 @@ class ReviewController extends Controller
             // Supprimer physiquement les images retirées
             $toDelete = array_diff($oldMedias, $existingMedias);
             foreach ($toDelete as $mediaPath) {
-                Storage::disk('public')->delete($mediaPath);
+                Media::delete($mediaPath);
             }
 
             // Ajouter les nouvelles images
             $newMediaPaths = [];
             if ($request->hasFile('medias')) {
                 foreach ($request->file('medias') as $media) {
-                    $newMediaPaths[] = $media->store('reviews', 'public');
+                    $newMediaPaths[] = Media::store($media, 'reviews');
                 }
             }
 
@@ -298,7 +298,7 @@ class ReviewController extends Controller
             $merged = array_values(array_merge($existingMedias, $newMediaPaths));
             if (count($merged) > self::MAX_MEDIAS) {
                 foreach ($newMediaPaths as $justUploaded) {
-                    Storage::disk('public')->delete($justUploaded);
+                    Media::delete($justUploaded);
                 }
 
                 return response()->json([
@@ -368,7 +368,7 @@ class ReviewController extends Controller
             // Supprimer physiquement les médias associés
             if (is_array($review->medias)) {
                 foreach ($review->medias as $mediaPath) {
-                    Storage::disk('public')->delete($mediaPath);
+                    Media::delete($mediaPath);
                 }
             }
 
