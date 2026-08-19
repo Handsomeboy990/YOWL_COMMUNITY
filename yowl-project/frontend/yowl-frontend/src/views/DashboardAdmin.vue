@@ -426,6 +426,10 @@
       </section>
 
       <!-- ===== PAGES LEGALES ===== -->
+      <AdminGrowth v-else-if="activeTab === 'growth'" />
+
+      <AdminAppeals v-else-if="activeTab === 'appeals'" />
+
       <AdminLegalPages v-else-if="activeTab === 'legal'" />
 
       <!-- ===== REGLAGES ===== -->
@@ -455,6 +459,8 @@ import { computed, onMounted, ref } from 'vue';
 import { useNotify } from '@/composables/useNotify';
 import { useConfirm } from '@/composables/useConfirm';
 import api from '@/services/apiService';
+import AdminGrowth from '@/components/admin/AdminGrowth.vue';
+import AdminAppeals from '@/components/admin/AdminAppeals.vue';
 import AdminLegalPages from '@/components/admin/AdminLegalPages.vue';
 import AdminSettings from '@/components/admin/AdminSettings.vue';
 import AdminRoles from '@/components/admin/AdminRoles.vue';
@@ -463,6 +469,7 @@ import CreateUserModal from '@/components/admin/CreateUserModal.vue';
 import UserDetailModal from '@/components/admin/UserDetailModal.vue';
 import { getStorageUrl } from '@/config';
 import BaseButton from '@/components/ui/BaseButton.vue';
+import { useAppealStore } from '@/stores/appeal';
 
 const activeTab = ref('overview');
 const isCreateUserOpen = ref(false);
@@ -476,6 +483,9 @@ const onUserCreated = () => {
 };
 const notify = useNotify();
 const confirm = useConfirm();
+// Le compteur de contestations en attente alimente la pastille de l'onglet,
+// donc il est charge des l'ouverture de la console, pas de l'onglet.
+const appealStore = useAppealStore();
 
 const stats = ref(null);
 const users = ref(null);
@@ -507,7 +517,9 @@ const loaded = { users: false, reviews: false, comments: false, reports: false, 
 
 const tabs = computed(() => [
   { key: 'overview', label: "Vue d'ensemble", icon: 'fa-solid fa-chart-pie' },
+  { key: 'growth', label: 'Croissance', icon: 'fa-solid fa-arrow-trend-up' },
   { key: 'reports', label: 'Modération', icon: 'fa-solid fa-flag', badge: pendingReports.value },
+  { key: 'appeals', label: 'Contestations', icon: 'fa-solid fa-scale-balanced', badge: appealStore.pendingCount },
   { key: 'users', label: 'Membres', icon: 'fa-solid fa-users' },
   { key: 'reviews', label: 'Avis', icon: 'fa-regular fa-newspaper' },
   { key: 'comments', label: 'Commentaires', icon: 'fa-regular fa-comments' },
@@ -842,5 +854,6 @@ onMounted(() => {
   // Les compteurs alimentent les pastilles des onglets des l'arrivee
   fetchReports();
   fetchSuggestions();
+  appealStore.loadQueue('pending');
 });
 </script>

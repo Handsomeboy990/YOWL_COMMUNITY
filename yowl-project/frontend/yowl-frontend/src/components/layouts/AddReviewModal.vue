@@ -20,11 +20,49 @@
                 hint="Le contenu du web dont tu parles"
             />
 
-            <!-- Aperçu du lien -->
-            <div v-if="form.link" class="rounded-xl border border-gray-200 overflow-hidden">
-                <iframe :src="form.link" class="w-full h-48 border-0" title="Aperçu du lien"
-                    sandbox="allow-same-origin allow-scripts allow-popups" referrerpolicy="no-referrer">
-                </iframe>
+            <!-- Rappel de l'hôte cité. L'aperçu Open Graph complet est
+                 récupéré côté serveur après publication : encadrer ici une
+                 page arbitraire lui donnerait la main sur ce formulaire. -->
+            <div v-if="linkHost" class="flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
+                <span class="w-9 h-9 shrink-0 rounded-lg bg-orange-primary/10 grid place-items-center text-orange-text">
+                    <i class="fa-solid fa-link" aria-hidden="true"></i>
+                </span>
+                <span class="min-w-0">
+                    <span class="block text-sm font-medium text-blue-night truncate">{{ linkHost }}</span>
+                    <span class="block text-xs text-gray-500">L'aperçu sera récupéré après publication.</span>
+                </span>
+            </div>
+
+            <!-- Doublon de lien. Une proposition, jamais un blocage : deux
+                 personnes ont le droit d'ouvrir deux sujets sur un même
+                 article, mais la plupart du temps elles veulent le même. -->
+            <div v-if="duplicates.length"
+                class="rounded-xl border border-sky-200 bg-sky-50/70 p-4 animate-fade-in-up">
+                <p class="text-sm font-medium text-sky-900">
+                    Ce lien est déjà discuté {{ duplicates.length > 1 ? 'à ' + duplicates.length + ' endroits' : 'ici' }}
+                </p>
+                <p class="mt-1 text-xs text-sky-800">
+                    Rejoindre la conversation existante lui donne plus de portée qu'en ouvrir une seconde.
+                </p>
+                <ul class="mt-3 space-y-2">
+                    <li v-for="existing in duplicates" :key="existing.id">
+                        <a :href="'/reviews/' + existing.id" target="_blank" rel="noopener"
+                            class="group flex items-start gap-3 rounded-lg bg-white border border-sky-100 p-3 hover:border-sky-300 transition-colors">
+                            <img :src="getStorageUrl(existing.user?.picture)" alt=""
+                                class="w-8 h-8 rounded-full object-cover shrink-0" />
+                            <span class="min-w-0 flex-1">
+                                <span class="block text-xs font-medium text-blue-night">
+                                    {{ existing.user?.fullname || existing.user?.username }}
+                                </span>
+                                <span class="block text-xs text-gray-600 line-clamp-2">{{ existing.content }}</span>
+                                <span class="mt-1 block text-[11px] text-gray-500">
+                                    {{ existing.comments_count }} réponse{{ existing.comments_count > 1 ? 's' : '' }}
+                                </span>
+                            </span>
+                            <i class="fa-solid fa-arrow-right text-sky-300 group-hover:text-sky-600 transition-colors mt-1"></i>
+                        </a>
+                    </li>
+                </ul>
             </div>
 
             <!-- Médias -->
@@ -104,11 +142,43 @@
                 </div>
             </div>
 
+            <!-- Programmation -->
+            <div class="rounded-xl border border-gray-200 overflow-hidden">
+                <button type="button"
+                    class="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-gray-50 transition-colors cursor-pointer"
+                    :aria-expanded="scheduling"
+                    @click="toggleScheduling">
+                    <span class="flex items-center gap-2.5 text-sm text-blue-night">
+                        <i class="fa-regular fa-clock text-gray-500" aria-hidden="true"></i>
+                        {{ form.scheduled_for ? 'Publication le ' + formatSchedule(form.scheduled_for) : 'Programmer la publication' }}
+                    </span>
+                    <i class="fa-solid fa-chevron-down text-xs text-gray-400 transition-transform"
+                        :class="scheduling ? 'rotate-180' : ''" aria-hidden="true"></i>
+                </button>
+
+                <div v-if="scheduling" class="border-t border-gray-100 px-4 py-4 space-y-3">
+                    <label class="block text-sm font-medium text-blue-night" :for="scheduleId">
+                        Date et heure de publication
+                    </label>
+                    <input :id="scheduleId" v-model="form.scheduled_for" type="datetime-local" :min="minSchedule"
+                        class="w-full rounded-xl border-2 border-gray-200 px-4 py-2.5 text-blue-night outline-none focus:border-orange-primary transition-colors" />
+                    <p class="text-xs text-gray-500">
+                        L'avis reste hors du fil jusqu'à cette heure, à cinq minutes près.
+                        Tu le retrouves dans « Mes avis » en attendant.
+                    </p>
+                    <button v-if="form.scheduled_for" type="button"
+                        class="text-xs font-medium text-orange-text hover:underline cursor-pointer"
+                        @click="form.scheduled_for = ''">
+                        Publier tout de suite plutôt
+                    </button>
+                </div>
+            </div>
+
             <!-- Actions -->
             <div class="flex justify-end gap-3 pt-2">
                 <BaseButton variant="ghost" :shine="false" @click="closeModal">Annuler</BaseButton>
                 <BaseButton type="submit" variant="primary" :loading="submitting">
-                    {{ form.id ? 'Mettre à jour' : 'Publier' }}
+                    {{ submitLabel }}
                 </BaseButton>
             </div>
         </form>
@@ -117,7 +187,7 @@
 
 <script setup>
 import { getStorageUrl } from '@/config';
-import { ref, watch } from 'vue';
+import { computed, ref, useId, watch } from 'vue';
 import { useNotify } from '@/composables/useNotify';
 import { useUserStore } from '@/stores/user';
 import { useRouter } from 'vue-router';
@@ -147,6 +217,7 @@ const emptyForm = () => ({
     existingMedias: [],
     tags: [],
     tagInput: '',
+    scheduled_for: '',
 });
 
 const form = ref(emptyForm());
@@ -154,6 +225,72 @@ const form = ref(emptyForm());
 const suggestions = ref([]);
 const showSuggestions = ref(false);
 let suggestionsTimer = null;
+
+const duplicates = ref([]);
+const scheduling = ref(false);
+const scheduleId = useId();
+let linkTimer = null;
+
+const linkHost = computed(() => {
+    try {
+        return new URL(form.value.link).hostname.replace(/^www\./, '');
+    } catch {
+        return '';
+    }
+});
+
+// L'attribut min du champ attend le format local sans fuseau, pas un ISO.
+const minSchedule = computed(() => {
+    const dans5min = new Date(Date.now() + 5 * 60 * 1000);
+    dans5min.setMinutes(dans5min.getMinutes() - dans5min.getTimezoneOffset());
+    return dans5min.toISOString().slice(0, 16);
+});
+
+const submitLabel = computed(() => {
+    if (form.value.id) return 'Mettre à jour';
+    return form.value.scheduled_for ? 'Programmer' : 'Publier';
+});
+
+const formatSchedule = (value) =>
+    new Date(value).toLocaleString('fr-FR', {
+        day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit',
+    });
+
+const toLocalInput = (value) => {
+    const date = new Date(value);
+    date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+    return date.toISOString().slice(0, 16);
+};
+
+const toggleScheduling = () => {
+    scheduling.value = !scheduling.value;
+};
+
+/**
+ * Cherche les discussions deja ouvertes sur la meme adresse.
+ *
+ * Attend que la saisie se pose : interroger a chaque frappe enverrait une
+ * requete par caractere pour une adresse encore incomplete.
+ */
+const lookForDuplicates = async (link) => {
+    if (!link || !linkHost.value) {
+        duplicates.value = [];
+        return;
+    }
+
+    try {
+        const response = await api.get('/liens/existant', { params: { link } });
+        duplicates.value = response.data.data ?? [];
+    } catch {
+        // Une proposition manquante n'empeche pas de publier.
+        duplicates.value = [];
+    }
+};
+
+watch(() => form.value.link, (link) => {
+    clearTimeout(linkTimer);
+    linkTimer = setTimeout(() => lookForDuplicates(link), 600);
+});
 
 // Suggestions de tags depuis le backend (avec debounce)
 const fetchTagSuggestions = async (query) => {
@@ -208,7 +345,13 @@ watch(
                 existingMedias: (existing || []).filter((m) => typeof m === 'string' && m.length > 0),
                 tags: normalizeTags(newReview.tags),
                 tagInput: '',
+                // Le champ datetime-local n'accepte pas le fuseau : on lui
+                // donne les seize premiers caracteres du format local.
+                scheduled_for: newReview.scheduled_for
+                    ? toLocalInput(newReview.scheduled_for)
+                    : '',
             };
+            scheduling.value = Boolean(newReview.scheduled_for);
         } else {
             form.value = emptyForm();
         }
@@ -292,6 +435,12 @@ const submitReview = async () => {
         medias: form.value.media,
         existingMedias: form.value.existingMedias,
         tags: form.value.tags,
+        // Le champ rend une heure locale sans fuseau. L'envoyer telle quelle
+        // la ferait lire dans le fuseau du serveur, soit un decalage silencieux
+        // pour tout membre qui n'est pas a l'heure UTC.
+        scheduled_for: form.value.scheduled_for
+            ? new Date(form.value.scheduled_for).toISOString()
+            : '',
     };
 
     submitting.value = true;
@@ -312,6 +461,9 @@ const closeModal = () => {
     emit('close');
     form.value = emptyForm();
     showSuggestions.value = false;
+    scheduling.value = false;
+    duplicates.value = [];
+    clearTimeout(linkTimer);
 };
 </script>
 

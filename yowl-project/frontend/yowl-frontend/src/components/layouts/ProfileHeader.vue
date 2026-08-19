@@ -115,5 +115,6 @@ const tabs = [
   { to: '/user/my-reviews', name: 'my-reviews', label: 'Mes avis', icon: 'fa-solid fa-newspaper' },
   { to: '/user/saved', name: 'saved', label: 'Enregistrés', icon: 'fa-regular fa-bookmark' },
   { to: '/user/activity', name: 'activity', label: 'Activité', icon: 'fa-solid fa-clock-rotate-left' },
+  { to: '/user/contestations', name: 'appeals', label: 'Contestations', icon: 'fa-solid fa-scale-balanced' },
 ];
 </script>

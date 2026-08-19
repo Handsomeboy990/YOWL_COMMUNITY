@@ -212,6 +212,7 @@ import { useConfirm } from '@/composables/useConfirm';
 import { useI18n } from 'vue-i18n';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher.vue';
 import { connectRealtime, disconnectRealtime, isRealtimeConfigured } from '@/services/realtime';
+import { usePresence } from '@/composables/usePresence';
 import { useUserStore } from '@/stores/user';
 import { useReviewStore } from '@/stores/review';
 import { getStorageUrl } from '@/config';
@@ -359,6 +360,10 @@ const togglePush = async () => {
 const UNREAD_POLL_MS = 60000;
 const realtime = isRealtimeConfigured();
 let unreadTimer = null;
+
+// Le coquillage entoure chaque page connectee : c'est le seul endroit d'ou
+// la presence se mesure une fois, et pas une fois par vue.
+usePresence();
 
 const refreshUnread = () => {
     if (userStore.isAuthenticated) notificationStore.fetchUnreadCount();

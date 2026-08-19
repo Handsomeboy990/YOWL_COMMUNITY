@@ -56,7 +56,14 @@
           <header class="flex items-start justify-between gap-3">
             <div class="min-w-0">
               <p class="text-sm text-gray-500">{{ formatDate(review.created_at) }}</p>
-              <span v-if="!review.is_published"
+              <!-- Deux etats partagent is_published a false, et les
+                   confondre ferait lire « retire du fil » sur un texte qui
+                   attend simplement son heure. -->
+              <span v-if="isScheduled(review)"
+                class="inline-flex items-center gap-1.5 mt-1.5 px-2 py-0.5 rounded-full bg-sky-50 text-sky-700 text-xs font-medium">
+                <i class="fa-regular fa-clock"></i> Programmé pour le {{ formatDateTime(review.scheduled_for) }}
+              </span>
+              <span v-else-if="!review.is_published"
                 class="inline-flex items-center gap-1.5 mt-1.5 px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 text-xs font-medium">
                 <i class="fa-solid fa-eye-slash"></i> Retiré du fil
               </span>
@@ -98,6 +105,20 @@
             <i class="fa-solid fa-arrow-up-right-from-square text-gray-300 group-hover:text-orange-text transition-colors"></i>
           </a>
 
+          <!-- Une decision de moderation doit ouvrir une porte de sortie,
+               sinon la seule reponse possible est de partir. -->
+          <div v-if="!review.is_published && !isScheduled(review)"
+            class="mt-4 rounded-xl bg-amber-50/70 border border-amber-100 p-3 flex items-center justify-between gap-3">
+            <p class="text-xs text-amber-800">
+              Tu penses que cette décision est une erreur ?
+            </p>
+            <button type="button"
+              class="shrink-0 text-xs font-medium text-orange-text hover:underline cursor-pointer"
+              @click="openAppeal(review.id)">
+              Contester
+            </button>
+          </div>
+
           <footer class="mt-auto pt-4 flex items-center justify-between border-t border-gray-100 text-sm">
             <div class="flex items-center gap-4 text-gray-600">
               <span class="flex items-center gap-1.5">
@@ -127,6 +148,8 @@
     <AddReviewModal :isOpen="isModalOpen" :editedReview="selectedReview" @close="closeModal" @publish="addPost"
       @update="updatePost" />
   </AppShell>
+
+  <AppealDialog v-model:open="appealOpen" :id="appealTarget" type="review" @sent="refresh" />
 </template>
 
 <script setup>
@@ -138,6 +161,7 @@ import LeaveCommunity from '@/components/layouts/LeaveCommunity.vue';
 import AddReviewModal from '@/components/layouts/AddReviewModal.vue';
 import BaseButton from '@/components/ui/BaseButton.vue';
 import ImageCarousel from '@/components/layouts/ImageCarouselMyPost.vue';
+import AppealDialog from '@/components/ui/AppealDialog.vue';
 import { useConfirm } from '@/composables/useConfirm';
 import { useReviewStore } from '@/stores/review';
 import { useProfileStore } from '@/stores/profile';
@@ -146,6 +170,8 @@ const reviewStore = useReviewStore();
 const profileStore = useProfileStore();
 const confirm = useConfirm();
 
+const appealOpen = ref(false);
+const appealTarget = ref(0);
 const isModalOpen = ref(false);
 const selectedReview = ref(null);
 
@@ -156,6 +182,19 @@ onMounted(() => {
 
 const formatDate = (value) =>
   new Date(value).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+
+const isScheduled = (review) =>
+  !review.is_published && review.scheduled_for && new Date(review.scheduled_for) > new Date();
+
+const formatDateTime = (value) =>
+  new Date(value).toLocaleString('fr-FR', {
+    day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit',
+  });
+
+const openAppeal = (id) => {
+  appealTarget.value = id;
+  appealOpen.value = true;
+};
 
 const getMedias = (review) => {
   if (!review.medias) return [];

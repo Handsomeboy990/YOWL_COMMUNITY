@@ -34,7 +34,7 @@
           <div class="h-64 grid place-items-center">
             <DoughnutChart v-if="hasEngagement" :data="reactionData" :options="doughnutOptions" />
             <p v-else class="text-sm text-gray-500 text-center px-4">
-              Personne n'a encore réagi à tes reviews. Publie, ça viendra.
+              Personne n'a encore réagi à tes avis. Publie, ça viendra.
             </p>
           </div>
         </section>
@@ -51,12 +51,15 @@
         </section>
       </div>
 
+      <DataExport />
+
       <LeaveCommunity />
     </div>
   </AppShell>
 </template>
 
 <script setup>
+import DataExport from '@/components/layouts/DataExport.vue';
 import { computed, onMounted } from 'vue';
 import {
   Chart as ChartJS,

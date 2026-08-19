@@ -11,6 +11,7 @@ import Summary from '@/components/pages/profil/Summary.vue'
 import Activity from '@/components/pages/profil/Activity.vue'
 import MyPost from '@/components/pages/profil/MyPost.vue'
 import Saved from '@/components/pages/profil/Saved.vue'
+import Appeals from '@/components/pages/profil/Appeals.vue'
 import Onboarding from '@/components/pages/Onboarding.vue'
 import MemberProfile from '@/views/MemberProfile.vue'
 import TagFeed from '@/views/TagFeed.vue'
@@ -107,6 +108,12 @@ const router = createRouter({
             path: '/user/saved',
             name: 'saved',
             component: Saved,
+            meta: { requiresAuth: true }
+        },
+        {
+            path: '/user/contestations',
+            name: 'appeals',
+            component: Appeals,
             meta: { requiresAuth: true }
         },
         {

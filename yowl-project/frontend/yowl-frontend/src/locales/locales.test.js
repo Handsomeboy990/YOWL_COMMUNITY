@@ -34,7 +34,10 @@ describe('catalogues de traduction', () => {
   });
 
   it('gardent les mêmes variables dans chaque phrase', () => {
-    const variables = (texte) => (String(texte).match(/\{(\w+)\}/g) ?? []).sort();
+    // Ensemble, pas liste : une forme plurielle « {count} avis | {count} avis »
+    // repete legitimement la meme variable dans chaque branche.
+    const variables = (texte) =>
+      [...new Set(String(texte).match(/\{(\w+)\}/g) ?? [])].sort();
 
     for (const chemin of clesFr) {
       const valeurFr = chemin.split('.').reduce((o, k) => o[k], fr);
