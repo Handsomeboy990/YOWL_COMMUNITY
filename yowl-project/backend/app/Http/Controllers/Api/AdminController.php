@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\AuditLog;
 use App\Models\User;
 use App\Models\Report;
 use App\Models\Review;
@@ -11,7 +12,9 @@ use App\Models\Suggestion;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use App\Support\Media;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules;
 
 class AdminController extends Controller
 {
@@ -80,13 +83,61 @@ class AdminController extends Controller
         return response()->json([
             'success' => true,
             'data' => [
-                'users' => User::count(),
+                'users' => User::whereNull('anonymized_at')->count(),
                 'reviews' => Review::count(),
                 'comments' => Comment::count(),
                 'tags' => Tag::count(),
+                'pending_reports' => Report::where('status', Report::STATUS_PENDING)->count(),
+                'new_suggestions' => Suggestion::where('status', Suggestion::STATUS_NEW)->count(),
                 'latest_reviews' => Review::latest()->take(5)->get(['id','content','created_at']),
             ]
         ]);
+    }
+
+    /**
+     * Create a member from the console.
+     *
+     * The account is created already verified: an administrator adding a
+     * colleague should not have to wait for a code sent to an address they do
+     * not own. The password is typed by the administrator and handed over out
+     * of band; it is never returned by this endpoint.
+     */
+    public function createUser(Request $request)
+    {
+        $validated = $request->validate([
+            'username' => ['required', 'string', 'min:3', 'max:255', 'unique:users,username'],
+            'fullname' => ['required', 'string', 'min:5', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'birthdate' => ['nullable', 'date', 'before:today'],
+            'roles' => ['present', 'array', 'min:1'],
+            'roles.*' => ['string', Rule::exists('roles', 'name')],
+        ]);
+
+        $user = User::create([
+            'username' => $validated['username'],
+            'fullname' => $validated['fullname'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'birthdate' => $validated['birthdate'] ?? null,
+        ]);
+
+        // email_verified_at n'est pas assignable en masse, volontairement :
+        // le champ ne doit jamais pouvoir venir d'une requete. Il est pose ici
+        // explicitement, l'administrateur repondant de l'adresse qu'il saisit.
+        $user->forceFill(['email_verified_at' => now()])->save();
+
+        $user->syncRoles($validated['roles']);
+
+        AuditLog::record('user.created', $user, ['roles' => $validated['roles']], $request);
+
+        $user['roles'] = $user->getRoleNames();
+
+        return response()->json([
+            'success' => true,
+            'data' => $user,
+            'message' => 'Membre créé',
+        ], 201);
     }
 
     /**

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Support\Settings;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -20,13 +21,20 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request)
     {
+        if (! Settings::get('registration.open')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Les inscriptions sont momentanément fermées.',
+            ], 403);
+        }
+
         try {
             $request->validate([
                 'username' => ['required', 'string', 'max:255', 'min:3', 'unique:users,username'],
                 'fullname' => ['required', 'string', 'max:255', 'min:5'],
                 'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
                 'password' => ['required', 'confirmed', Rules\Password::defaults()],
-                'birthdate' => ['required', 'date', 'before:'.\Carbon\Carbon::now()->subYears(13)->format('Y-m-d'), 'after:'.\Carbon\Carbon::now()->subYears(35)->format('Y-m-d')],
+                'birthdate' => $this->birthdateRules(),
             ]);
         } catch (ValidationException $e) {
             return response()->json([
@@ -62,5 +70,32 @@ class RegisteredUserController extends Controller
             'success' => true,
             'message' => 'Code de vérification envoyé à votre email.'
         ]);
+    }
+
+    /**
+     * Birthdate rules, taken from the settings rather than from constants.
+     *
+     * The bounds used to be written into this method, so moving them meant a
+     * deployment. Either bound can now be cleared from the administration, in
+     * which case it stops applying.
+     *
+     * @return array<int, string>
+     */
+    private function birthdateRules(): array
+    {
+        $rules = ['required', 'date'];
+
+        $minimumAge = Settings::get('registration.age_min');
+        if ($minimumAge !== null) {
+            // Etre plus vieux que l'age minimum, c'est etre ne avant cette date.
+            $rules[] = 'before_or_equal:'.now()->subYears($minimumAge)->format('Y-m-d');
+        }
+
+        $maximumAge = Settings::get('registration.age_max');
+        if ($maximumAge !== null) {
+            $rules[] = 'after:'.now()->subYears($maximumAge + 1)->format('Y-m-d');
+        }
+
+        return $rules;
     }
 }

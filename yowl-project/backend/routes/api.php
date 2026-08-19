@@ -5,6 +5,8 @@ use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\DashboardKPIController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ReportController;
+use App\Http\Controllers\Api\RoleController;
+use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\SuggestionController;
 use App\Http\Controllers\Api\ReviewReactionController;
@@ -96,6 +98,22 @@ Route::middleware(['auth:sanctum','role:admin'])->prefix('admin')->group(functio
   // Suggestions envoyees par les membres
   Route::get('/suggestions', [AdminController::class, 'suggestions']);
   Route::patch('/suggestions/{suggestion}', [AdminController::class, 'updateSuggestion']);
+
+  // Creation de membres depuis la console
+  Route::post('/users', [AdminController::class, 'createUser']);
+
+  // Reglages de la plateforme, sans redeploiement
+  Route::get('/settings', [SettingController::class, 'index']);
+  Route::patch('/settings', [SettingController::class, 'update']);
+  Route::get('/audit-log', [SettingController::class, 'auditLog']);
+
+  // Roles et droits
+  Route::get('/roles', [RoleController::class, 'index']);
+  Route::post('/roles', [RoleController::class, 'store']);
+  Route::patch('/roles/{role}', [RoleController::class, 'update']);
+  Route::delete('/roles/{role}', [RoleController::class, 'destroy']);
+  Route::post('/permissions', [RoleController::class, 'storePermission']);
+  Route::patch('/users/{user}/roles', [RoleController::class, 'syncUserRoles']);
 });
 
 

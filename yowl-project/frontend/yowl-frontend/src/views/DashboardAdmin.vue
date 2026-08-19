@@ -156,9 +156,14 @@
       <section v-else-if="activeTab === 'users'" class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
         <div class="flex flex-wrap items-center justify-between gap-3 px-5 py-4 border-b border-gray-100">
           <h2 class="font-semibold text-blue-night">Membres</h2>
-          <input v-model="userSearch" type="search" placeholder="Rechercher un membre..."
-            class="w-full sm:w-64 px-3 py-2 text-sm bg-gray-100 focus:bg-white border border-transparent focus:border-orange-primary rounded-lg outline-none transition-colors"
-            @keyup.enter="fetchUsers(1)">
+          <div class="flex flex-wrap items-center gap-2">
+            <input v-model="userSearch" type="search" placeholder="Rechercher un membre..."
+              class="w-full sm:w-64 px-3 py-2 text-sm bg-gray-100 focus:bg-white border border-transparent focus:border-orange-primary rounded-lg outline-none transition-colors"
+              @keyup.enter="fetchUsers(1)">
+            <BaseButton variant="primary" size="sm" icon="fa-solid fa-user-plus" @click="isCreateUserOpen = true">
+              Créer un membre
+            </BaseButton>
+          </div>
         </div>
 
         <TableSkeleton v-if="loading.users" />
@@ -376,7 +381,19 @@
         <EmptyState v-else icon="fa-regular fa-lightbulb" title="Aucune suggestion"
           description="Les idées envoyées par les membres apparaîtront ici." />
       </section>
+
+      <!-- ===== REGLAGES ===== -->
+      <AdminSettings v-else-if="activeTab === 'settings'" />
+
+      <!-- ===== ROLES ET DROITS ===== -->
+      <AdminRoles v-else-if="activeTab === 'roles'" />
+
+      <!-- ===== JOURNAL ===== -->
+      <AdminAuditLog v-else-if="activeTab === 'audit'" />
     </div>
+
+    <CreateUserModal :is-open="isCreateUserOpen" @close="isCreateUserOpen = false"
+      @created="onUserCreated" />
   </AppShell>
 </template>
 
@@ -389,8 +406,19 @@ import { computed, onMounted, ref } from 'vue';
 import { useNotify } from '@/composables/useNotify';
 import { useConfirm } from '@/composables/useConfirm';
 import api from '@/services/apiService';
+import AdminSettings from '@/components/admin/AdminSettings.vue';
+import AdminRoles from '@/components/admin/AdminRoles.vue';
+import AdminAuditLog from '@/components/admin/AdminAuditLog.vue';
+import CreateUserModal from '@/components/admin/CreateUserModal.vue';
+import BaseButton from '@/components/ui/BaseButton.vue';
 
 const activeTab = ref('overview');
+const isCreateUserOpen = ref(false);
+
+const onUserCreated = () => {
+  fetchUsers(1);
+  fetchStats();
+};
 const notify = useNotify();
 const confirm = useConfirm();
 
@@ -428,13 +456,16 @@ const tabs = computed(() => [
   { key: 'reviews', label: 'Reviews', icon: 'fa-regular fa-newspaper' },
   { key: 'comments', label: 'Commentaires', icon: 'fa-regular fa-comments' },
   { key: 'suggestions', label: 'Suggestions', icon: 'fa-regular fa-lightbulb', badge: newSuggestions.value },
+  { key: 'settings', label: 'Réglages', icon: 'fa-solid fa-sliders' },
+  { key: 'roles', label: 'Rôles et droits', icon: 'fa-solid fa-user-shield' },
+  { key: 'audit', label: 'Journal', icon: 'fa-solid fa-clipboard-list' },
 ]);
 
 const statCards = computed(() => [
   { label: 'Membres', value: stats.value?.users ?? 0, icon: 'fa-solid fa-users text-blue-600', tone: 'bg-blue-50' },
   { label: 'Reviews', value: stats.value?.reviews ?? 0, icon: 'fa-regular fa-newspaper text-orange-primary', tone: 'bg-orange-50' },
   { label: 'Commentaires', value: stats.value?.comments ?? 0, icon: 'fa-regular fa-comments text-emerald-600', tone: 'bg-emerald-50' },
-  { label: 'Tags', value: stats.value?.tags ?? 0, icon: 'fa-solid fa-tags text-purple-600', tone: 'bg-purple-50' },
+  { label: 'Signalements en attente', value: stats.value?.pending_reports ?? 0, icon: 'fa-solid fa-flag text-red-600', tone: 'bg-red-50' },
 ]);
 
 const reportFilters = [
