@@ -11,6 +11,7 @@ use App\Models\Comment;
 use App\Models\Suggestion;
 use App\Models\Tag;
 use Illuminate\Http\Request;
+use App\Support\Cached;
 use App\Support\Media;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -83,7 +84,7 @@ class AdminController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => [
+            'data' => Cached::remember(Cached::ADMIN_STATS, fn () => [
                 'users' => User::whereNull('anonymized_at')->count(),
                 'reviews' => Review::count(),
                 'comments' => Comment::count(),
@@ -91,7 +92,7 @@ class AdminController extends Controller
                 'pending_reports' => Report::where('status', Report::STATUS_PENDING)->count(),
                 'new_suggestions' => Suggestion::where('status', Suggestion::STATUS_NEW)->count(),
                 'latest_reviews' => Review::latest()->take(5)->get(['id','content','created_at']),
-            ]
+            ]),
         ]);
     }
 

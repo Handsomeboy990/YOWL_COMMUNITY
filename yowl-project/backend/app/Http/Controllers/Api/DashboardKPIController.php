@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Comment;
 use App\Models\Review;
 use App\Models\User;
-use Illuminate\Support\Facades\Cache;
+use App\Support\Cached;
 
 class DashboardKPIController extends Controller
 {
@@ -21,18 +21,11 @@ class DashboardKPIController extends Controller
         '30-35' => [30, 36],
     ];
 
-    /**
-     * How long the counters are served from cache.
-     *
-     * The endpoint is public, unauthenticated and called on every feed load,
-     * so it is the cheapest thing on the API to hammer. Community counters do
-     * not need to be accurate to the second.
-     */
-    private const CACHE_SECONDS = 300;
-
     public function getKPI()
     {
-        $kpi = Cache::remember('kpi.community', self::CACHE_SECONDS, fn () => $this->compute());
+        // Duree de vie et invalidation declarees dans Cached : l'entree est
+        // videe des qu'un avis ou un commentaire change.
+        $kpi = Cached::remember(Cached::KPI, fn () => $this->compute());
 
         return response()->json([
             'success' => true,

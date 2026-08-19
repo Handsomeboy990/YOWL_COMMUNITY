@@ -10,7 +10,7 @@ use App\Models\ReviewReaction;
 use App\Models\Suggestion;
 use App\Models\Tag;
 use App\Models\User;
-use App\Support\PlaceholderImage;
+use App\Support\SeedImage;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -105,20 +105,20 @@ class CommunitySeeder extends Seeder
     }
 
     /**
-     * A stable illustration for a given seed, drawn and stored locally.
+     * A photograph for a given seed, downloaded once and stored locally.
      */
-    private static function illustrationUrl(string $seed, string $label = ''): string
+    private static function illustrationUrl(string $seed, string $label = ''): ?string
     {
-        return PlaceholderImage::make($seed, $label !== '' ? $label : $seed);
+        return SeedImage::illustration($seed);
     }
 
     /**
      * Give the seeded members an avatar, so the feed does not show forty
      * identical initials.
      */
-    private static function avatarUrl(string $seed): string
+    private static function avatarUrl(string $seed): ?string
     {
-        return PlaceholderImage::make('avatar-'.$seed, mb_substr($seed, 0, 2));
+        return SeedImage::avatar($seed);
     }
 
     /**
@@ -231,9 +231,11 @@ class CommunitySeeder extends Seeder
                     }
                     if ($pool) {
                         shuffle($pool);
-                        $topic = $tagNames[0] ?? 'yowl';
                         foreach (array_slice($pool, 0, rand(1, min(3, count($pool)))) as $seed) {
-                            $medias[] = self::illustrationUrl($seed, $topic);
+                            // Une image indisponible ne bloque pas la publication.
+                            if ($stored = self::illustrationUrl($seed)) {
+                                $medias[] = $stored;
+                            }
                         }
                     }
                 }

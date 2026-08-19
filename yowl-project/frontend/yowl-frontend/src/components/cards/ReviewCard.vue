@@ -63,18 +63,8 @@
         <ImageCarousel :images="mediasArray" />
       </div>
 
-      <!-- Lien cité -->
-      <a v-if="safeLink" :href="safeLink" target="_blank" rel="noopener noreferrer"
-        class="group flex items-center gap-3 mt-2 p-3 rounded-xl border border-gray-200 hover:border-orange-primary hover:bg-orange-50/40 transition-colors duration-200">
-        <span class="w-10 h-10 shrink-0 rounded-lg bg-orange-primary/10 grid place-items-center text-orange-primary">
-          <i class="fa-solid fa-link"></i>
-        </span>
-        <span class="min-w-0 flex-1">
-          <span class="block text-sm font-medium text-blue-night truncate">{{ linkHost }}</span>
-          <span class="block text-xs text-gray-400 truncate">{{ safeLink }}</span>
-        </span>
-        <i class="fa-solid fa-arrow-up-right-from-square text-gray-300 group-hover:text-orange-primary transition-colors"></i>
-      </a>
+      <!-- Lien cité, avec l'aperçu publié par la page quand il existe -->
+      <LinkPreviewCard v-if="safeLink" class="mt-2" :url="safeLink" :preview="review.link_preview" />
     </div>
 
     <!-- Actions -->
@@ -138,6 +128,7 @@ import { useReviewStore } from '@/stores/review'
 import { useNotify, apiErrorMessage } from '@/composables/useNotify'
 import ImageCarousel from '../layouts/ImageCarousel.vue'
 import ReportModal from '../layouts/ReportModal.vue'
+import LinkPreviewCard from './LinkPreviewCard.vue'
 import { getStorageUrl } from '@/config'
 
 const notify = useNotify()
@@ -175,11 +166,6 @@ const safeLink = computed(() => {
   } catch {
     return ''
   }
-})
-
-const linkHost = computed(() => {
-  if (!safeLink.value) return ''
-  return new URL(safeLink.value).hostname.replace(/^www\./, '')
 })
 
 const onClickOutside = (event) => {

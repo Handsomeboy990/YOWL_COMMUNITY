@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\FetchLinkPreview;
 use App\Models\Review;
 use App\Models\ReviewReaction;
 use App\Models\Tag;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use App\Support\Media;
 use Illuminate\Validation\ValidationException;
@@ -164,6 +164,10 @@ class ReviewController extends Controller
 
             $review = Review::create($validated);
 
+            if ($review->link) {
+                FetchLinkPreview::dispatch($review->id);
+            }
+
             // Lier les tags à la review créée
             $tags = $request->input('tags');
             if ($tags) {
@@ -172,11 +176,6 @@ class ReviewController extends Controller
                     if (!strlen(trim($tag))) continue;
                     $tagName = trim($tag);
                     $createdTag = Tag::firstOrCreate(['name' => strtolower($tagName)]);
-                    if ($createdTag->wasRecentlyCreated) {
-                        // La liste publique est en cache : un tag nouveau doit
-                        // y apparaitre sans attendre l'expiration.
-                        Cache::forget('tags.all');
-                    }
                     $tagIds[] = $createdTag->id;
                 }
                 if (count($tagIds)) {
@@ -323,11 +322,6 @@ class ReviewController extends Controller
                     if (!strlen(trim($tag))) continue;
                     $tagName = trim($tag);
                     $createdTag = Tag::firstOrCreate(['name' => strtolower($tagName)]);
-                    if ($createdTag->wasRecentlyCreated) {
-                        // La liste publique est en cache : un tag nouveau doit
-                        // y apparaitre sans attendre l'expiration.
-                        Cache::forget('tags.all');
-                    }
                     $tagIds[] = $createdTag->id;
                 }
                 $review->tags()->sync($tagIds);
@@ -335,7 +329,16 @@ class ReviewController extends Controller
                 $review->tags()->sync([]);
             }
 
+            $linkBefore = $review->link;
             $review->update($validated);
+
+            // Le lien a change : l'ancien apercu ne decrit plus rien.
+            if ($review->link !== $linkBefore) {
+                $review->forceFill(['link_preview' => null, 'link_preview_at' => null])->saveQuietly();
+                if ($review->link) {
+                    FetchLinkPreview::dispatch($review->id);
+                }
+            }
 
             return response()->json(
                 [

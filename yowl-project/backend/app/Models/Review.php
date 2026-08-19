@@ -22,6 +22,8 @@ class Review extends Model
 
     protected $casts = [
         'medias' => 'array',
+        'link_preview' => 'array',
+        'link_preview_at' => 'datetime',
     ];
 
     // relation avec les autres Model

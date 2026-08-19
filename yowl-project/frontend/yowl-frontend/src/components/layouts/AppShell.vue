@@ -19,7 +19,7 @@
                         </span>
                         <input v-model="searchQuery" type="text" placeholder="Rechercher sur YOWL..."
                             class="pl-10 pr-4 py-2.5 w-full bg-gray-100 hover:bg-gray-200/70 focus:bg-white border border-transparent focus:border-orange-primary rounded-full text-gray-900 text-sm focus:outline-none transition-all duration-200"
-                            @keyup.enter="handleSearch" />
+                            @input="handleSearch" @keyup.enter="handleSearch" />
                     </div>
                 </div>
 
@@ -280,17 +280,16 @@ const publishReview = async (reviewData) => {
     if (route.name !== 'home') router.push('/feed');
 };
 
-const handleSearch = async () => {
-    if (searchQuery.value.trim()) {
-        await reviewStore.searchReviews(searchQuery.value.trim());
-        if (reviewStore.reviews.length === 0) {
-            notify.info('Aucun résultat', 'Aucun avis ne correspond à ta recherche pour le moment.');
-            searchQuery.value = '';
-            reviewStore.getReviews();
-        }
+/**
+ * La recherche s'ecrit dans l'etat partage du fil, temporisee, et se combine
+ * avec les filtres de la colonne de droite au lieu de les ecraser. Le fil
+ * affiche lui-meme son etat "aucun resultat", ce qui evite la notification
+ * qui effacait la recherche que la personne venait de taper.
+ */
+const handleSearch = () => {
+    reviewStore.setQuery({ search: searchQuery.value });
+    if (route.name !== 'home') {
         router.push('/feed');
-    } else {
-        reviewStore.getReviews();
     }
 };
 

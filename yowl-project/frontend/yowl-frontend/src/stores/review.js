@@ -1,4 +1,4 @@
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { defineStore } from 'pinia';
 import api from '@/services/apiService';
 import { useNotify, apiErrorMessage } from '@/composables/useNotify';
@@ -42,26 +42,112 @@ export const useReviewStore = defineStore(
     }
     }
 
-    //  Récupérer les reviews
-    async function getReviews(page = 1) {
-      loading.value = true;
-      try {
-        const response = await api.get(`/reviews?page=${page}`);
-        reviews.value = response.data.data.data;
-        pagination.value = {
-          current_page: response.data.data.current_page,
-          last_page: response.data.data.last_page,
-          total: response.data.data.total,
-        };
-        actualPage.value = page
-        search.value = false
+    /**
+     * Etat unique de la requete du fil.
+     *
+     * La recherche, les filtres et le tri partaient auparavant dans trois
+     * fonctions separees qui s'ecrasaient : chercher effacait les filtres,
+     * filtrer effacait la recherche, et ni l'une ni l'autre ne mettait la
+     * pagination a jour, si bien que le pied de page continuait d'annoncer
+     * les pages de la liste precedente. Tout passe maintenant par un seul
+     * objet, envoye tel quel a l'API, qui sait deja combiner ces criteres.
+     */
+    const query = ref({
+      search: '',
+      tags: '',
+      sort: 'newest',
+      noAnswers: false,
+      noViews: false,
+      noLikes: false,
+      page: 1,
+    });
 
+    const hasActiveFilters = computed(
+      () =>
+        Boolean(query.value.search) ||
+        Boolean(query.value.tags) ||
+        query.value.noAnswers ||
+        query.value.noViews ||
+        query.value.noLikes ||
+        query.value.sort !== 'newest'
+    );
+
+    function buildParams() {
+      const params = { page: query.value.page };
+      if (query.value.search.trim()) params.search = query.value.search.trim();
+      if (query.value.tags.trim()) params.tags = query.value.tags.trim();
+      if (query.value.sort) params.sort = query.value.sort;
+      if (query.value.noAnswers) params.noAnswers = 1;
+      if (query.value.noViews) params.noViews = 1;
+      if (query.value.noLikes) params.noLikes = 1;
+      return params;
+    }
+
+    // Une reponse arrivee apres une requete plus recente ne doit pas ecraser
+    // l'affichage : chaque appel porte un numero, seul le dernier compte.
+    let requestId = 0;
+
+    async function fetchReviews() {
+      const current = ++requestId;
+      loading.value = true;
+      error.value = null;
+      try {
+        const response = await api.get('/reviews', { params: buildParams() });
+        if (current !== requestId) return;
+
+        const payload = response.data.data;
+        reviews.value = payload.data ?? [];
+        pagination.value = {
+          current_page: payload.current_page,
+          last_page: payload.last_page,
+          total: payload.total,
+        };
+        actualPage.value = payload.current_page;
+        search.value = hasActiveFilters.value;
       } catch (err) {
+        if (current !== requestId) return;
         error.value = extractErrorMessage(err, 'Impossible de charger le fil pour le moment.');
       } finally {
-        loading.value = false;
+        if (current === requestId) loading.value = false;
       }
       getKPI();
+    }
+
+    // La frappe ne declenche pas un appel par caractere.
+    let debounceTimer = null;
+    function fetchDebounced(delay = 350) {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => fetchReviews(), delay);
+    }
+
+    /** Modifie un ou plusieurs criteres et repart de la premiere page. */
+    function setQuery(patch, { immediate = false } = {}) {
+      query.value = { ...query.value, ...patch, page: 1 };
+      immediate ? fetchReviews() : fetchDebounced();
+    }
+
+    function goToPage(page) {
+      query.value.page = page;
+      fetchReviews();
+    }
+
+    function resetQuery() {
+      query.value = {
+        search: '',
+        tags: '',
+        sort: 'newest',
+        noAnswers: false,
+        noViews: false,
+        noLikes: false,
+        page: 1,
+      };
+      fetchReviews();
+    }
+
+    /** Compatibilite : le chargement initial passe encore par ici. */
+    async function getReviews(page = 1) {
+      query.value.page = Number(page) || 1;
+      await fetchReviews();
     }
 
     //  Récupérer une review
@@ -69,50 +155,44 @@ export const useReviewStore = defineStore(
       try {
         const response = await api.get(`/reviews/${id}`);
         const index = reviews.value.findIndex((element) => element.id == id);
-        reviews.value[index].nb_views = response.data.data.nb_views
-
-
-      } catch (err) {
-        // Silent error handling
-    }
+        // La review peut ne pas etre dans la page chargee : ecrire dans
+        // reviews.value[-1] levait une erreur avalee par le catch.
+        if (index !== -1) {
+          reviews.value[index].nb_views = response.data.data.nb_views;
+        }
+      } catch {
+        // Le compteur de vues reste sur sa derniere valeur connue.
+      }
       getKPI();
     }
 
-    //  Créer une review
+    //  Créer un avis
     async function createReviews(data) {
       try {
-        const response = await api.post('/reviews', data, {
+        await api.post('/reviews', data, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
-        response.data.data.comments = [];
-        response.data.data.nb_like = 0;
-        response.data.data.nb_dislike = 0;
-        response.data.data.nb_views = 0;
-        reviews.value.unshift(response.data.data);
-        if (reviews.value.length > pagination.value.last_page * 10) {
-          pagination.value.last_page++;
-        }
-        notify.success('Review publiée');
-        pagination.value.total ++
+        notify.success('Avis publié');
+        // On recharge depuis le serveur plutot que de bricoler la liste et la
+        // pagination a la main, ce qui les laissait incoherentes des qu'un
+        // filtre etait actif.
+        await fetchReviews();
       } catch (err) {
         const message = apiErrorMessage(err, 'La publication a échoué.');
         notify.error(message);
         throw new Error(message);
       }
-
-      getKPI();
     }
 
-    // Modifier une review
+    // Modifier un avis
     async function updateReviews(id, data) {
       try {
         const response = await api.post(`/reviews/${id}`, data, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
-
         const index = reviews.value.findIndex((element) => element.id === id);
         if (index !== -1) reviews.value[index] = response.data.data;
-        notify.success('Review mise à jour');
+        notify.success('Avis mis à jour');
       } catch (err) {
         const message = apiErrorMessage(err, 'La mise à jour a échoué.');
         notify.error(message);
@@ -120,91 +200,31 @@ export const useReviewStore = defineStore(
       }
     }
 
-    //  Supprimer une review
+    //  Supprimer un avis
     async function deleteReviews(id) {
       try {
         await api.delete(`/reviews/${id}`);
-        reviews.value = reviews.value.filter((element) => element.id !== id);
-        if (reviews.value.length < pagination.value.last_page * 10) {
-          pagination.value.last_page--;
-          if (pagination.value.current_page > pagination.value.last_page) {
-            pagination.value.current_page = pagination.value.last_page;
-          }
-        }
-        getReviews(pagination.value.current_page);
-        // pagination.value.total --
+        await fetchReviews();
       } catch (err) {
         const message = apiErrorMessage(err, 'La suppression a échoué.');
         notify.error(message);
         throw new Error(message);
       }
-      getKPI();
     }
 
     async function reactToReview(reviewId, reaction) {
       try {
         const response = await api.post(`/reviews/${reviewId}/react`, { reaction });
-
         const index = reviews.value.findIndex((r) => r.id === reviewId);
         if (index !== -1) {
           reviews.value[index].nb_like = response.data.nb_like;
           reviews.value[index].nb_dislike = response.data.nb_dislike;
           reviews.value[index].user_reaction = response.data.user_reaction;
         }
-
         return response;
-      } catch (_err) {
-        // Silent error handling
-      }
-    }
-
-    /**
-     * Rechercher un élément depuis le backend
-     * Avantage : recherche facile et filtres faciles àa appliquer avec pagination
-     * @param {*} query
-     */
-    async function searchReviews(query) {
-      loading.value = true;
-      try {
-        const response = await api.get(`/reviews?search=${encodeURIComponent(query)}`);
-        reviews.value = response.data.data.data || [];
-        error.value = null;
-        search.value = true;
-
       } catch (err) {
-        error.value = extractErrorMessage(
-          err,
-          'Impossible de lancer la recherche pour le moment.'
-        );
-      } finally {
-        loading.value = false;
-      }
-    }
-
-    /**
-     * Filtrer les reviews depuis le backend
-     * @param {Object} filters - { noAnswers, noViews, noLikes, sortBy, tags }
-     */
-    async function filterReviews({ noAnswers, noViews, noLikes, sortBy, tags }) {
-      loading.value = true;
-      try {
-        // Construction des paramètres de requête
-        const params = {};
-        if (noAnswers) params.noAnswers = 1;
-        if (noViews) params.noViews = 1;
-        if (noLikes) params.noLikes = 1;
-        if (sortBy) params.sort = sortBy;
-        if (tags && tags.trim() !== '') params.tags = tags;
-
-        const queryString = new URLSearchParams(params).toString();
-        const response = await api.get(`/reviews${queryString ? '?' + queryString : ''}`);
-        reviews.value = response.data.data.data || [];
-        error.value = null;
-        search.value = true;
-      } catch (err) {
-        error.value = extractErrorMessage(err, 'Impossible d\'appliquer les filtres pour le moment.');
-      } finally {
-        loading.value = false;
+        notify.error(apiErrorMessage(err, 'La réaction a échoué.'));
+        throw err;
       }
     }
 
@@ -234,8 +254,6 @@ export const useReviewStore = defineStore(
       deleteReviews,
       getReviews,
       getReview,
-      searchReviews,
-      filterReviews,
       reviews,
       error,
       loading,
@@ -247,6 +265,12 @@ export const useReviewStore = defineStore(
       clearError,
       reactToReview,
       pagination,
+      query,
+      hasActiveFilters,
+      fetchReviews,
+      setQuery,
+      goToPage,
+      resetQuery,
     };
   },
   {

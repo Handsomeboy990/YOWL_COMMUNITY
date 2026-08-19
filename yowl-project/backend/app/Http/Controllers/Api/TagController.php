@@ -4,18 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tag;
-use Illuminate\Support\Facades\Cache;
+use App\Support\Cached;
 
 class TagController extends Controller
 {
-    /**
-     * How long the unfiltered tag list is served from cache.
-     *
-     * It is public, called on every page carrying the filter panel, and its
-     * content changes only when somebody publishes a new tag.
-     */
-    private const CACHE_SECONDS = 600;
-
     public function index()
     {
         $search = request('search');
@@ -24,9 +16,8 @@ class TagController extends Controller
         // Seule la liste complete est mise en cache : mettre en cache chaque
         // recherche reviendrait a stocker une entree par frappe au clavier.
         if ($term === '') {
-            $tags = Cache::remember(
-                'tags.all',
-                self::CACHE_SECONDS,
+            $tags = Cached::remember(
+                Cached::TAGS,
                 fn () => Tag::orderBy('name')->limit(50)->get()
             );
         } else {

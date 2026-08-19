@@ -44,13 +44,13 @@
                 <p class="mt-2 text-gray-600 text-sm max-w-md">{{ reviewStore.error }}</p>
                 <button type="button"
                     class="mt-5 px-4 py-2 rounded-xl bg-orange-primary text-white text-sm font-medium hover:bg-orange-primary-dark transition-colors cursor-pointer"
-                    @click="reviewStore.getReviews(reviewStore.actualPage)">
+                    @click="reviewStore.fetchReviews()">
                     Réessayer
                 </button>
             </div>
 
             <!-- Aucun résultat pour la recherche ou les filtres -->
-            <div v-else-if="reviews.length === 0 && reviewStore.search"
+            <div v-else-if="reviews.length === 0 && reviewStore.hasActiveFilters"
                 class="flex flex-col items-center justify-center text-center py-20 px-4">
                 <i class="fa-solid fa-magnifying-glass text-4xl text-gray-300"></i>
                 <h2 class="mt-5 text-xl font-semibold text-gray-800">Aucun résultat</h2>
@@ -59,13 +59,13 @@
                 </p>
                 <button type="button"
                     class="mt-5 px-4 py-2 rounded-xl bg-blue-night text-white text-sm font-medium hover:bg-blue-night/90 transition-colors cursor-pointer"
-                    @click="reviewStore.getReviews(1)">
-                    Revenir au fil complet
+                    @click="reviewStore.resetQuery()">
+                    Effacer la recherche et les filtres
                 </button>
             </div>
 
             <!-- Etat vide -->
-            <div v-else-if="reviews.length === 0 && reviewStore.search == false"
+            <div v-else-if="reviews.length === 0 && !reviewStore.hasActiveFilters"
                 class="flex flex-col items-center justify-center text-center py-20 px-4 animate-fade-in">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-20 h-20 md:w-24 md:h-24 mb-6 text-gray-300 animate-bounce-slow" viewBox="0 0 24 24"
                     fill="none" stroke="currentColor" stroke-width="1.5">
@@ -141,7 +141,7 @@ onBeforeMount(async () => {
 })
 
 // Changer de page
-const handlePageChange = async (page) => {
-    await reviewStore.getReviews(page)
+const handlePageChange = (page) => {
+    reviewStore.goToPage(page)
 }
 </script>

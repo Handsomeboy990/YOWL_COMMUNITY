@@ -6,9 +6,9 @@
       <div class="mb-6">
         <h3 class="font-roboto font-medium text-white mb-4 text-lg sm:text-base">Filtrer par</h3>
         <div class="space-y-3">
-          <div><BaseCheckbox v-model="filters.noAnswers" dark label="Sans réponses" /></div>
-          <div><BaseCheckbox v-model="filters.noViews" dark label="Sans vues" /></div>
-          <div><BaseCheckbox v-model="filters.noLikes" dark label="Sans likes" /></div>
+          <div><BaseCheckbox v-model="noAnswers" dark label="Sans réponses" /></div>
+          <div><BaseCheckbox v-model="noViews" dark label="Sans vues" /></div>
+          <div><BaseCheckbox v-model="noLikes" dark label="Sans likes" /></div>
         </div>
       </div>
 
@@ -33,16 +33,22 @@
         >
       </div>
 
-      <!-- Bouton d'application -->
-      <BaseButton variant="primary" block :shine="false" icon="fa-solid fa-filter" @click="applyFilter">
-        Appliquer les filtres
+      <!-- Les filtres s'appliquent en direct : ce bouton ne sert plus qu'a
+           tout remettre a zero, et n'apparait que s'il y a quelque chose a
+           remettre a zero. -->
+      <BaseButton v-if="hasActiveFilters" variant="ghost" block :shine="false"
+        icon="fa-solid fa-arrow-rotate-left" @click="resetAll">
+        Réinitialiser
       </BaseButton>
+      <p v-else class="text-white/50 text-xs text-center">
+        Les filtres s'appliquent au fur et à mesure.
+      </p>
     </div>
   </aside>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { computed } from 'vue';
 import { useReviewStore } from '@/stores/review';
 import BaseCheckbox from '@/components/ui/BaseCheckbox.vue';
 import BaseRadio from '@/components/ui/BaseRadio.vue';
@@ -50,22 +56,27 @@ import BaseButton from '@/components/ui/BaseButton.vue';
 
 const reviewStore = useReviewStore();
 
-const filters = ref({
-  noAnswers: false,
-  noViews: false,
-  noLikes: false,
-});
-
-const sortBy = ref('newest');
-const tagInput = ref('');
-
-function applyFilter() {
-  reviewStore.filterReviews({
-    noAnswers: filters.value.noAnswers,
-    noViews: filters.value.noViews,
-    noLikes: filters.value.noLikes,
-    sortBy: sortBy.value,
-    tags: tagInput.value,
+/**
+ * Chaque controle ecrit directement dans l'etat de la requete du fil, qui
+ * declenche le rechargement. Avant, il fallait valider par un bouton, et
+ * valider effacait la recherche en cours.
+ */
+const bind = (key, { immediate = true } = {}) =>
+  computed({
+    get: () => reviewStore.query[key],
+    set: (value) => reviewStore.setQuery({ [key]: value }, { immediate }),
   });
+
+const noAnswers = bind('noAnswers');
+const noViews = bind('noViews');
+const noLikes = bind('noLikes');
+const sortBy = bind('sort');
+// La saisie de tags est temporisee, elle se tape caractere par caractere.
+const tagInput = bind('tags', { immediate: false });
+
+const hasActiveFilters = computed(() => reviewStore.hasActiveFilters);
+
+function resetAll() {
+  reviewStore.resetQuery();
 }
 </script>

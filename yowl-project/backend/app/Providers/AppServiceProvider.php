@@ -2,6 +2,12 @@
 
 namespace App\Providers;
 
+use App\Models\Comment;
+use App\Models\Review;
+use App\Models\Tag;
+use App\Models\User;
+use App\Observers\ContentObserver;
+use App\Observers\TagObserver;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -28,6 +34,21 @@ class AppServiceProvider extends ServiceProvider
         });
 
         $this->configureRateLimiting();
+        $this->registerCacheInvalidation();
+    }
+
+    /**
+     * Wire the observers that keep the cached counters honest.
+     *
+     * Doing it here rather than in each controller means a future write path
+     * inherits the invalidation instead of having to remember it.
+     */
+    private function registerCacheInvalidation(): void
+    {
+        Review::observe(ContentObserver::class);
+        Comment::observe(ContentObserver::class);
+        User::observe(ContentObserver::class);
+        Tag::observe(TagObserver::class);
     }
 
     /**
