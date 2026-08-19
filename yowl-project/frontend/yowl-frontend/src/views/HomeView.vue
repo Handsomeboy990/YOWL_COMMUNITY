@@ -56,11 +56,9 @@
                 <i class="fa-solid fa-plug-circle-exclamation text-4xl text-gray-400" aria-hidden="true"></i>
                 <h2 class="mt-5 text-xl font-semibold text-gray-800">{{ t('feed.loadError') }}</h2>
                 <p class="mt-2 text-gray-600 text-sm max-w-md">{{ reviewStore.error }}</p>
-                <button type="button"
-                    class="mt-5 px-4 py-2 rounded-xl bg-orange-primary text-white text-sm font-medium hover:bg-orange-primary-dark transition-colors cursor-pointer"
-                    @click="reviewStore.fetchReviews()">
+                <BaseButton class="mt-5" variant="primary" size="sm" @click="reviewStore.fetchReviews()">
                     {{ t('common.retry') }}
-                </button>
+                </BaseButton>
             </div>
 
             <!-- Aucun résultat pour la recherche ou les filtres -->
@@ -123,6 +121,7 @@
 </template>
 
 <script setup>
+import BaseButton from '@/components/ui/BaseButton.vue';
 import { ref, watch, onBeforeMount } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AppShell from '@/components/layouts/AppShell.vue'
