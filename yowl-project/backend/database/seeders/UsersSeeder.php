@@ -11,77 +11,40 @@ use RuntimeException;
 class UsersSeeder extends Seeder
 {
     /**
-     * The number of demonstration members created alongside the administrator.
-     */
-    private const DEMO_MEMBERS = 50;
-
-    /**
-     * Seed one administrator and a set of demonstration members.
+     * Seed the administrator account, and only that one.
      *
-     * No password is written in this file. The administrator password comes
-     * from SEED_ADMIN_PASSWORD, and a random one is generated and printed once
-     * when the variable is absent. Demonstration members share a generated
-     * password that is printed the same way, so a seeded database never ships
-     * with a credential anybody can read in the repository.
+     * The members come from CommunitySeeder, which gives them names, ages and
+     * content. This seeder used to create fifty accounts called user1 to
+     * user50 sharing one password written in the file.
+     *
+     * No password is written here either: SEED_ADMIN_PASSWORD is used when it
+     * is set, otherwise one is generated and printed once.
      */
     public function run(): void
-    {
-        $this->guardAgainstProduction();
-
-        $adminEmail = env('SEED_ADMIN_EMAIL', 'admin@yowl.local');
-        $adminPassword = env('SEED_ADMIN_PASSWORD') ?: Str::password(20);
-        $memberPassword = env('SEED_MEMBER_PASSWORD') ?: Str::password(20);
-
-        $admin = User::create([
-            'username' => 'admin',
-            'fullname' => 'Administrateur YOWL',
-            'email' => $adminEmail,
-            'password' => Hash::make($adminPassword),
-            'birthdate' => '1990-01-01',
-            'email_verified_at' => now(),
-        ]);
-        $admin->assignRole('admin');
-
-        for ($i = 1; $i <= self::DEMO_MEMBERS; $i++) {
-            $member = User::create([
-                'username' => 'user'.$i,
-                'fullname' => 'User '.$i,
-                'email' => 'user'.$i.'@yowl.local',
-                'password' => Hash::make($memberPassword),
-                'birthdate' => '2000-01-'.str_pad((string) (($i % 28) + 1), 2, '0', STR_PAD_LEFT),
-                'email_verified_at' => now(),
-            ]);
-            $member->assignRole('client');
-        }
-
-        $this->announce($adminEmail, $adminPassword, $memberPassword);
-    }
-
-    /**
-     * Refuse to seed a production database.
-     *
-     * Seeding creates accounts with known addresses and resets nothing else,
-     * so running it against live data is never intentional.
-     */
-    private function guardAgainstProduction(): void
     {
         if (app()->environment('production')) {
             throw new RuntimeException(
                 'UsersSeeder refuses to run in production. '
-                .'Create the first administrator with a dedicated command instead.'
+                .'Create the first administrator with php artisan yowl:make-admin instead.'
             );
         }
-    }
 
-    /**
-     * Print the generated credentials once, so they can be used and forgotten.
-     */
-    private function announce(string $adminEmail, string $adminPassword, string $memberPassword): void
-    {
+        $email = env('SEED_ADMIN_EMAIL', 'admin@yowl.local');
+        $password = env('SEED_ADMIN_PASSWORD') ?: Str::password(20);
+
+        $admin = User::create([
+            'username' => 'admin',
+            'fullname' => 'Administrateur YOWL',
+            'email' => $email,
+            'password' => Hash::make($password),
+            'birthdate' => '1990-01-01',
+        ]);
+        // email_verified_at n'est pas assignable en masse, volontairement.
+        $admin->forceFill(['email_verified_at' => now()])->save();
+        $admin->assignRole('admin');
+
         $this->command?->newLine();
-        $this->command?->info('Seeded credentials, shown once:');
-        $this->command?->line('  administrator  '.$adminEmail.'  '.$adminPassword);
-        $this->command?->line('  members        user1@yowl.local ... user'.self::DEMO_MEMBERS.'@yowl.local  '.$memberPassword);
-        $this->command?->newLine();
+        $this->command?->info('Administrateur, affiché une seule fois :');
+        $this->command?->line('  '.$email.'  '.$password);
     }
 }

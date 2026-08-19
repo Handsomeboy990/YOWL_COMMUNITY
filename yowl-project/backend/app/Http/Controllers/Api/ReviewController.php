@@ -7,6 +7,7 @@ use App\Models\Review;
 use App\Models\ReviewReaction;
 use App\Models\Tag;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use App\Support\Media;
 use Illuminate\Validation\ValidationException;
@@ -171,6 +172,11 @@ class ReviewController extends Controller
                     if (!strlen(trim($tag))) continue;
                     $tagName = trim($tag);
                     $createdTag = Tag::firstOrCreate(['name' => strtolower($tagName)]);
+                    if ($createdTag->wasRecentlyCreated) {
+                        // La liste publique est en cache : un tag nouveau doit
+                        // y apparaitre sans attendre l'expiration.
+                        Cache::forget('tags.all');
+                    }
                     $tagIds[] = $createdTag->id;
                 }
                 if (count($tagIds)) {
@@ -317,6 +323,11 @@ class ReviewController extends Controller
                     if (!strlen(trim($tag))) continue;
                     $tagName = trim($tag);
                     $createdTag = Tag::firstOrCreate(['name' => strtolower($tagName)]);
+                    if ($createdTag->wasRecentlyCreated) {
+                        // La liste publique est en cache : un tag nouveau doit
+                        // y apparaitre sans attendre l'expiration.
+                        Cache::forget('tags.all');
+                    }
                     $tagIds[] = $createdTag->id;
                 }
                 $review->tags()->sync($tagIds);
