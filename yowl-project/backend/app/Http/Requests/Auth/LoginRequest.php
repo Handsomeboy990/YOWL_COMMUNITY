@@ -54,26 +54,15 @@ class LoginRequest extends FormRequest
 
         $credentials = $this->only('email', 'password');
         $user = \App\Models\User::where('email', $credentials['email'])->first();
-        if ($user) {
-            // vériier si le user est banni
-            if ($user->is_active == false) {
-                throw ValidationException::withMessages([
-                    'email' => 'This account has been banned.'
-                ]);
-            }
-            // Vérification de l'âge du user
-            $birthdate = $user->birthdate;
-            if ($birthdate && !$user->hasRole('admin')) {
-                $birthdateStr = is_string($birthdate) ? $birthdate : (string) $birthdate;
-                $age = \Carbon\Carbon::parse($birthdateStr)->age;
-                if ($age >= 36) {
-                    $user->is_active = false;
-                    $user->save();
-                    throw ValidationException::withMessages([
-                        'email' => 'This account has been banned (age limit).'
-                    ]);
-                }
-            }
+
+        // Un compte desactive par la moderation, ou par son propre titulaire,
+        // ne se reconnecte pas. L'age n'entre plus dans cette decision : la
+        // borne s'applique a l'inscription, elle n'expulse pas un membre
+        // legitime le jour de son anniversaire.
+        if ($user && $user->is_active == false) {
+            throw ValidationException::withMessages([
+                'email' => 'This account has been banned.'
+            ]);
         }
 
         if (!Auth::attempt($credentials)) {
