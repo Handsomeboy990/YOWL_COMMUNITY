@@ -1,7 +1,11 @@
 <template>
     <AppShell>
-        <!-- Colonne centrale du fil -->
-        <div class="w-full max-w-2xl mx-auto px-4 py-6">
+        <!-- Colonne centrale du fil.
+             Elle occupe toute la place laissee par les rails : le max-w-2xl
+             centre d'avant reduisait le fil a une bande etroite avec du vide
+             de chaque cote. La longueur de ligne est bornee dans la carte,
+             sur le texte seul, pas sur la carte entiere. -->
+        <div class="w-full px-4 xl:px-6 py-6">
             <!-- Filtres (mobile / tablette : repliables) -->
             <details class="xl:hidden mb-4 bg-white rounded-xl border border-gray-200 overflow-hidden">
                 <summary class="px-4 py-3 font-medium text-blue-night cursor-pointer select-none flex items-center gap-2">
@@ -73,13 +77,14 @@
                 </p>
             </div>
 
-            <!-- Fil des reviews -->
-            <div class="space-y-4 md:space-y-5">
-                <TransitionGroup name="feed" mode="out-in">
-                    <ReviewCard v-for="review in reviews" :key="review.id" :review="review"
-                        class="animate-fade-in-up" />
-                </TransitionGroup>
-            </div>
+            <!-- Fil des reviews.
+                 TransitionGroup n'accepte pas "mode" : Vue signalait un
+                 attribut surnumeraire a chaque rendu. -->
+            <TransitionGroup tag="div" name="feed"
+                class="relative space-y-4 md:space-y-5 stagger">
+                <ReviewCard v-for="review in reviews" :key="review.id" :review="review"
+                    class="animate-fade-in-up" />
+            </TransitionGroup>
 
             <!-- Pagination -->
             <div class="mt-8">

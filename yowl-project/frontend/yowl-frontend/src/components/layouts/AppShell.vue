@@ -95,7 +95,7 @@
         </header>
 
         <!-- ===== NAVIGATION GAUCHE (desktop) ===== -->
-        <nav class="hidden lg:flex flex-col fixed left-0 top-16 bottom-0 w-60 xl:w-64 bg-white border-r border-gray-200 px-3 py-5 z-40"
+        <nav class="hidden lg:flex flex-col fixed left-0 top-16 bottom-0 w-60 xl:w-64 2xl:w-68 bg-white border-r border-gray-200 px-3 py-5 z-40"
             aria-label="Navigation principale">
             <div class="flex-1 space-y-1 overflow-y-auto">
                 <router-link v-for="item in mainNav" :key="item.to" :to="item.to"
@@ -109,6 +109,23 @@
                     <BaseButton variant="primary" block icon="fa-solid fa-plus" @click="openPublish">
                         Publier une review
                     </BaseButton>
+                </div>
+
+                <!-- Invitation pour un visiteur. Sans elle, la colonne ne
+                     porte qu'un lien et laisse un vide sur toute sa hauteur. -->
+                <div v-if="!userStore.isAuthenticated"
+                    class="mt-5 rounded-2xl border border-orange-200 bg-gradient-to-br from-orange-50 to-white p-4">
+                    <p class="font-poppins font-bold text-blue-night">Rejoins YOWL</p>
+                    <p class="mt-1 text-sm text-gray-600 leading-relaxed">
+                        Publie tes avis, réagis et suis les sujets qui comptent pour toi.
+                    </p>
+                    <BaseButton class="mt-3" :tag="'router-link'" :to="'/signup'" variant="primary" size="sm" block>
+                        Créer mon compte
+                    </BaseButton>
+                    <router-link to="/login"
+                        class="mt-2 block text-center text-sm text-gray-500 hover:text-blue-night transition-colors">
+                        J'ai déjà un compte
+                    </router-link>
                 </div>
             </div>
 
@@ -125,8 +142,12 @@
             </div>
         </nav>
 
-        <!-- ===== CONTENU ===== -->
-        <div class="pt-16 lg:pl-60 xl:pl-64 w-full" :class="$slots.rail ? 'xl:pr-80' : ''">
+        <!-- ===== CONTENU =====
+             Le decalage suit la largeur des rails, qui s'elargissent avec
+             l'ecran. La colonne centrale prend tout ce qui reste : c'est ce
+             qui supprime la gouttiere vide entre le fil et les options. -->
+        <div class="pt-16 w-full lg:pl-60 xl:pl-64 2xl:pl-68"
+            :class="$slots.rail ? 'xl:pr-80 2xl:pr-96' : ''">
             <main class="w-full min-h-[calc(100vh-4rem)] pb-24 lg:pb-8">
                 <slot />
             </main>
@@ -134,7 +155,7 @@
 
         <!-- ===== RAIL DROIT (optionnel) ===== -->
         <aside v-if="$slots.rail"
-            class="hidden xl:block fixed right-0 top-16 bottom-0 w-80 border-l border-gray-200 bg-white overflow-y-auto p-5 z-40">
+            class="hidden xl:block fixed right-0 top-16 bottom-0 w-80 2xl:w-96 border-l border-gray-200 bg-white overflow-y-auto p-5 z-40">
             <slot name="rail" />
         </aside>
 

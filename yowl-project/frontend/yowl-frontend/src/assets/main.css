@@ -155,10 +155,32 @@
 
 .feed-leave-active {
     animation: fadeOut 0.3s ease-in;
+    position: absolute;
 }
 
 .feed-move {
     transition: transform 0.5s ease;
+}
+
+/* Entree echelonnee des premieres cartes du fil.
+   Au dela de la sixieme, le retard n'est plus perceptible et retarderait
+   l'affichage sans rien apporter. */
+.stagger > *:nth-child(1) { animation-delay: 0ms; }
+.stagger > *:nth-child(2) { animation-delay: 60ms; }
+.stagger > *:nth-child(3) { animation-delay: 120ms; }
+.stagger > *:nth-child(4) { animation-delay: 180ms; }
+.stagger > *:nth-child(5) { animation-delay: 240ms; }
+.stagger > *:nth-child(6) { animation-delay: 300ms; }
+
+/* Reaction : une impulsion courte quand le compteur change */
+@keyframes reactionPop {
+    0% { transform: scale(1); }
+    45% { transform: scale(1.25); }
+    100% { transform: scale(1); }
+}
+
+.animate-reaction-pop {
+    animation: reactionPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 @keyframes fadeOut {
@@ -290,4 +312,21 @@ html {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+}
+
+/* ========== MOUVEMENT REDUIT ==========
+   Certaines personnes reglent leur systeme pour supprimer les animations,
+   par confort ou parce que le mouvement leur donne le vertige. Le reglage est
+   respecte globalement : rien n'est anime, mais tout reste visible et
+   utilisable. Une duree infime plutot que zero, pour que les evenements de
+   fin de transition continuent de se declencher. */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
 }

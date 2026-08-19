@@ -43,8 +43,10 @@
 
     <ReportModal :is-open="isReportOpen" type="review" :id="review.id" @close="isReportOpen = false" />
 
-    <!-- Contenu -->
-    <p class="font-roboto text-sm md:text-base text-gray-700 mb-3 line-clamp-3">
+    <!-- Contenu.
+         La carte s'etire avec sa colonne, le texte non : au dela d'environ
+         quatre-vingts caracteres l'oeil perd la ligne suivante. -->
+    <p class="font-roboto text-sm md:text-base text-gray-700 mb-3 line-clamp-3 max-w-[80ch]">
       {{ review.content }}
     </p>
     <router-link :to="{ name: 'review-detail', params: { id: review.id } }"
