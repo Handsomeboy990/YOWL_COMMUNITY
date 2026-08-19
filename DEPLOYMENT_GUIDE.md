@@ -235,12 +235,18 @@ Après la configuration initiale :
 3. Ouvrez la console du navigateur (F12) pour voir les erreurs
 
 ### Base de données vide
+
+Appliquez les migrations, rien de plus :
+
 ```bash
-# Connectez-vous à Railway CLI (optionnel)
-railway login
-railway link
-railway run php artisan migrate:fresh --seed
+php artisan migrate --force
 ```
+
+N'exécutez jamais `migrate:fresh` ni `db:seed` sur une base distante.
+`migrate:fresh` détruit toutes les tables avant de les recréer, et les seeders
+créent des comptes de démonstration aux adresses connues. Le premier
+administrateur se crée à la main, avec un mot de passe qui n'existe nulle part
+dans ce dépôt.
 
 ---
 
