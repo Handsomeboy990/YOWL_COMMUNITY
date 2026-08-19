@@ -56,6 +56,7 @@ class ReviewReactionController extends Controller
 
             $review->nb_like = (int) ($counts->likes ?? 0);
             $review->nb_dislike = (int) ($counts->dislikes ?? 0);
+            $review->score = \App\Support\FeedScore::for($review);
             $review->save();
 
             return [$result, $newLike];

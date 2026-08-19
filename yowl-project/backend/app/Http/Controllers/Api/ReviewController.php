@@ -125,6 +125,9 @@ class ReviewController extends Controller
                 $query->orderBy('created_at', 'asc');
             } elseif ($sort === 'highestLike') {
                 $query->orderByDesc('nb_like');
+            } elseif ($sort === 'relevant') {
+                // Classement : fraicheur et engagement, colonne indexee.
+                $query->orderByDesc('score')->orderByDesc('created_at');
             } else {
                 $query->orderByDesc('created_at'); // défaut
             }
@@ -210,6 +213,8 @@ class ReviewController extends Controller
             $validated['medias'] = $mediaPaths;
 
             $review = Review::create($validated);
+
+            \App\Support\FeedScore::refresh($review);
 
             if ($review->link) {
                 FetchLinkPreview::dispatch($review->id);

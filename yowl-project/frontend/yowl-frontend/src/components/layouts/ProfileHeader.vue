@@ -113,6 +113,7 @@ const tiles = computed(() => {
 const tabs = [
   { to: '/user/summary', name: 'summary', label: 'Résumé', icon: 'fa-solid fa-chart-pie' },
   { to: '/user/my-reviews', name: 'my-reviews', label: 'Mes avis', icon: 'fa-solid fa-newspaper' },
+  { to: '/user/saved', name: 'saved', label: 'Enregistrés', icon: 'fa-regular fa-bookmark' },
   { to: '/user/activity', name: 'activity', label: 'Activité', icon: 'fa-solid fa-clock-rotate-left' },
 ];
 </script>

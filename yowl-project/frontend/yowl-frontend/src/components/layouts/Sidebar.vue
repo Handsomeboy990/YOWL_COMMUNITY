@@ -16,6 +16,7 @@
       <div class="mb-6">
         <h3 class="font-roboto font-medium text-white mb-4 text-lg sm:text-base">Trier par</h3>
         <div class="space-y-3">
+          <div><BaseRadio v-model="sortBy" value="relevant" name="sort" dark label="Les plus pertinentes" /></div>
           <div><BaseRadio v-model="sortBy" value="newest" name="sort" dark label="Plus récentes" /></div>
           <div><BaseRadio v-model="sortBy" value="older" name="sort" dark label="Plus anciennes" /></div>
           <div><BaseRadio v-model="sortBy" value="highestLike" name="sort" dark label="Plus aimées" /></div>

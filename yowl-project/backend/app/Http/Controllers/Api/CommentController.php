@@ -93,6 +93,9 @@ class CommentController extends Controller
         $validated['user_id'] = $author->id;
         $comment = Comment::create($validated);
 
+        // Un commentaire pese dans le classement du fil.
+        \App\Support\FeedScore::refresh($review);
+
         // Notifier l'auteur de la review et celui du commentaire parent
         if ($review && $review->user_id !== $author->id && $review->user) {
             $review->user->notify(new CommentReceived($author, $comment));

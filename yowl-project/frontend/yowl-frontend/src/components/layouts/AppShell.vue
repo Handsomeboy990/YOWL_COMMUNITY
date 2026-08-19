@@ -234,6 +234,7 @@ const mainNav = computed(() => {
     if (userStore.isAuthenticated) {
         items.push(
             { to: '/user/my-reviews', icon: 'fa-solid fa-newspaper', label: 'Mes avis', name: 'my-reviews' },
+            { to: '/user/saved', icon: 'fa-regular fa-bookmark', label: 'Enregistrés', name: 'saved' },
             { to: '/user/activity', icon: 'fa-solid fa-clock-rotate-left', label: 'Activité', name: 'activity' },
             { to: '/user/summary', icon: 'fa-solid fa-chart-pie', label: 'Statistiques', name: 'summary' },
         );
