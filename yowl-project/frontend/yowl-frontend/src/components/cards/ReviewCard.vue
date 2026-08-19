@@ -58,6 +58,14 @@
          quatre-vingts caracteres l'oeil perd la ligne suivante. -->
     <RichContent :text="review.content"
       classes="font-roboto text-sm md:text-base text-gray-700 mb-3 line-clamp-3 max-w-[80ch]" />
+
+    <!-- Les tags n'étaient affichés nulle part dans le fil, alors qu'ils
+         sont la porte d'entrée vers le sujet. -->
+    <div v-if="review.tags?.length" class="flex flex-wrap gap-1.5 mb-3">
+      <router-link v-for="tag in review.tags" :key="tag.id" :to="`/sujets/${tag.name}`"
+        class="px-2.5 py-1 rounded-full bg-orange-primary/10 text-orange-text text-xs font-medium hover:bg-orange-primary/20 transition-colors"
+        @click.stop>#{{ tag.name }}</router-link>
+    </div>
     <router-link :to="{ name: 'review-detail', params: { id: review.id } }"
       class="text-orange-text hover:text-orange-primary-dark font-medium text-sm transition-colors duration-200 inline-flex items-center gap-1">
       Voir plus

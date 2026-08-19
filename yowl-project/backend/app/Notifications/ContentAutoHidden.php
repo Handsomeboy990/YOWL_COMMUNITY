@@ -30,7 +30,7 @@ class ContentAutoHidden extends ActivityNotification
     public function body(): string
     {
         return "Il a reçu {$this->reports} signalements et attend la décision d'un modérateur. "
-            .'Écris-nous par le formulaire de suggestion si tu penses que c\'est une erreur.';
+            .'Si tu penses que c\'est une erreur, tu peux contester la décision.';
     }
 
     public function url(): string

@@ -4,10 +4,13 @@ use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\DashboardKPIController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\AppealController;
 use App\Http\Controllers\Api\BlockController;
 use App\Http\Controllers\Api\BookmarkController;
+use App\Http\Controllers\Api\DataExportController;
 use App\Http\Controllers\Api\DigestController;
 use App\Http\Controllers\Api\FollowController;
+use App\Http\Controllers\Api\GrowthController;
 use App\Http\Controllers\Api\HelpfulController;
 use App\Http\Controllers\Api\LegalPageController;
 use App\Http\Controllers\Api\PollController;
@@ -15,6 +18,7 @@ use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\ReviewController;
+use App\Http\Controllers\Api\TagFeedController;
 use App\Http\Controllers\Api\SuggestionController;
 use App\Http\Controllers\Api\ReviewReactionController;
 use App\Http\Controllers\Api\CommentReactionController;
@@ -41,6 +45,11 @@ require __DIR__.'/auth.php';
 Route::get('/reviews', [ReviewController::class, 'index']);
 Route::get('/reviews/{review}', [ReviewController::class, 'show']);
 Route::get('/tags', [\App\Http\Controllers\Api\TagController::class, 'index']);
+
+// Un tag est un lieu : il a son adresse, ses chiffres et son fil.
+Route::get('/sujets', [TagFeedController::class, 'index']);
+Route::get('/sujets/{name}', [TagFeedController::class, 'show']);
+Route::get('/sujets/{name}/avis', [TagFeedController::class, 'reviews']);
 
 Route::get('/polls/{poll}', [PollController::class, 'show']);
 
@@ -108,6 +117,14 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::patch('/digest', [DigestController::class, 'update']);
 
+    // Consultee pendant la redaction : le meme lien deja discute ailleurs.
+    // Hors du prefixe /reviews, que GET /reviews/{review} capterait.
+    Route::get('/liens/existant', [ReviewController::class, 'existingForLink']);
+
+    // Portabilite : partir avec ses donnees, pas seulement les effacer
+    Route::get('/mes-donnees', [DataExportController::class, 'summary']);
+    Route::get('/mes-donnees/export', [DataExportController::class, 'export'])->middleware('throttle:5,10');
+
     // Sondages : un avis en forme compacte
     Route::post('/reviews/{review}/poll', [PollController::class, 'store']);
     Route::post('/polls/{poll}/vote', [PollController::class, 'vote'])->middleware('throttle:30,1');
@@ -121,6 +138,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/bookmarks/{review}', [BookmarkController::class, 'store']);
     Route::delete('/bookmarks/{review}', [BookmarkController::class, 'destroy']);
 
+    // Contestation d'une decision de moderation
+    Route::get('/appeals', [AppealController::class, 'mine']);
+    Route::post('/appeals', [AppealController::class, 'store'])->middleware('throttle:10,1');
+
+    // Signal de presence, seule source du temps par session
+    Route::post('/presence', [GrowthController::class, 'ping'])->middleware('throttle:120,60');
+
     // Signalement de contenu
     Route::post('/reports', [ReportController::class, 'store'])->middleware('throttle:20,1');
 });
@@ -129,6 +153,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
 Route::middleware(['auth:sanctum','role:admin'])->prefix('admin')->group(function(){
   Route::patch('/users/{user}/role', [AdminController::class, 'changeUserRole']);
   Route::get('/stats', [AdminController::class, 'stats']);
+
+  // Croissance : les cinq indicateurs du cahier des charges
+  Route::get('/croissance', [GrowthController::class, 'index']);
+  Route::get('/croissance/export', [GrowthController::class, 'export']);
   Route::get('/users', [AdminController::class, 'users']);
   Route::get('/reviews', [AdminController::class, 'reviews']);
   Route::get('/comments', [AdminController::class, 'comments']);
@@ -152,6 +180,10 @@ Route::middleware(['auth:sanctum','role:admin'])->prefix('admin')->group(functio
   Route::get('/users/{user}', [AdminController::class, 'showUser']);
   Route::patch('/users/{user}', [AdminController::class, 'updateUser']);
   Route::post('/users/{user}/password', [AdminController::class, 'regeneratePassword']);
+
+  // File des contestations
+  Route::get('/appeals', [AppealController::class, 'index']);
+  Route::patch('/appeals/{appeal}', [AppealController::class, 'resolve']);
 
   // Pages legales : edition, brouillon, publication
   Route::get('/legal', [LegalPageController::class, 'index']);

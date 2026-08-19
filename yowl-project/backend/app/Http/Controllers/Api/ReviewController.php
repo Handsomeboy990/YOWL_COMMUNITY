@@ -189,6 +189,47 @@ class ReviewController extends Controller
     }
 
     /**
+     * Discussions already open on the same address.
+     *
+     * Called while the member is still composing. Two people citing the same
+     * article should land in the same conversation rather than start two
+     * that never meet, so the answer is a proposal, never a refusal: the
+     * publication itself stays allowed.
+     */
+    public function existingForLink(Request $request)
+    {
+        $validated = $request->validate([
+            'link' => 'required|url:http,https|max:2048',
+        ]);
+
+        $empreinte = \App\Support\LinkNormaliser::fingerprint($validated['link']);
+        if (! $empreinte) {
+            return response()->json([
+                'success' => true,
+                'data' => [],
+                'message' => 'Existing discussions retrieved successfully.',
+            ]);
+        }
+
+        $existants = Review::query()
+            ->where('link_fingerprint', $empreinte)
+            ->where('is_published', true)
+            ->when($request->user(), fn ($q, $user) => $q->where('user_id', '!=', $user->id))
+            ->withCount('comments')
+            ->with('user:id,username,fullname,picture')
+            ->orderByDesc('comments_count')
+            ->orderByDesc('created_at')
+            ->limit(3)
+            ->get(['id', 'user_id', 'content', 'link', 'nb_like', 'created_at']);
+
+        return response()->json([
+            'success' => true,
+            'data' => $existants,
+            'message' => 'Existing discussions retrieved successfully.',
+        ]);
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
@@ -201,8 +242,13 @@ class ReviewController extends Controller
                 'link' => 'nullable|url:http,https|max:2048',
                 'medias' => 'nullable|array|max:'.self::MAX_MEDIAS,
                 'medias.*' => self::MEDIA_RULES,
+                'scheduled_for' => 'nullable|date|after:now|before:'.now()->addYear()->toDateString(),
             ]);
             $validated['user_id'] = $request->user()->id;
+
+            // Un avis programme attend son heure hors du fil. Il reprend le
+            // meme drapeau que la moderation, et scheduled_for dit lequel des
+            // deux etats s'applique.
 
             $mediaPaths = [];
             if ($request->hasFile('medias')) {
@@ -214,6 +260,9 @@ class ReviewController extends Controller
             $validated['medias'] = $mediaPaths;
 
             $review = Review::create($validated);
+            if (! empty($validated['scheduled_for'])) {
+                $review->forceFill(['is_published' => false])->saveQuietly();
+            }
 
             \App\Support\FeedScore::refresh($review);
 
@@ -327,7 +376,15 @@ class ReviewController extends Controller
                 'medias.*' => self::MEDIA_RULES,
                 'existingMedias' => 'nullable|array',
                 'existingMedias.*' => 'string',
+                'scheduled_for' => 'nullable|date|before:'.now()->addYear()->toDateString(),
             ]);
+
+            // Deplacer l'heure d'un avis programme, ou la retirer pour publier
+            // tout de suite. Une date effacee sur un avis masque par la
+            // moderation ne le republie pas : seul l'admin peut le faire.
+            if ($request->has('scheduled_for') && $review->isScheduled()) {
+                $validated['is_published'] = empty($validated['scheduled_for']);
+            }
 
             // Récupérer les anciennes images à garder
             $existingMedias = $request->input('existingMedias', []);
@@ -387,7 +444,12 @@ class ReviewController extends Controller
             }
 
             $linkBefore = $review->link;
+            $publication = $validated['is_published'] ?? null;
+            unset($validated['is_published']);
             $review->update($validated);
+            if ($publication !== null) {
+                $review->forceFill(['is_published' => $publication])->save();
+            }
 
             // Le lien a change : l'ancien apercu ne decrit plus rien.
             if ($review->link !== $linkBefore) {

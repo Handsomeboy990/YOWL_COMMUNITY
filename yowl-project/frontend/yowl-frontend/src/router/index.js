@@ -13,6 +13,8 @@ import MyPost from '@/components/pages/profil/MyPost.vue'
 import Saved from '@/components/pages/profil/Saved.vue'
 import Onboarding from '@/components/pages/Onboarding.vue'
 import MemberProfile from '@/views/MemberProfile.vue'
+import TagFeed from '@/views/TagFeed.vue'
+import TagDirectory from '@/views/TagDirectory.vue'
 import About from '@/components/pages/About.vue'
 import Faq from '@/components/pages/Faq.vue'
 import Suggestion from '@/components/pages/Suggestion.vue'
@@ -79,6 +81,16 @@ const router = createRouter({
             name: 'activity',
             component: Activity,
             meta: { requiresAuth: true }
+        },
+        {
+            path: '/sujets',
+            name: 'tag-directory',
+            component: TagDirectory,
+        },
+        {
+            path: '/sujets/:name',
+            name: 'tag-feed',
+            component: TagFeed,
         },
         {
             path: '/membres/:username',

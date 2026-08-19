@@ -29,7 +29,8 @@
     "policy": "Charte",
     "suggestions": "Suggestions",
     "profile": "Mon profil",
-    "publishReview": "Publier un avis"
+    "publishReview": "Publier un avis",
+    "topics": "Sujets"
   },
   "feed": {
     "all": "Tout",
@@ -43,7 +44,8 @@
     "seeMore": "Voir plus",
     "reply": "Répondre",
     "views": "{count} vue | {count} vues",
-    "comments": "{count} commentaire | {count} commentaires"
+    "comments": "{count} commentaire | {count} commentaires",
+    "reviewCount": "{count} avis"
   },
   "filters": {
     "filterBy": "Filtrer par",
@@ -104,7 +106,11 @@
     "notices": "Mentions légales",
     "updated": "Dernière mise à jour le {date}",
     "unavailable": "Page indisponible",
-    "notPublished": "Ce texte n'est pas encore publié."
+    "notPublished": "Ce texte n'est pas encore publié.",
+    "documents": "Les textes",
+    "onThisPage": "Sur cette page",
+    "readingTime": "{count} min de lecture",
+    "question": "Une question sur ce texte ?"
   },
   "member": {
     "notFound": "Membre introuvable",
@@ -132,5 +138,23 @@
     "welcomeBack": "Bon retour parmi nous",
     "noAccount": "Pas encore de compte ?",
     "signIn": "Se connecter"
+  },
+  "tag": {
+    "notFound": "Sujet introuvable",
+    "notFoundHint": "Ce sujet n'existe pas ou n'a encore aucun avis.",
+    "browseAll": "Voir tous les sujets",
+    "summary": "{reviews} avis de {contributors} membres",
+    "reviews": "Avis",
+    "followers": "Abonnés",
+    "contributors": "Contributeurs",
+    "thisWeek": "Cette semaine",
+    "empty": "Aucun avis sur ce sujet",
+    "emptyHint": "Sois le premier à publier ici.",
+    "related": "Sujets voisins",
+    "directory": "Les sujets",
+    "directoryHint": "Chaque sujet a sa page et son fil. Suis ceux qui t'intéressent, ils alimenteront ton fil personnalisé.",
+    "searchPlaceholder": "Filtrer les sujets...",
+    "noMatch": "Aucun sujet ne correspond.",
+    "followerCount": "{count} abonné | {count} abonnés"
   }
 }

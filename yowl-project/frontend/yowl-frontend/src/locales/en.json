@@ -29,7 +29,8 @@
     "policy": "Guidelines",
     "suggestions": "Suggestions",
     "profile": "My profile",
-    "publishReview": "Post a review"
+    "publishReview": "Post a review",
+    "topics": "Topics"
   },
   "feed": {
     "all": "Everything",
@@ -43,7 +44,8 @@
     "seeMore": "Read more",
     "reply": "Reply",
     "views": "{count} view | {count} views",
-    "comments": "{count} comment | {count} comments"
+    "comments": "{count} comment | {count} comments",
+    "reviewCount": "{count} review | {count} reviews"
   },
   "filters": {
     "filterBy": "Filter by",
@@ -104,7 +106,11 @@
     "notices": "Legal notices",
     "updated": "Last updated on {date}",
     "unavailable": "Page unavailable",
-    "notPublished": "This text is not published yet."
+    "notPublished": "This text is not published yet.",
+    "documents": "Documents",
+    "onThisPage": "On this page",
+    "readingTime": "{count} min read",
+    "question": "A question about this text?"
   },
   "member": {
     "notFound": "Member not found",
@@ -132,5 +138,23 @@
     "welcomeBack": "Welcome back",
     "noAccount": "No account yet?",
     "signIn": "Sign in"
+  },
+  "tag": {
+    "notFound": "Topic not found",
+    "notFoundHint": "This topic does not exist or has no reviews yet.",
+    "browseAll": "Browse all topics",
+    "summary": "{reviews} reviews from {contributors} members",
+    "reviews": "Reviews",
+    "followers": "Followers",
+    "contributors": "Contributors",
+    "thisWeek": "This week",
+    "empty": "No review on this topic",
+    "emptyHint": "Be the first to post here.",
+    "related": "Related topics",
+    "directory": "Topics",
+    "directoryHint": "Every topic has its own page and feed. Follow the ones you care about, they will fill your personalised feed.",
+    "searchPlaceholder": "Filter topics...",
+    "noMatch": "No topic matches.",
+    "followerCount": "{count} follower | {count} followers"
   }
 }

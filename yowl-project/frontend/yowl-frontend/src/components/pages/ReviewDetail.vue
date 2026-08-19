@@ -74,10 +74,8 @@
 
               <!-- Tags -->
               <div v-if="review.tags?.length" class="mt-5 flex flex-wrap gap-2">
-                <span v-for="tag in review.tags" :key="tag.id"
-                  class="text-xs font-medium bg-orange-primary/10 text-orange-text rounded-full px-3 py-1">
-                  #{{ tag.name }}
-                </span>
+                <router-link v-for="tag in review.tags" :key="tag.id"
+                  :to="`/sujets/${tag.name}`" class="text-xs font-medium bg-orange-primary/10 text-orange-text rounded-full px-3 py-1 hover:bg-orange-primary/20 transition-colors">#{{ tag.name }}</router-link>
               </div>
             </div>
           </div>
