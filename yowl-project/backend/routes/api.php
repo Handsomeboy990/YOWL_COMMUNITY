@@ -4,6 +4,8 @@ use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\DashboardKPIController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\BlockController;
+use App\Http\Controllers\Api\BookmarkController;
 use App\Http\Controllers\Api\FollowController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\RoleController;
@@ -79,6 +81,17 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/follows', [FollowController::class, 'store']);
     Route::delete('/follows', [FollowController::class, 'destroy']);
     Route::get('/follows/suggestions', [FollowController::class, 'suggestions']);
+
+    // Blocage : la decision individuelle, sans arbitrage
+    Route::get('/blocks', [BlockController::class, 'index']);
+    Route::post('/blocks/{user}', [BlockController::class, 'store']);
+    Route::delete('/blocks/{user}', [BlockController::class, 'destroy']);
+
+    // Avis enregistres
+    Route::get('/bookmarks', [BookmarkController::class, 'index']);
+    Route::get('/bookmarks/ids', [BookmarkController::class, 'ids']);
+    Route::post('/bookmarks/{review}', [BookmarkController::class, 'store']);
+    Route::delete('/bookmarks/{review}', [BookmarkController::class, 'destroy']);
 
     // Signalement de contenu
     Route::post('/reports', [ReportController::class, 'store'])->middleware('throttle:20,1');

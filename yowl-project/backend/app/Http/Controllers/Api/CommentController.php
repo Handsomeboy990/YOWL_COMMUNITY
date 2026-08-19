@@ -34,12 +34,22 @@ class CommentController extends Controller
      */
     public function index(Request $request)
     {
-        $comments = $this->visibleTo(
+        $currentUser = auth('sanctum')->user();
+
+        $query = $this->visibleTo(
             Comment::with(['user:id,username,picture', 'review:id,user_id']),
-            auth('sanctum')->user()
-        )
-            ->orderByDesc('created_at')
-            ->paginate(10);
+            $currentUser
+        );
+
+        // Bloquer quelqu'un doit aussi faire taire ses commentaires.
+        if ($currentUser) {
+            $query->whereNotIn(
+                'user_id',
+                \App\Models\Block::where('user_id', $currentUser->id)->select('blocked_id')
+            );
+        }
+
+        $comments = $query->orderByDesc('created_at')->paginate(10);
 
         return $comments;
     }
@@ -87,6 +97,13 @@ class CommentController extends Controller
         if ($review && $review->user_id !== $author->id && $review->user) {
             $review->user->notify(new CommentReceived($author, $comment));
         }
+        // Mentions : @pseudo previent la personne citee.
+        foreach (\App\Support\Mentions::resolve($comment->content, $author) as $mentioned) {
+            if ($mentioned->id !== $review?->user_id) {
+                $mentioned->notify(new \App\Notifications\Mentioned($author, $comment->review_id, 'commentaire'));
+            }
+        }
+
         if ($comment->parent_id) {
             $parent = Comment::find($comment->parent_id);
             if ($parent && $parent->user_id !== $author->id && $parent->user_id !== $review?->user_id && $parent->user) {

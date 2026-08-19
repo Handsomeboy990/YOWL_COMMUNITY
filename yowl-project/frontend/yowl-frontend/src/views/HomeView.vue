@@ -132,12 +132,14 @@ import KpiSideBar from '@/components/layouts/KpiSideBar.vue'
 import { useReviewStore } from '@/stores/review'
 import { useUserStore } from '@/stores/user'
 import { useFollowStore } from '@/stores/follow'
+import { useBookmarkStore } from '@/stores/bookmark'
 import { useCommentStore } from '@/stores/comment'
 import { useRoute } from 'vue-router'
 
 const reviewStore = useReviewStore()
 const userStore = useUserStore()
 const followStore = useFollowStore()
+const bookmarkStore = useBookmarkStore()
 
 const feedModes = [
     { value: 'all', label: 'Tout', icon: 'fa-solid fa-globe' },
@@ -168,6 +170,7 @@ onBeforeMount(async () => {
     await reviewStore.getReviews(route.params.page ? route.params.page : 1)
     await commentStore.getComments()
     followStore.load()
+    bookmarkStore.load()
 })
 
 // Changer de page

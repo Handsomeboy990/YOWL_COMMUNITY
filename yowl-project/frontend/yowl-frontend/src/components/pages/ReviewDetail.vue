@@ -53,35 +53,19 @@
           <div class="flex flex-col lg:flex-row gap-6">
 
             <!-- Images -->
-            <div v-if="mediasArray.length && !review.link" class="w-full lg:w-1/2">
+            <div v-if="mediasArray.length" class="w-full lg:w-1/2">
               <div class="rounded-xl overflow-hidden shadow-md">
                 <ImageCarousel :images="mediasArray" />
               </div>
+              <LinkPreviewCard v-if="safeLink" class="mt-3" :url="safeLink" :preview="review.link_preview" />
             </div>
 
-            <!-- Aperçu du lien -->
-            <div v-if="review.link && !mediasArray.length" class="w-full lg:w-1/2">
-              <div class="border border-gray-200 rounded-xl overflow-hidden shadow-md hover:border-orange-primary transition-colors">
-                <iframe :src="review.link" class="w-full h-64 md:h-80 lg:h-96 border-0" title="Aperçu du contenu"
-                  sandbox="allow-same-origin allow-scripts allow-popups" referrerpolicy="no-referrer"></iframe>
-                <a :href="review.link" target="_blank" rel="noopener"
-                  class="text-orange-primary text-sm md:text-base flex items-center justify-center gap-2 py-3 bg-gray-50 hover:bg-orange-50 transition-colors font-medium">
-                  <i class="fa-solid fa-external-link"></i>
-                  Voir le contenu dont je parle
-                </a>
-              </div>
-            </div>
-
-            <!-- Images + lien -->
-            <div v-if="review.link && mediasArray.length" class="w-full lg:w-1/2">
-              <div class="rounded-xl overflow-hidden shadow-md mb-3">
-                <ImageCarousel :images="mediasArray" />
-              </div>
-              <a :href="review.link" target="_blank" rel="noopener"
-                class="text-orange-primary text-sm md:text-base flex items-center justify-center gap-2 hover:underline font-medium">
-                <i class="fa-solid fa-external-link"></i>
-                Voir le contenu dont je parle
-              </a>
+            <!-- Lien cité, seul.
+                 L'iframe qui se trouvait ici portait allow-same-origin et
+                 allow-scripts ensemble, ce qui laisse la page encadrée retirer
+                 son propre bac à sable. -->
+            <div v-else-if="safeLink" class="w-full lg:w-1/2">
+              <LinkPreviewCard :url="safeLink" :preview="review.link_preview" />
             </div>
 
             <!-- Texte -->
@@ -170,6 +154,8 @@ import { getStorageUrl } from '@/config';
 import { computed, onBeforeMount, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import CommentList from '../CommentList.vue'
+import ImageCarousel from '@/components/layouts/ImageCarousel.vue'
+import LinkPreviewCard from '@/components/cards/LinkPreviewCard.vue'
 import { useCommentStore } from '@/stores/comment'
 import { useNotify, apiErrorMessage } from '@/composables/useNotify';
 import { useUserStore } from '@/stores/user'
@@ -220,6 +206,19 @@ onBeforeMount(async () => {
 const refresh = () => {
   // Le compteur de commentaires est recalculé automatiquement via le store
 }
+
+// Seuls http et https sont ouverts : un lien javascript: rendu tel quel
+// s'exécuterait au clic.
+const safeLink = computed(() => {
+  const raw = review.value?.link
+  if (!raw) return null
+  try {
+    const url = new URL(raw)
+    return url.protocol === 'http:' || url.protocol === 'https:' ? url.href : null
+  } catch {
+    return null
+  }
+})
 
 const mediasArray = computed(() => {
   if (!review.value?.medias) return [];

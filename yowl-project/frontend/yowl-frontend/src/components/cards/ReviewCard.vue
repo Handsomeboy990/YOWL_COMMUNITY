@@ -35,7 +35,12 @@
           </button>
 
           <div v-if="isMenuOpen"
-            class="absolute right-0 mt-2 w-44 bg-white rounded-xl shadow-lg shadow-blue-night/10 border border-gray-100 py-1 z-20">
+            class="absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-lg shadow-blue-night/10 border border-gray-100 py-1 z-20">
+            <button type="button"
+              class="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 cursor-pointer"
+              @click="blockAuthor">
+              <i class="fa-solid fa-ban w-4"></i> Bloquer {{ review.user?.username }}
+            </button>
             <button type="button"
               class="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-red-500 hover:bg-red-50 cursor-pointer"
               @click="openReport">
@@ -117,11 +122,21 @@
         </router-link>
       </div>
 
-      <router-link :to="{ name: 'review-detail', params: { id: review.id } }"
-        class="flex items-center gap-2 text-gray-600 hover:text-orange-primary transition-colors duration-200 text-sm md:text-base">
-        <i class="fa-regular fa-comment"></i>
-        <span class="font-medium">{{ review.comments?.length || 0 }}</span>
-      </router-link>
+      <div class="flex items-center gap-3">
+        <button v-if="userStore.isAuthenticated" type="button"
+          class="w-9 h-9 rounded-full grid place-items-center transition-colors cursor-pointer"
+          :class="saved ? 'text-orange-primary bg-orange-50' : 'text-gray-400 hover:text-orange-primary hover:bg-orange-50'"
+          :aria-pressed="saved" :aria-label="saved ? 'Retirer des enregistrements' : 'Enregistrer cet avis'"
+          @click="toggleBookmark">
+          <i :class="saved ? 'fa-solid fa-bookmark' : 'fa-regular fa-bookmark'"></i>
+        </button>
+
+        <router-link :to="{ name: 'review-detail', params: { id: review.id } }"
+          class="flex items-center gap-2 text-gray-600 hover:text-orange-primary transition-colors duration-200 text-sm md:text-base">
+          <i class="fa-regular fa-comment"></i>
+          <span class="font-medium">{{ review.comments?.length || 0 }}</span>
+        </router-link>
+      </div>
     </footer>
   </div>
 </template>
@@ -135,9 +150,14 @@ import ImageCarousel from '../layouts/ImageCarousel.vue'
 import ReportModal from '../layouts/ReportModal.vue'
 import LinkPreviewCard from './LinkPreviewCard.vue'
 import FollowButton from '@/components/ui/FollowButton.vue'
+import { useBookmarkStore } from '@/stores/bookmark'
+import { useConfirm } from '@/composables/useConfirm'
+import api from '@/services/apiService'
 import { getStorageUrl } from '@/config'
 
 const notify = useNotify()
+const bookmarkStore = useBookmarkStore()
+const confirm = useConfirm()
 
 const props = defineProps({
   review: {
@@ -162,6 +182,28 @@ const canFollow = computed(
 const canReport = computed(
   () => Boolean(userStore.user?.id) && userStore.user.id !== props.review.user_id
 )
+
+// L'etat local suit le store, qui bascule de facon optimiste.
+const saved = computed(() => bookmarkStore.has(props.review.id))
+const toggleBookmark = () => bookmarkStore.toggle(props.review.id)
+
+const blockAuthor = async () => {
+  isMenuOpen.value = false
+  const confirmed = await confirm({
+    title: `Bloquer ${props.review.user?.username} ?`,
+    message: "Tu ne verras plus ses publications ni ses commentaires, et vos abonnements réciproques seront retirés.",
+    confirmLabel: 'Bloquer',
+    tone: 'danger',
+  })
+  if (!confirmed) return
+
+  try {
+    await api.post(`/blocks/${props.review.user_id}`)
+    notify.success('Membre bloqué', 'Actualise le fil pour ne plus voir ses publications.')
+  } catch (err) {
+    notify.error(apiErrorMessage(err, 'Le blocage a échoué.'))
+  }
+}
 
 const openReport = () => {
   isMenuOpen.value = false

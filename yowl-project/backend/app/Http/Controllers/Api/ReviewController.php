@@ -76,6 +76,16 @@ class ReviewController extends Controller
                     $q->whereNull('nb_like')->orWhere('nb_like', 0);
                 });
             }
+            // Un membre bloque disparait du fil, sans exception : c'est ce
+            // qui distingue le blocage du signalement, qui lui demande un
+            // arbitrage humain.
+            if ($currentUser) {
+                $query->whereNotIn(
+                    'user_id',
+                    \App\Models\Block::where('user_id', $currentUser->id)->select('blocked_id')
+                );
+            }
+
             // Fil personnalise : uniquement les membres et les tags suivis.
             // Sans le graphe, tout le monde voyait exactement la meme chose.
             if (request('feed') === 'following' && $currentUser) {
@@ -137,9 +147,18 @@ class ReviewController extends Controller
                     ->flip();
             }
 
-            $reviews->getCollection()->transform(function ($review) use ($userReactions, $followedAuthors) {
+            $bookmarked = collect();
+            if ($currentUser) {
+                $bookmarked = \App\Models\Bookmark::where('user_id', $currentUser->id)
+                    ->whereIn('review_id', $reviews->getCollection()->pluck('id'))
+                    ->pluck('review_id')
+                    ->flip();
+            }
+
+            $reviews->getCollection()->transform(function ($review) use ($userReactions, $followedAuthors, $bookmarked) {
                 $review->user_reaction = $userReactions[$review->id] ?? null;
                 $review->author_followed = $followedAuthors->has($review->user_id);
+                $review->bookmarked = $bookmarked->has($review->id);
 
                 return $review;
             });
@@ -194,6 +213,10 @@ class ReviewController extends Controller
 
             if ($review->link) {
                 FetchLinkPreview::dispatch($review->id);
+            }
+
+            foreach (\App\Support\Mentions::resolve($review->content, $request->user()) as $mentioned) {
+                $mentioned->notify(new \App\Notifications\Mentioned($request->user(), $review->id, 'avis'));
             }
 
             // Lier les tags à la review créée
