@@ -58,6 +58,8 @@ class User extends Authenticatable
             'birthdate' => 'date',
             'email_verification_expires_at' => 'datetime',
             'is_active' => 'boolean',
+            'digest_optin' => 'boolean',
+            'digest_sent_at' => 'datetime',
             'anonymized_at' => 'datetime',
         ];
     }

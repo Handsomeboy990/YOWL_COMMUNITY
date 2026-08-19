@@ -50,6 +50,13 @@ class Settings
             'label' => 'Formulaire de suggestion ouvert',
             'group' => 'Communauté',
         ],
+        'moderation.auto_hide_threshold' => [
+            'type' => 'int',
+            'default' => 3,
+            'rules' => 'nullable|integer|min:2|max:50',
+            'label' => 'Masquer un contenu au-delà de N signalements, vide pour ne jamais masquer',
+            'group' => 'Modération',
+        ],
         'reviews.require_approval' => [
             'type' => 'bool',
             'default' => false,

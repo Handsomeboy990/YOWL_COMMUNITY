@@ -29,14 +29,20 @@ class FeedScore
 
     private const VIEW_WEIGHT = 0.05;
 
+    /** L'utilite juge la qualite de l'avis, pas la popularite du sujet. */
+    private const HELPFUL_WEIGHT = 3.0;
+
     public static function for(Review $review): float
     {
         $engagement = self::LIKE_WEIGHT * max(0, $review->nb_like)
             + self::COMMENT_WEIGHT * $review->comments()->count()
+            + self::HELPFUL_WEIGHT * max(0, $review->nb_helpful ?? 0)
             + self::VIEW_WEIGHT * max(0, $review->nb_views);
 
         // Les avis rejetes pesent negativement, sans jamais annuler le reste.
-        $engagement = max(0, $engagement - 0.5 * max(0, $review->nb_dislike));
+        $engagement = max(0, $engagement
+            - 0.5 * max(0, $review->nb_dislike)
+            - 1.5 * max(0, $review->nb_unhelpful ?? 0));
 
         $ageHours = max(0, $review->created_at?->diffInHours(now()) ?? 0);
 

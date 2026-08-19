@@ -74,10 +74,15 @@ class ReportController extends Controller
         $report->reportable()->associate($reportable);
         $report->save();
 
+        $hidden = \App\Support\AutoModeration::evaluate($report);
+
         return response()->json([
             'success' => true,
             'data' => $report,
-            'message' => 'Signalement transmis à la modération.',
+            'auto_hidden' => $hidden,
+            'message' => $hidden
+                ? 'Signalement transmis. Le contenu a été retiré du fil en attendant une décision.'
+                : 'Signalement transmis à la modération.',
         ], 201);
     }
 }

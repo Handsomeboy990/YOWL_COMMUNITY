@@ -10,3 +10,6 @@ Artisan::command('inspire', function () {
 
 // Le score decroit avec le temps : il se recalcule meme sans nouvelle activite.
 Schedule::command('yowl:refresh-scores')->hourly();
+
+// Resume hebdomadaire, le lundi matin.
+Schedule::command('yowl:send-digest')->weeklyOn(1, '09:00');

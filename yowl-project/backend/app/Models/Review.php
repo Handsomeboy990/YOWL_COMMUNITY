@@ -22,6 +22,7 @@ class Review extends Model
 
     protected $casts = [
         'medias' => 'array',
+        'is_published' => 'boolean',
         'link_preview' => 'array',
         'link_preview_at' => 'datetime',
     ];
@@ -45,5 +46,10 @@ class Review extends Model
     public function reactions()
     {
         return $this->hasMany(ReviewReaction::class);
+    }
+
+    public function poll()
+    {
+        return $this->hasOne(Poll::class);
     }
 }

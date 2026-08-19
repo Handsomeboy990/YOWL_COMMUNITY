@@ -6,7 +6,10 @@ use App\Http\Controllers\Api\DashboardKPIController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\BlockController;
 use App\Http\Controllers\Api\BookmarkController;
+use App\Http\Controllers\Api\DigestController;
 use App\Http\Controllers\Api\FollowController;
+use App\Http\Controllers\Api\HelpfulController;
+use App\Http\Controllers\Api\PollController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\SettingController;
@@ -38,6 +41,11 @@ Route::get('/reviews', [ReviewController::class, 'index']);
 Route::get('/reviews/{review}', [ReviewController::class, 'show']);
 Route::get('/tags', [\App\Http\Controllers\Api\TagController::class, 'index']);
 
+Route::get('/polls/{poll}', [PollController::class, 'show']);
+
+// Desabonnement du resume, sans connexion : un lien depuis un email.
+Route::match(['get', 'post'], '/digest/unsubscribe/{token}', [DigestController::class, 'unsubscribe'])
+    ->middleware('throttle:20,1');
 Route::get('/comments', [CommentController::class, 'index']);
 Route::get('/comments/{comment}', [CommentController::class, 'show']);
 Route::get('/kpi', [DashboardKPIController::class, 'getKPI']);
@@ -86,6 +94,15 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/blocks', [BlockController::class, 'index']);
     Route::post('/blocks/{user}', [BlockController::class, 'store']);
     Route::delete('/blocks/{user}', [BlockController::class, 'destroy']);
+
+    Route::patch('/digest', [DigestController::class, 'update']);
+
+    // Sondages : un avis en forme compacte
+    Route::post('/reviews/{review}/poll', [PollController::class, 'store']);
+    Route::post('/polls/{poll}/vote', [PollController::class, 'vote'])->middleware('throttle:30,1');
+
+    // Utilite d'un avis, distincte du j'aime
+    Route::post('/reviews/{review}/helpful', [HelpfulController::class, 'toggle'])->middleware('throttle:60,1');
 
     // Avis enregistres
     Route::get('/bookmarks', [BookmarkController::class, 'index']);

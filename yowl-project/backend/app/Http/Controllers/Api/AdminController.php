@@ -359,7 +359,16 @@ class AdminController extends Controller
             $query->where('status', $validated['status']);
         }
 
+        // Le plus signale remonte en premier : un moderateur traite d'abord
+        // ce qui compte, plutot que le plus recent.
         $reports = $query->orderByRaw("CASE WHEN status = 'pending' THEN 0 ELSE 1 END")
+            ->orderByDesc(
+                Report::selectRaw('COUNT(*)')
+                    ->whereColumn('reports_count.reportable_type', 'reports.reportable_type')
+                    ->whereColumn('reports_count.reportable_id', 'reports.reportable_id')
+                    ->where('reports_count.status', Report::STATUS_PENDING)
+                    ->from('reports as reports_count')
+            )
             ->orderByDesc('created_at')
             ->paginate(20);
 

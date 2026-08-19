@@ -34,7 +34,7 @@ class ReviewController extends Controller
         try {
             $currentUser = auth('sanctum')->user();
 
-            $query = Review::with(['user:id,username,picture', 'tags', 'comments']);
+            $query = Review::with(['user:id,username,picture', 'tags', 'comments', 'poll.options']);
 
             // Ne montrer que les reviews publiées (sauf celles de l'utilisateur connecté)
             $query->where(function ($q) use ($currentUser) {
@@ -44,20 +44,10 @@ class ReviewController extends Controller
                 }
             });
 
-            // Recherche (insensible à la casse, portable MySQL/PostgreSQL/SQLite)
+            // Recherche : plein texte sur PostgreSQL, repli normalise ailleurs.
             $search = request('search');
             if ($search) {
-                $needle = '%'.mb_strtolower($search).'%';
-                $query->where(function ($q) use ($needle) {
-                    $q->whereRaw('LOWER(content) LIKE ?', [$needle])
-                        ->orWhereRaw('LOWER(link) LIKE ?', [$needle])
-                        ->orWhereHas('user', function ($userQuery) use ($needle) {
-                            $userQuery->whereRaw('LOWER(username) LIKE ?', [$needle]);
-                        })
-                        ->orWhereHas('tags', function ($tagQuery) use ($needle) {
-                            $tagQuery->whereRaw('LOWER(name) LIKE ?', [$needle]);
-                        });
-                });
+                \App\Support\ReviewSearch::apply($query, $search);
             }
 
             // Filtre : reviews sans réponses
@@ -128,6 +118,9 @@ class ReviewController extends Controller
             } elseif ($sort === 'relevant') {
                 // Classement : fraicheur et engagement, colonne indexee.
                 $query->orderByDesc('score')->orderByDesc('created_at');
+            } elseif ($search) {
+                // Une recherche sans tri choisi sort les meilleures reponses.
+                \App\Support\ReviewSearch::order($query, $search);
             } else {
                 $query->orderByDesc('created_at'); // défaut
             }
@@ -150,6 +143,13 @@ class ReviewController extends Controller
                     ->flip();
             }
 
+            $helpfulVotes = collect();
+            if ($currentUser) {
+                $helpfulVotes = \App\Models\HelpfulVote::where('user_id', $currentUser->id)
+                    ->whereIn('review_id', $reviews->getCollection()->pluck('id'))
+                    ->pluck('helpful', 'review_id');
+            }
+
             $bookmarked = collect();
             if ($currentUser) {
                 $bookmarked = \App\Models\Bookmark::where('user_id', $currentUser->id)
@@ -158,10 +158,11 @@ class ReviewController extends Controller
                     ->flip();
             }
 
-            $reviews->getCollection()->transform(function ($review) use ($userReactions, $followedAuthors, $bookmarked) {
+            $reviews->getCollection()->transform(function ($review) use ($userReactions, $followedAuthors, $bookmarked, $helpfulVotes) {
                 $review->user_reaction = $userReactions[$review->id] ?? null;
                 $review->author_followed = $followedAuthors->has($review->user_id);
                 $review->bookmarked = $bookmarked->has($review->id);
+                $review->user_helpful = $helpfulVotes[$review->id] ?? null;
 
                 return $review;
             });
@@ -276,7 +277,7 @@ class ReviewController extends Controller
                 ], 404);
             }
 
-            $review->load(['user:id,username,picture', 'tags', 'comments']);
+            $review->load(['user:id,username,picture', 'tags', 'comments', 'poll.options']);
             // Incrément atomique : deux lectures simultanées ne s'écrasent pas
             $review->increment('nb_views');
 
