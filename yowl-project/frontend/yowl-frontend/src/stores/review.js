@@ -59,6 +59,7 @@ export const useReviewStore = defineStore(
       noAnswers: false,
       noViews: false,
       noLikes: false,
+      feed: '',
       page: 1,
     });
 
@@ -80,6 +81,7 @@ export const useReviewStore = defineStore(
       if (query.value.noAnswers) params.noAnswers = 1;
       if (query.value.noViews) params.noViews = 1;
       if (query.value.noLikes) params.noLikes = 1;
+      if (query.value.feed) params.feed = query.value.feed;
       return params;
     }
 
@@ -139,6 +141,7 @@ export const useReviewStore = defineStore(
         noAnswers: false,
         noViews: false,
         noLikes: false,
+        feed: query.value.feed,
         page: 1,
       };
       fetchReviews();

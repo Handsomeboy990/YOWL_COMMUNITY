@@ -18,4 +18,12 @@ class Tag extends Model
     {
         return $this->belongsToMany(Review::class, 'review_tag');
     }
+
+    /**
+     * Members following this tag.
+     */
+    public function followers()
+    {
+        return $this->morphToMany(User::class, 'followable', 'follows')->withTimestamps();
+    }
 }

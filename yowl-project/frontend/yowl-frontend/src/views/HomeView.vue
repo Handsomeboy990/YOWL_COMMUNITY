@@ -6,6 +6,20 @@
              de chaque cote. La longueur de ligne est bornee dans la carte,
              sur le texte seul, pas sur la carte entiere. -->
         <div class="w-full px-4 xl:px-6 py-6">
+            <!-- Bascule du fil. Un fil algorithmique sans echappatoire est la
+                 premiere chose qu'on reproche a un reseau : le fil complet
+                 reste accessible en un clic. -->
+            <div v-if="userStore.isAuthenticated" class="flex gap-1 mb-4 p-1 rounded-xl bg-white border border-gray-200 w-fit">
+              <button v-for="mode in feedModes" :key="mode.value" type="button"
+                class="px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer"
+                :class="feed === mode.value
+                  ? 'bg-orange-primary text-white shadow-sm'
+                  : 'text-gray-500 hover:text-blue-night'"
+                :aria-pressed="feed === mode.value" @click="switchFeed(mode.value)">
+                <i :class="[mode.icon, 'mr-1.5']"></i>{{ mode.label }}
+              </button>
+            </div>
+
             <!-- Filtres (mobile / tablette : repliables) -->
             <details class="xl:hidden mb-4 bg-white rounded-xl border border-gray-200 overflow-hidden">
                 <summary class="px-4 py-3 font-medium text-blue-night cursor-pointer select-none flex items-center gap-2">
@@ -116,10 +130,25 @@ import ReviewCard from '@/components/cards/ReviewCard.vue'
 import Pagination from '@/components/layouts/Pagination.vue'
 import KpiSideBar from '@/components/layouts/KpiSideBar.vue'
 import { useReviewStore } from '@/stores/review'
+import { useUserStore } from '@/stores/user'
+import { useFollowStore } from '@/stores/follow'
 import { useCommentStore } from '@/stores/comment'
 import { useRoute } from 'vue-router'
 
 const reviewStore = useReviewStore()
+const userStore = useUserStore()
+const followStore = useFollowStore()
+
+const feedModes = [
+    { value: 'all', label: 'Tout', icon: 'fa-solid fa-globe' },
+    { value: 'following', label: 'Mes abonnements', icon: 'fa-solid fa-user-group' },
+]
+const feed = ref('all')
+
+const switchFeed = (mode) => {
+    feed.value = mode
+    reviewStore.setQuery({ feed: mode === 'following' ? 'following' : '' }, { immediate: true })
+}
 const commentStore = useCommentStore()
 
 const reviews = ref([])
@@ -138,6 +167,7 @@ watch(
 onBeforeMount(async () => {
     await reviewStore.getReviews(route.params.page ? route.params.page : 1)
     await commentStore.getComments()
+    followStore.load()
 })
 
 // Changer de page

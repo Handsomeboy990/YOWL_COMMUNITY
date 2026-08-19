@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\DashboardKPIController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\FollowController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\SettingController;
@@ -72,6 +73,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::patch('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
     Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
     Route::delete('/notifications/{id}', [NotificationController::class, 'destroy']);
+
+    // Abonnements : suivre un membre ou un tag
+    Route::get('/follows', [FollowController::class, 'index']);
+    Route::post('/follows', [FollowController::class, 'store']);
+    Route::delete('/follows', [FollowController::class, 'destroy']);
+    Route::get('/follows/suggestions', [FollowController::class, 'suggestions']);
 
     // Signalement de contenu
     Route::post('/reports', [ReportController::class, 'store'])->middleware('throttle:20,1');

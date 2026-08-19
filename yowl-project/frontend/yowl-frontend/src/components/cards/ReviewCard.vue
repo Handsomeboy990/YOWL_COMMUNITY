@@ -10,8 +10,13 @@
         <div v-else class="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-gray-200 to-gray-300 rounded-full grid place-items-center">
           <i class="fa-solid fa-user text-gray-600"></i>
         </div>
-        <div>
-          <p class="font-roboto font-semibold text-gray-900 text-sm md:text-base">{{ review.user?.username }}</p>
+        <div class="min-w-0">
+          <div class="flex items-center gap-2 flex-wrap">
+            <p class="font-roboto font-semibold text-gray-900 text-sm md:text-base truncate">
+              {{ review.user?.username }}
+            </p>
+            <FollowButton v-if="canFollow" type="user" :id="review.user_id" />
+          </div>
           <p class="font-roboto text-xs text-gray-500">{{ dateFormatted }}</p>
         </div>
       </div>
@@ -129,6 +134,7 @@ import { useNotify, apiErrorMessage } from '@/composables/useNotify'
 import ImageCarousel from '../layouts/ImageCarousel.vue'
 import ReportModal from '../layouts/ReportModal.vue'
 import LinkPreviewCard from './LinkPreviewCard.vue'
+import FollowButton from '@/components/ui/FollowButton.vue'
 import { getStorageUrl } from '@/config'
 
 const notify = useNotify()
@@ -148,6 +154,11 @@ const isReportOpen = ref(false)
 const menuRef = ref(null)
 
 // Un membre connecté signale le contenu des autres, jamais le sien
+// On ne s'abonne pas a soi-meme, et un visiteur n'a personne a suivre.
+const canFollow = computed(
+  () => Boolean(userStore.user?.id) && userStore.user.id !== props.review.user_id
+)
+
 const canReport = computed(
   () => Boolean(userStore.user?.id) && userStore.user.id !== props.review.user_id
 )

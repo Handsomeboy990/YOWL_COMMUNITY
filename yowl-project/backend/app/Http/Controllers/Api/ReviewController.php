@@ -76,6 +76,24 @@ class ReviewController extends Controller
                     $q->whereNull('nb_like')->orWhere('nb_like', 0);
                 });
             }
+            // Fil personnalise : uniquement les membres et les tags suivis.
+            // Sans le graphe, tout le monde voyait exactement la meme chose.
+            if (request('feed') === 'following' && $currentUser) {
+                $followedUsers = \App\Models\Follow::where('user_id', $currentUser->id)
+                    ->where('followable_type', \App\Models\User::class)
+                    ->pluck('followable_id');
+                $followedTags = \App\Models\Follow::where('user_id', $currentUser->id)
+                    ->where('followable_type', \App\Models\Tag::class)
+                    ->pluck('followable_id');
+
+                $query->where(function ($q) use ($followedUsers, $followedTags) {
+                    $q->whereIn('user_id', $followedUsers);
+                    if ($followedTags->isNotEmpty()) {
+                        $q->orWhereHas('tags', fn ($t) => $t->whereIn('tags.id', $followedTags));
+                    }
+                });
+            }
+
             // Filtre : tags (accept comma separated names or single name)
             if (request('tags')) {
                 $tags = request('tags');
@@ -110,8 +128,18 @@ class ReviewController extends Controller
                     ->whereIn('review_id', $reviews->getCollection()->pluck('id'))
                     ->pluck('reaction', 'review_id');
             }
-            $reviews->getCollection()->transform(function ($review) use ($userReactions) {
+            $followedAuthors = collect();
+            if ($currentUser) {
+                $followedAuthors = \App\Models\Follow::where('user_id', $currentUser->id)
+                    ->where('followable_type', \App\Models\User::class)
+                    ->whereIn('followable_id', $reviews->getCollection()->pluck('user_id'))
+                    ->pluck('followable_id')
+                    ->flip();
+            }
+
+            $reviews->getCollection()->transform(function ($review) use ($userReactions, $followedAuthors) {
                 $review->user_reaction = $userReactions[$review->id] ?? null;
+                $review->author_followed = $followedAuthors->has($review->user_id);
 
                 return $review;
             });

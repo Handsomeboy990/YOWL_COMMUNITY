@@ -87,6 +87,32 @@ class User extends Authenticatable
     }
 
     /**
+     * Members this user follows.
+     */
+    public function followedUsers()
+    {
+        return $this->morphedByMany(User::class, 'followable', 'follows')->withTimestamps();
+    }
+
+    /**
+     * Tags this user follows.
+     */
+    public function followedTags()
+    {
+        return $this->morphedByMany(Tag::class, 'followable', 'follows')->withTimestamps();
+    }
+
+    /**
+     * Members following this user.
+     */
+    public function followers()
+    {
+        return $this->belongsToMany(User::class, 'follows', 'followable_id', 'user_id')
+            ->where('follows.followable_type', self::class)
+            ->withTimestamps();
+    }
+
+    /**
      * Browser push subscriptions registered by this user.
      */
     public function pushSubscriptions()
