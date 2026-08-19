@@ -171,12 +171,13 @@ import { computed, onBeforeMount, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import CommentList from '../CommentList.vue'
 import { useCommentStore } from '@/stores/comment'
+import { useNotify, apiErrorMessage } from '@/composables/useNotify';
 import { useUserStore } from '@/stores/user'
 import api from '@/services/apiService'
-import Swal from 'sweetalert2'
 
 const route = useRoute()
-const userStore = useUserStore();
+const userStore = useUserStore()
+const notify = useNotify();;
 const commentStore = useCommentStore()
 
 const reviewId = parseInt(route.params.id)
@@ -232,12 +233,7 @@ const mediasArray = computed(() => {
 
 const toggleReaction = async (reaction) => {
   if (!userStore.user?.id) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Connexion requise',
-      text: 'Tu dois être connecté pour réagir.',
-      confirmButtonColor: '#FF6B35',
-    });
+    notify.info('Connexion requise', 'Tu dois être connecté pour réagir.')
     return
   }
 
@@ -246,13 +242,8 @@ const toggleReaction = async (reaction) => {
     review.value.nb_like = response.data.nb_like
     review.value.nb_dislike = response.data.nb_dislike
     review.value.user_reaction = response.data.user_reaction
-  } catch {
-    Swal.fire({
-      icon: 'error',
-      title: 'Oups...',
-      text: 'La réaction a échoué. Réessaie.',
-      confirmButtonColor: '#FF6B35',
-    });
+  } catch (err) {
+    notify.error(apiErrorMessage(err, 'La réaction a échoué. Réessaie.'))
   }
 }
 </script>

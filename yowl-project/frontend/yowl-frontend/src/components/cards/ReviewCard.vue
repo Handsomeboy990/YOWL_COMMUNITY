@@ -133,10 +133,12 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { useReviewStore } from '@/stores/review'
-import Swal from 'sweetalert2';
+import { useNotify, apiErrorMessage } from '@/composables/useNotify'
 import ImageCarousel from '../layouts/ImageCarousel.vue'
 import ReportModal from '../layouts/ReportModal.vue'
 import { getStorageUrl } from '@/config'
+
+const notify = useNotify()
 
 const props = defineProps({
   review: {
@@ -210,25 +212,15 @@ const mediasArray = computed(() => {
 // J'aime / Je n'aime pas
 const toggleReaction = async (reaction) => {
   if (!userStore.user?.id) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Connexion requise',
-      text: 'Tu dois être connecté pour réagir.',
-      confirmButtonColor: '#FF6B35',
-    });
+    notify.info('Connexion requise', 'Tu dois être connecté pour réagir.');
     return
   }
 
   try {
     // Le store met à jour la review concernée (le même objet que la prop)
     await reviewStore.reactToReview(props.review.id, reaction)
-  } catch {
-    Swal.fire({
-      icon: 'error',
-      title: 'Oups...',
-      text: 'La réaction a échoué. Réessaie.',
-      confirmButtonColor: '#FF6B35',
-    });
+  } catch (err) {
+    notify.error(apiErrorMessage(err, 'La réaction a échoué. Réessaie.'));
   }
 }
 </script>

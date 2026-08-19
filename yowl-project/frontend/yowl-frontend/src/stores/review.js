@@ -1,11 +1,12 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import api from '@/services/apiService';
-import Swal from 'sweetalert2';
+import { useNotify, apiErrorMessage } from '@/composables/useNotify';
 
 export const useReviewStore = defineStore(
   'reviews',
   () => {
+    const notify = useNotify();
     const reviews = ref([]);
     const error = ref(null);
     const loading = ref(false);
@@ -91,21 +92,11 @@ export const useReviewStore = defineStore(
         if (reviews.value.length > pagination.value.last_page * 10) {
           pagination.value.last_page++;
         }
-        Swal.fire({
-          icon: 'success',
-          title: 'Review Published!',
-          showConfirmButton: false,
-          timer: 1500,
-        })
+        notify.success('Review publiée');
         pagination.value.total ++
       } catch (err) {
-        let message = 'Review creation failed';
-        if (err.response?.data?.message) message = err.response.data.message;
-        Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: message,
-        });
+        const message = apiErrorMessage(err, 'La publication a échoué.');
+        notify.error(message);
         throw new Error(message);
       }
 
@@ -121,20 +112,10 @@ export const useReviewStore = defineStore(
 
         const index = reviews.value.findIndex((element) => element.id === id);
         if (index !== -1) reviews.value[index] = response.data.data;
-        Swal.fire({
-          icon: 'success',
-          title: 'Review Updated!',
-          showConfirmButton: false,
-          timer: 1500,
-        })
+        notify.success('Review mise à jour');
       } catch (err) {
-        let message = 'Review update failed';
-        if (err.response?.data?.message) message = err.response.data.message;
-        Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: message,
-        });
+        const message = apiErrorMessage(err, 'La mise à jour a échoué.');
+        notify.error(message);
         throw new Error(message);
       }
     }
@@ -153,13 +134,8 @@ export const useReviewStore = defineStore(
         getReviews(pagination.value.current_page);
         // pagination.value.total --
       } catch (err) {
-        let message = 'Review deletion failed';
-        if (err.response?.data?.message) message = err.response.data.message;
-        Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: message,
-        });
+        const message = apiErrorMessage(err, 'La suppression a échoué.');
+        notify.error(message);
         throw new Error(message);
       }
       getKPI();

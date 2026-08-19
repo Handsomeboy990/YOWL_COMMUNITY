@@ -24,9 +24,9 @@
 
 <script setup>
 import { ref } from "vue";
+import { useNotify } from '@/composables/useNotify';
 import { useUserStore } from "@/stores/user";
 import router from "@/router";
-import Swal from "sweetalert2";
 
 const props = defineProps({
   content: String,
@@ -37,28 +37,19 @@ const newComment = ref(props.content || "");
 const focused = ref(false);
 
 const userStore = useUserStore()
+const notify = useNotify();
 const emit = defineEmits(["submitComment", "editComment"]);
 
 const submit = () => {
   // Connexion obligatoire
   if (!userStore.isAuthenticated) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Connexion requise',
-      text: "Tu dois être connecté pour commenter.",
-      confirmButtonColor: "#FF6B35"
-    });
+    notify.info('Connexion requise', "Tu dois être connecté pour commenter.");
     router.push('/login')
     return;
   }
 
   if (!newComment.value.trim()) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Commentaire vide',
-      text: "Impossible de publier un commentaire vide.",
-      confirmButtonColor: '#FF6B35'
-    });
+    notify.warning('Commentaire vide', "Impossible de publier un commentaire vide.");
     return;
   }
 

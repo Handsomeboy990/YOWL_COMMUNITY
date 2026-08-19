@@ -33,14 +33,15 @@
 <script setup>
 import { ref, watch } from 'vue'
 import defaultAvatar from '@/assets/logo.png'
+import { useNotify } from '@/composables/useNotify';
 import { useUserStore } from '@/stores/user'
 import { getStorageUrl } from '@/config'
-import Swal from 'sweetalert2';
 import BaseModal from '@/components/ui/BaseModal.vue';
 import BaseInput from '@/components/ui/BaseInput.vue';
 import BaseButton from '@/components/ui/BaseButton.vue';
 
 const userStore = useUserStore();
+const notify = useNotify();
 const saving = ref(false);
 
 defineProps({
@@ -90,21 +91,15 @@ const emit = defineEmits(['close'])
 const EditModalSubmit = async () => {
   saving.value = true;
   try {
-    await userStore.updateUser(form.value)
-    Swal.fire({
-      icon: "success",
-      title: "Profil mis à jour !",
-      timer: 1500,
-      showConfirmButton: false
-    })
+    const result = await userStore.updateUser(form.value)
+    if (result?.email_verification_required) {
+      notify.success('Profil mis à jour', 'Un code de vérification est parti vers ta nouvelle adresse.')
+    } else {
+      notify.success('Profil mis à jour')
+    }
     emit('close')
   } catch (err) {
-    Swal.fire({
-      icon: "error",
-      title: "La mise à jour a échoué",
-      text: err.message || '',
-      confirmButtonColor: '#FF6B35',
-    })
+    notify.error('La mise à jour a échoué', err.message || '')
   } finally {
     saving.value = false;
   }

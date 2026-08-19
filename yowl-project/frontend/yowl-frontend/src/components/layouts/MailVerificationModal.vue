@@ -54,7 +54,7 @@
 
 <script setup>
 import { nextTick, onBeforeUnmount, ref, watch } from 'vue';
-import Swal from 'sweetalert2';
+import { useNotify } from '@/composables/useNotify';
 import BaseModal from '@/components/ui/BaseModal.vue';
 import BaseButton from '@/components/ui/BaseButton.vue';
 
@@ -70,6 +70,7 @@ const emit = defineEmits(['close', 'resend', 'verify']);
 const codeInputs = ref(['', '', '', '', '', '']);
 const otpInputs = ref([]);
 const resendCooldown = ref(0);
+const notify = useNotify();
 let cooldownTimer = null;
 
 watch(
@@ -112,12 +113,7 @@ const verifyCode = () => {
   if (code.length === 6) {
     emit('verify', code);
   } else {
-    Swal.fire({
-      icon: 'warning',
-      title: 'Code incomplet',
-      text: 'Merci de saisir les 6 chiffres du code reçu par email.',
-      confirmButtonColor: '#FF6B35',
-    });
+    notify.warning('Code incomplet', 'Merci de saisir les 6 chiffres du code reçu par email.');
   }
 };
 
@@ -128,13 +124,7 @@ const resendCode = () => {
     resendCooldown.value--;
     if (resendCooldown.value <= 0) clearInterval(cooldownTimer);
   }, 1000);
-  Swal.fire({
-    icon: 'success',
-    title: 'Code renvoyé',
-    text: 'Un nouveau code vient de partir. Vérifie ta boîte mail.',
-    timer: 2500,
-    showConfirmButton: false,
-  });
+  notify.success('Code renvoyé', 'Un nouveau code vient de partir. Vérifie ta boîte mail.');
 };
 
 onBeforeUnmount(() => clearInterval(cooldownTimer));

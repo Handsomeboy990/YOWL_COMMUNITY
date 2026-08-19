@@ -118,9 +118,9 @@
 <script setup>
 import { getStorageUrl } from '@/config';
 import { ref, watch } from 'vue';
+import { useNotify } from '@/composables/useNotify';
 import { useUserStore } from '@/stores/user';
 import { useRouter } from 'vue-router';
-import Swal from 'sweetalert2';
 import api from '@/services/apiService';
 import BaseModal from '@/components/ui/BaseModal.vue';
 import BaseInput from '@/components/ui/BaseInput.vue';
@@ -136,6 +136,7 @@ const emit = defineEmits(['close', 'publish', 'update']);
 
 const router = useRouter();
 const userStore = useUserStore();
+const notify = useNotify();
 const submitting = ref(false);
 
 const emptyForm = () => ({
@@ -274,23 +275,13 @@ const onTagKeydown = (e) => {
 // Soumission
 const submitReview = async () => {
     if (!userStore.isAuthenticated) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Connexion requise',
-            text: 'Tu dois être connecté pour publier une review.',
-            confirmButtonColor: '#FF6B35',
-        });
+        notify.info('Connexion requise', 'Tu dois être connecté pour publier une review.');
         router.push('/login');
         return;
     }
 
     if (!form.value.content.trim()) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Review vide',
-            text: 'Impossible de publier une review sans contenu.',
-            confirmButtonColor: '#FF6B35',
-        });
+        notify.warning('Review vide', 'Impossible de publier une review sans contenu.');
         return;
     }
 

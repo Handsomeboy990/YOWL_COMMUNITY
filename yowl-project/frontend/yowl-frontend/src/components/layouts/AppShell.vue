@@ -179,10 +179,11 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useNotify } from '@/composables/useNotify';
+import { useConfirm } from '@/composables/useConfirm';
 import { useUserStore } from '@/stores/user';
 import { useReviewStore } from '@/stores/review';
 import { getStorageUrl } from '@/config';
-import Swal from 'sweetalert2';
 import BaseButton from '@/components/ui/BaseButton.vue';
 import AddReviewModal from '@/components/layouts/AddReviewModal.vue';
 import { usePushNotifications } from '@/composables/usePushNotifications';
@@ -192,6 +193,8 @@ import NotificationPanel from '@/components/layouts/NotificationPanel.vue';
 const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
+const notify = useNotify();
+const confirm = useConfirm();
 const reviewStore = useReviewStore();
 
 const notificationStore = useNotificationStore();
@@ -260,12 +263,7 @@ const handleSearch = async () => {
     if (searchQuery.value.trim()) {
         await reviewStore.searchReviews(searchQuery.value.trim());
         if (reviewStore.reviews.length === 0) {
-            Swal.fire({
-                title: 'Aucun résultat',
-                text: 'Aucune review ne correspond à ta recherche pour le moment.',
-                icon: 'info',
-                confirmButtonColor: '#FF6B35',
-            });
+            notify.info('Aucun résultat', 'Aucune review ne correspond à ta recherche pour le moment.');
             searchQuery.value = '';
             reviewStore.getReviews();
         }
@@ -275,30 +273,18 @@ const handleSearch = async () => {
     }
 };
 
-const logout = () => {
+const logout = async () => {
     isDropdownOpen.value = false;
-    Swal.fire({
-        title: 'Confirmer la déconnexion',
-        text: 'Veux-tu vraiment te déconnecter ?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#FF6B35',
-        cancelButtonColor: '#1E2A38',
-        confirmButtonText: 'Oui, me déconnecter',
-        cancelButtonText: 'Annuler',
-    }).then(async (result) => {
-        if (result.isConfirmed) {
-            await userStore.logoutUser();
-            router.push('/');
-            Swal.fire({
-                title: 'Déconnecté !',
-                text: 'À très vite !',
-                icon: 'success',
-                timer: 1800,
-                showConfirmButton: false,
-            });
-        }
+    const confirmed = await confirm({
+        title: 'Se déconnecter ?',
+        message: 'Tu devras te reconnecter pour publier ou réagir.',
+        confirmLabel: 'Me déconnecter',
     });
+    if (!confirmed) return;
+
+    await userStore.logoutUser();
+    router.push('/');
+    notify.success('Déconnecté', 'À très vite.');
 };
 
 const onClickOutside = (event) => {
@@ -324,23 +310,14 @@ const push = usePushNotifications();
 const togglePush = async () => {
     if (push.isSubscribed.value) {
         await push.unsubscribe();
-        Swal.fire({
-            title: 'Notifications désactivées',
-            icon: 'info',
-            timer: 1800,
-            showConfirmButton: false,
-        });
+        notify.info('Notifications désactivées');
     } else {
         const ok = await push.subscribe();
-        Swal.fire({
-            title: ok ? 'Notifications activées !' : 'Notifications refusées',
-            text: ok
-                ? 'Tu seras prévenu des réactions et commentaires sur tes reviews.'
-                : "Autorise les notifications dans ton navigateur pour les activer.",
-            icon: ok ? 'success' : 'warning',
-            timer: 2500,
-            showConfirmButton: false,
-        });
+        if (ok) {
+            notify.success('Notifications activées', 'Tu seras prévenu des réactions et commentaires sur tes reviews.');
+        } else {
+            notify.warning('Notifications refusées', "Autorise les notifications dans ton navigateur pour les activer.");
+        }
     }
 };
 

@@ -129,12 +129,13 @@ import Pagination from '@/components/layouts/Pagination.vue';
 import UserProfilData from '@/components/layouts/UserProfilData.vue';
 import LeaveCommunity from '@/components/layouts/LeaveCommunity.vue';
 import AddReviewModal from '@/components/layouts/AddReviewModal.vue';
+import { useConfirm } from '@/composables/useConfirm';
 import { useReviewStore } from '@/stores/review';
 import { useUserStore } from '@/stores/user';
 import ImageCarousel from '@/components/layouts/ImageCarouselMyPost.vue';
-import Swal from 'sweetalert2';
 
 const reviewStore = useReviewStore();
+const confirm = useConfirm();
 const userStore = useUserStore();
 
 // Reviews de l'utilisateur connecté
@@ -176,27 +177,16 @@ const updatePost = async (updatedReview) => {
 };
 
 const deletePost = async (reviewId) => {
-  Swal.fire({
-    title: 'Confirmer la suppression',
-    text: 'Veux-tu vraiment supprimer cette review ?',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#FF6B35',
-    cancelButtonColor: '#1E2A38',
-    confirmButtonText: 'Oui, supprimer',
-    cancelButtonText: 'Annuler',
-  }).then(async (result) => {
-    if (result.isConfirmed) {
-      await reviewStore.deleteReviews(reviewId);
-      Swal.fire({
-        title: 'Supprimée !',
-        text: 'La review a été supprimée.',
-        icon: 'success',
-        timer: 1500,
-        showConfirmButton: false,
-      });
-    }
+  const confirmed = await confirm({
+    title: 'Supprimer cette review ?',
+    message: 'Elle disparaîtra du fil, avec ses commentaires et ses réactions.',
+    confirmLabel: 'Supprimer',
+    tone: 'danger',
   });
+  if (!confirmed) return;
+
+  // Le store affiche deja l'echec eventuel.
+  await reviewStore.deleteReviews(reviewId);
 };
 
 const getMedias = (review) => {

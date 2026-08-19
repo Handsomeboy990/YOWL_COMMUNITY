@@ -114,7 +114,8 @@ import CommentForm from "../layouts/CommentForm.vue";
 import ReportModal from "../layouts/ReportModal.vue";
 import { useCommentStore } from "@/stores/comment";
 import { useUserStore } from "@/stores/user";
-import Swal from "sweetalert2";
+import { useNotify, apiErrorMessage } from '@/composables/useNotify';
+import { useConfirm } from '@/composables/useConfirm';
 
 const storeUser = useUserStore()
 const user = storeUser.user
@@ -127,6 +128,8 @@ const props = defineProps({
 });
 
 const store = useCommentStore();
+const notify = useNotify();
+const confirm = useConfirm();
 const isReplying = ref(false);
 const showReplies = ref(false);
 const isEditing = ref(false)
@@ -179,49 +182,32 @@ const addReply = (replyContent) => {
 // Modifier le commentaire
 const editComment = async (commentContent) => {
     await store.updateComment({ content: commentContent.content }, props.comment.id)
-    Swal.fire({
-        icon: "success",
-        title: "Commentaire modifié !",
-        timer: 1200,
-        showConfirmButton: false
-    })
+    notify.success('Commentaire modifié')
     isEditing.value = false;
 }
 
 // Supprimer le commentaire
-const deleteComment = () => {
-    Swal.fire({
-        title: "Confirmer la suppression",
-        text: "Veux-tu vraiment supprimer ce commentaire ?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#FF6B35",
-        cancelButtonColor: "#1E2A38",
-        confirmButtonText: "Oui, supprimer",
-        cancelButtonText: "Annuler"
-    }).then(async (result) => {
-        if (result.isConfirmed) {
-            await store.deleteComment(props.comment.id)
-            Swal.fire({
-                title: "Supprimé !",
-                text: "Le commentaire a été supprimé.",
-                icon: "success",
-                timer: 1500,
-                showConfirmButton: false,
-            });
-        }
-    });
+const deleteComment = async () => {
+    const confirmed = await confirm({
+        title: 'Supprimer ce commentaire ?',
+        message: 'Il disparaîtra de la discussion pour tout le monde.',
+        confirmLabel: 'Supprimer',
+        tone: 'danger',
+    })
+    if (!confirmed) return
+
+    try {
+        await store.deleteComment(props.comment.id)
+        notify.success('Commentaire supprimé')
+    } catch (err) {
+        notify.error(apiErrorMessage(err, 'La suppression a échoué.'))
+    }
 }
 
 // J'aime / Je n'aime pas
 const toggleReaction = async (reaction) => {
     if (!storeUser.user?.id) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Connexion requise',
-            text: 'Tu dois être connecté pour réagir.',
-            confirmButtonColor: '#FF6B35',
-        });
+        notify.info('Connexion requise', 'Tu dois être connecté pour réagir.')
         return
     }
 

@@ -386,10 +386,13 @@ import Pagination from '@/components/layouts/Pagination.vue';
 import EmptyState from '@/components/ui/EmptyState.vue';
 import TableSkeleton from '@/components/ui/TableSkeleton.vue';
 import { computed, onMounted, ref } from 'vue';
+import { useNotify } from '@/composables/useNotify';
+import { useConfirm } from '@/composables/useConfirm';
 import api from '@/services/apiService';
-import Swal from 'sweetalert2';
 
 const activeTab = ref('overview');
+const notify = useNotify();
+const confirm = useConfirm();
 
 const stats = ref(null);
 const users = ref(null);
@@ -602,27 +605,21 @@ const changeSuggestionFilter = (value) => {
   fetchSuggestions(1);
 };
 
-const confirmAction = (options) =>
-  Swal.fire({
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#FF6B35',
-    cancelButtonColor: '#1E2A38',
-    cancelButtonText: 'Annuler',
-    ...options,
-  });
+// Le tableau de bord n'agit qu'apres confirmation : les gestes y sont
+// destructeurs ou visibles par toute la communaute.
+const confirmAction = ({ title, text, confirmButtonText, tone = 'danger' }) =>
+  confirm({ title, message: text, confirmLabel: confirmButtonText, tone });
 
-const notifySuccess = (title) =>
-  Swal.fire({ title, icon: 'success', timer: 1500, showConfirmButton: false });
+const notifySuccess = (title) => notify.success(title);
 
 const toggleRole = async (user) => {
   const newRole = isAdminUser(user) ? 'client' : 'admin';
-  const result = await confirmAction({
+  const confirmed = await confirmAction({
     title: 'Confirmer le changement de rôle',
     text: `Veux-tu vraiment passer ce membre en "${newRole}" ?`,
     confirmButtonText: 'Oui, changer',
   });
-  if (result.isConfirmed) {
+  if (confirmed) {
     await api.patch(`/admin/users/${user.id}/role`, { role: newRole });
     notifySuccess('Rôle mis à jour !');
     fetchUsers(users.value?.current_page || 1);
@@ -630,12 +627,12 @@ const toggleRole = async (user) => {
 };
 
 const deleteComment = async (id) => {
-  const result = await confirmAction({
+  const confirmed = await confirmAction({
     title: 'Confirmer la suppression',
     text: 'Veux-tu vraiment supprimer ce commentaire ? Cette action est irréversible.',
     confirmButtonText: 'Oui, supprimer',
   });
-  if (result.isConfirmed) {
+  if (confirmed) {
     await api.delete(`/admin/comments/${id}`);
     notifySuccess('Supprimé !');
     fetchComments(comments.value?.current_page || 1);
@@ -643,12 +640,12 @@ const deleteComment = async (id) => {
 };
 
 const publishReview = async (id) => {
-  const result = await confirmAction({
+  const confirmed = await confirmAction({
     title: 'Confirmer la publication',
     text: 'Veux-tu vraiment publier cette review ?',
     confirmButtonText: 'Oui, publier',
   });
-  if (result.isConfirmed) {
+  if (confirmed) {
     await api.patch(`/admin/reviews/${id}/publish`);
     notifySuccess('Publiée !');
     fetchReviews(reviews.value?.current_page || 1);
@@ -656,12 +653,12 @@ const publishReview = async (id) => {
 };
 
 const unpublishReview = async (id) => {
-  const result = await confirmAction({
+  const confirmed = await confirmAction({
     title: 'Confirmer la dépublication',
     text: 'Veux-tu vraiment dépublier cette review ?',
     confirmButtonText: 'Oui, dépublier',
   });
-  if (result.isConfirmed) {
+  if (confirmed) {
     await api.patch(`/admin/reviews/${id}/unpublish`);
     notifySuccess('Dépubliée !');
     fetchReviews(reviews.value?.current_page || 1);
@@ -669,12 +666,12 @@ const unpublishReview = async (id) => {
 };
 
 const deleteReview = async (id) => {
-  const result = await confirmAction({
+  const confirmed = await confirmAction({
     title: 'Confirmer la suppression',
     text: 'Veux-tu vraiment supprimer cette review ? Cette action est irréversible.',
     confirmButtonText: 'Oui, supprimer',
   });
-  if (result.isConfirmed) {
+  if (confirmed) {
     await api.delete(`/admin/reviews/${id}`);
     notifySuccess('Supprimée !');
     fetchReviews(reviews.value?.current_page || 1);
@@ -682,12 +679,12 @@ const deleteReview = async (id) => {
 };
 
 const banUser = async (id) => {
-  const result = await confirmAction({
+  const confirmed = await confirmAction({
     title: 'Confirmer le bannissement',
     text: 'Veux-tu vraiment bannir ce membre ?',
     confirmButtonText: 'Oui, bannir',
   });
-  if (result.isConfirmed) {
+  if (confirmed) {
     await api.patch(`/admin/users/${id}/ban`);
     notifySuccess('Banni !');
     fetchUsers(users.value?.current_page || 1);
@@ -695,12 +692,12 @@ const banUser = async (id) => {
 };
 
 const unbanUser = async (id) => {
-  const result = await confirmAction({
+  const confirmed = await confirmAction({
     title: 'Confirmer la réintégration',
     text: 'Veux-tu vraiment réintégrer ce membre dans la communauté ?',
     confirmButtonText: 'Oui, réintégrer',
   });
-  if (result.isConfirmed) {
+  if (confirmed) {
     await api.patch(`/admin/users/${id}/unban`);
     notifySuccess('Réintégré !');
     fetchUsers(users.value?.current_page || 1);
@@ -708,14 +705,14 @@ const unbanUser = async (id) => {
 };
 
 const resolveReport = async (report, status, deleteContent) => {
-  const result = await confirmAction({
+  const confirmed = await confirmAction({
     title: deleteContent ? 'Supprimer le contenu signalé' : 'Clore le signalement',
     text: deleteContent
       ? 'Le contenu sera supprimé définitivement et le signalement marqué traité.'
       : 'Le signalement sera clos sans toucher au contenu.',
     confirmButtonText: 'Confirmer',
   });
-  if (!result.isConfirmed) return;
+  if (!confirmed) return;
 
   await api.patch(`/admin/reports/${report.id}`, { status, delete_content: deleteContent });
   notifySuccess('Signalement traité');

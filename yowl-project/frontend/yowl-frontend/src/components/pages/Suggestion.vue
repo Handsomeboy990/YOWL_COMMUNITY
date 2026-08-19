@@ -32,7 +32,7 @@ import { ref } from 'vue';
 import BaseInput from '@/components/ui/BaseInput.vue';
 import BaseTextarea from '@/components/ui/BaseTextarea.vue';
 import BaseButton from '@/components/ui/BaseButton.vue';
-import Swal from 'sweetalert2';
+import { useNotify, apiErrorMessage } from '@/composables/useNotify';
 import api from '@/services/apiService';
 
 const form = ref({
@@ -42,15 +42,11 @@ const form = ref({
 });
 
 const isSending = ref(false);
+const notify = useNotify();
 
 const submit = async () => {
   if (!form.value.message.trim()) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Suggestion vide',
-      text: 'Écris ta suggestion avant de l\'envoyer.',
-      confirmButtonColor: '#FF6B35',
-    });
+    notify.warning('Suggestion vide', "Écris ta suggestion avant de l'envoyer.");
     return;
   }
 
@@ -62,24 +58,10 @@ const submit = async () => {
       message: form.value.message,
     });
 
-    Swal.fire({
-      icon: 'success',
-      title: 'Merci !',
-      text: response.data?.message || 'Ta suggestion a bien été enregistrée.',
-      timer: 2500,
-      showConfirmButton: false,
-    });
+    notify.success('Merci !', response.data?.message || 'Ta suggestion a bien été enregistrée.');
     form.value = { name: '', email: '', message: '' };
   } catch (err) {
-    const errors = err.response?.data?.errors;
-    Swal.fire({
-      icon: 'error',
-      title: 'Envoi impossible',
-      text: errors
-        ? Object.values(errors).flat().join(' ')
-        : err.response?.data?.message || 'Réessaie dans un instant.',
-      confirmButtonColor: '#FF6B35',
-    });
+    notify.error('Envoi impossible', apiErrorMessage(err, 'Réessaie dans un instant.'));
   } finally {
     isSending.value = false;
   }

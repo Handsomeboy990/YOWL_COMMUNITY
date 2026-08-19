@@ -40,7 +40,7 @@
 
 <script setup>
 import { ref, watch } from 'vue';
-import Swal from 'sweetalert2';
+import { useNotify, apiErrorMessage } from '@/composables/useNotify';
 import api from '@/services/apiService';
 import BaseModal from '@/components/ui/BaseModal.vue';
 import BaseButton from '@/components/ui/BaseButton.vue';
@@ -68,6 +68,7 @@ const reasons = [
 const reason = ref('');
 const details = ref('');
 const isSending = ref(false);
+const notify = useNotify();
 
 // Repartir d'un formulaire vierge a chaque ouverture
 watch(
@@ -93,23 +94,9 @@ async function submit() {
     });
 
     emit('close');
-    Swal.fire({
-      icon: 'success',
-      title: 'Signalement envoyé',
-      text: response.data?.message || 'La modération va examiner ce contenu.',
-      timer: 2500,
-      showConfirmButton: false,
-    });
+    notify.success('Signalement envoyé', response.data?.message || 'La modération va examiner ce contenu.');
   } catch (err) {
-    const errors = err.response?.data?.errors;
-    Swal.fire({
-      icon: 'error',
-      title: 'Signalement impossible',
-      text: errors
-        ? Object.values(errors).flat().join(' ')
-        : err.response?.data?.message || 'Réessaie dans un instant.',
-      confirmButtonColor: '#FF6B35',
-    });
+    notify.error('Signalement impossible', apiErrorMessage(err, 'Réessaie dans un instant.'));
   } finally {
     isSending.value = false;
   }
