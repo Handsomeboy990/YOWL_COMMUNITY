@@ -46,8 +46,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
   Route::get('users/{user}/activity', [UserController::class, 'activity']);
     Route::delete('/users/{user}', [UserController::class, 'destroy']);
 
-    Route::post('/reviews', [ReviewController::class, 'store']);
-    Route::post('/reviews/{review}', [ReviewController::class, 'update']);
+    // La publication accepte jusqu'a 5 fichiers : cadence resserree.
+    Route::post('/reviews', [ReviewController::class, 'store'])->middleware('throttle:20,1');
+    Route::post('/reviews/{review}', [ReviewController::class, 'update'])->middleware('throttle:30,1');
     Route::delete('/reviews/{review}', [ReviewController::class, 'destroy']);
     // Route::apiResource('reviews', ReviewController::class);
     // Route::apiResource('comments', CommentController::class);
