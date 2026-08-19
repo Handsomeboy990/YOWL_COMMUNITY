@@ -24,7 +24,7 @@ class SettingController extends Controller
                 'label' => $definition['label'],
                 'group' => $definition['group'],
                 'type' => $definition['type'],
-                'value' => $values[$key],
+                'value' => array_key_exists($key, $values) ? $values[$key] : $definition['default'],
                 'default' => $definition['default'],
             ];
         }

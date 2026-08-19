@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             PermissionSeeder::class,
             UsersSeeder::class,
             TagSeeder::class,
+            LegalPageSeeder::class,
             CommunitySeeder::class,
         ]);
     }

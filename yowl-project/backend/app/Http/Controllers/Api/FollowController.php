@@ -136,6 +136,40 @@ class FollowController extends Controller
         ]);
     }
 
+    /**
+     * Members matching a handle fragment, for the mention autocomplete.
+     *
+     * Anybody who blocked the searcher is left out: a mention is otherwise a
+     * way to reach somebody who does not want to be reached.
+     */
+    public function searchMembers(Request $request)
+    {
+        $validated = $request->validate([
+            'q' => 'required|string|min:1|max:30',
+        ]);
+
+        $terme = mb_strtolower($validated['q']);
+
+        $blockedBy = \App\Models\Block::where('blocked_id', $request->user()->id)->pluck('user_id');
+        $blocked = \App\Models\Block::where('user_id', $request->user()->id)->pluck('blocked_id');
+
+        $membres = User::query()
+            ->whereRaw('LOWER(username) LIKE ?', [$terme.'%'])
+            ->whereNull('anonymized_at')
+            ->where('is_active', true)
+            ->whereNotIn('id', $blockedBy)
+            ->whereNotIn('id', $blocked)
+            ->orderBy('username')
+            ->limit(6)
+            ->get(['id', 'username', 'fullname', 'picture']);
+
+        return response()->json([
+            'success' => true,
+            'data' => $membres,
+            'message' => 'Members retrieved successfully.',
+        ]);
+    }
+
     private function followerCount(string $class, int $id): int
     {
         return Follow::where('followable_type', $class)->where('followable_id', $id)->count();

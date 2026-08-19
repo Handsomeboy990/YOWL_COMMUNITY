@@ -14,6 +14,11 @@ import fs from 'node:fs';
  */
 const axe = fs.readFileSync('./node_modules/axe-core/axe.min.js', 'utf8');
 
+// En série : lancés en parallèle, plusieurs onglets sollicitent le serveur de
+// développement en même temps et une page peut ne pas être prête à temps, ce
+// qui fait échouer un contrôle sans qu'il y ait de régression.
+test.describe.configure({ mode: 'serial' });
+
 const parcours = [
   ['/feed', 'le fil'],
   ['/login', 'la connexion'],
@@ -29,9 +34,10 @@ for (const [chemin, nom] of parcours) {
     // et vérifie du même coup que l'application le respecte.
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto(chemin);
-    // On attend un titre rendu plutot qu'un delai arbitraire. Les pages
-    // d'authentification ne portent pas l'ossature de l'application.
-    await expect(page.getByRole('heading').first()).toBeVisible();
+    // On attend que l'application ait rendu quelque chose, plutôt qu'un délai
+    // arbitraire. Un titre ne convient pas : l'inscription n'en porte pas au
+    // premier écran.
+    await expect(page.locator('form, main, header').first()).toBeVisible();
     await page.addScriptTag({ content: axe });
 
     const resultat = await page.evaluate(async () =>
@@ -55,7 +61,9 @@ for (const [chemin, nom] of parcours) {
 
 test('le lien d\'évitement est la première cible du clavier', async ({ page }) => {
   await page.goto('/feed');
-  await expect(page.getByRole('banner')).toBeVisible();
+  await expect(page.locator('header').first()).toBeVisible();
+  // Aucun clic avant la tabulation : cliquer déplace le point de départ du
+  // parcours et le lien d'évitement n'est alors plus le premier atteint.
   await page.keyboard.press('Tab');
 
   const focus = await page.evaluate(() => document.activeElement?.textContent?.trim());

@@ -98,7 +98,7 @@
             <BaseButton variant="primary" icon="fa-solid fa-plus" @click="publishFirst">
               Publier mon premier avis
             </BaseButton>
-            <BaseButton :tag="'router-link'" :to="'/feed'" variant="ghost">Voir mon fil</BaseButton>
+            <BaseButton variant="ghost" @click="finish">Voir mon fil</BaseButton>
           </div>
         </section>
       </div>
@@ -151,6 +151,9 @@ async function saveTags() {
       [...chosenTags.value].map((id) => api.post('/follows', { type: 'tag', id }))
     );
     await followStore.load();
+    // Le fil est deja en memoire avec l'ancien etat : sans ce rechargement,
+    // il fallait rafraichir la page pour voir l'effet des sujets choisis.
+    await reviewStore.fetchReviews();
     step.value = 1;
     loadPeople();
   } catch (err) {
@@ -179,6 +182,13 @@ const publishFirst = () => {
 async function onPublished(data) {
   await reviewStore.createReviews(data);
   isPublishOpen.value = false;
+  router.push('/feed');
+}
+
+// Terminer sans publier recharge quand meme le fil : les abonnements pris
+// pendant l'accueil doivent etre visibles a l'arrivee.
+async function finish() {
+  await reviewStore.fetchReviews();
   router.push('/feed');
 }
 

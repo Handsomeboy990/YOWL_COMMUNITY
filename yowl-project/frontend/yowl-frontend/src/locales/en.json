@@ -96,5 +96,41 @@
     "french": "Français",
     "english": "English",
     "digest": "Weekly email digest"
+  },
+  "legal": {
+    "charter": "Guidelines",
+    "privacy": "Privacy",
+    "terms": "Terms of use",
+    "notices": "Legal notices",
+    "updated": "Last updated on {date}",
+    "unavailable": "Page unavailable",
+    "notPublished": "This text is not published yet."
+  },
+  "member": {
+    "notFound": "Member not found",
+    "block": "Block",
+    "unblock": "Unblock",
+    "blocked": "You blocked this member. Their posts are hidden.",
+    "nothing": "This member has not posted anything yet.",
+    "followers": "Followers",
+    "following": "Following",
+    "views": "Views"
+  },
+  "onboarding": {
+    "step1": "Your topics",
+    "step2": "Who to follow",
+    "step3": "Your first review",
+    "interests": "What are you into?",
+    "continue": "Continue",
+    "skip": "Skip",
+    "seeFeed": "See my feed",
+    "ready": "All set"
+  },
+  "auth": {
+    "remember": "Remember me",
+    "forgot": "Forgot your password?",
+    "welcomeBack": "Welcome back",
+    "noAccount": "No account yet?",
+    "signIn": "Sign in"
   }
 }

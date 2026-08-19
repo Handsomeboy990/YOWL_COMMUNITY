@@ -171,6 +171,79 @@ class UserController extends Controller
     }
 
     /**
+     * The public profile of a member, reached by their handle.
+     *
+     * Mentions point here, so it has to work without knowing an identifier
+     * and without being signed in.
+     */
+    public function publicProfile(Request $request, string $username)
+    {
+        $user = User::where('username', $username)->whereNull('anonymized_at')->first();
+        if (! $user) {
+            return response()->json(['success' => false, 'message' => 'Membre introuvable.'], 404);
+        }
+
+        $viewer = auth('sanctum')->user();
+
+        $totals = $user->reviews()->where('is_published', true)
+            ->selectRaw('COUNT(*) AS reviews')
+            ->selectRaw('COALESCE(SUM(nb_like), 0) AS likes')
+            ->selectRaw('COALESCE(SUM(nb_views), 0) AS views')
+            ->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'id' => $user->id,
+                'username' => $user->username,
+                'fullname' => $user->fullname,
+                'picture' => $user->picture,
+                'created_at' => $user->created_at,
+                'is_active' => $user->is_active,
+                'stats' => [
+                    'reviews' => (int) $totals->reviews,
+                    'likes' => (int) $totals->likes,
+                    'views' => (int) $totals->views,
+                    'followers' => $user->followers()->count(),
+                    'following' => $user->followedUsers()->count(),
+                ],
+                'following' => $viewer
+                    ? \App\Models\Follow::where('user_id', $viewer->id)
+                        ->where('followable_type', User::class)
+                        ->where('followable_id', $user->id)->exists()
+                    : false,
+                'blocked' => $viewer
+                    ? \App\Models\Block::where('user_id', $viewer->id)
+                        ->where('blocked_id', $user->id)->exists()
+                    : false,
+                'is_me' => $viewer?->id === $user->id,
+            ],
+            'message' => 'Profile retrieved successfully.',
+        ]);
+    }
+
+    /**
+     * The published reviews of a member, for their public profile.
+     */
+    public function publicReviews(string $username)
+    {
+        $user = User::where('username', $username)->whereNull('anonymized_at')->firstOrFail();
+
+        $reviews = $user->reviews()
+            ->where('is_published', true)
+            ->with(['user:id,username,picture', 'tags'])
+            ->withCount('comments')
+            ->orderByDesc('created_at')
+            ->paginate(10);
+
+        return response()->json([
+            'success' => true,
+            'data' => $reviews,
+            'message' => 'Reviews retrieved successfully.',
+        ]);
+    }
+
+    /**
      * The reviews written by a member, newest first.
      *
      * The profile used to build this list by filtering the global feed held in

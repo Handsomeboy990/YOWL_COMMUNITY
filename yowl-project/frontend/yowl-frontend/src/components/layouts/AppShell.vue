@@ -259,7 +259,7 @@ const mainNav = computed(() => {
 const secondaryNav = [
     { to: '/about', icon: 'fa-regular fa-circle-question', label: 'À propos' },
     { to: '/faq', icon: 'fa-regular fa-comments', label: 'FAQ' },
-    { to: '/policy', icon: 'fa-solid fa-shield-halved', label: 'Charte' },
+    { to: '/charte', icon: 'fa-solid fa-shield-halved', label: 'Charte' },
     { to: '/suggestion', icon: 'fa-regular fa-lightbulb', label: 'Suggestions' },
 ];
 

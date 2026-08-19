@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Cache;
  */
 class Settings
 {
-    private const CACHE_KEY = 'settings.all';
+    private const CACHE_PREFIX = 'settings.all';
 
     /**
      * @var array<string, array{type: string, default: mixed, rules: string, label: string, group: string}>
@@ -74,6 +74,19 @@ class Settings
     ];
 
     /**
+     * The cache key, versioned by the shape of the registry.
+     *
+     * The entry used to be cached for ever under a fixed key. Adding a
+     * setting therefore left a stale array in the cache that did not contain
+     * the new key, and the console crashed on an undefined index. Deriving the
+     * key from the declared keys means a registry change invalidates itself.
+     */
+    private static function cacheKey(): string
+    {
+        return self::CACHE_PREFIX.'.'.substr(md5(implode('|', array_keys(self::REGISTRY))), 0, 8);
+    }
+
+    /**
      * Read one setting, falling back to its declared default.
      */
     public static function get(string $key, mixed $fallback = null): mixed
@@ -84,6 +97,8 @@ class Settings
 
         $stored = self::all();
 
+        // array_key_exists et non ?? : une borne mise a vide vaut null, ce
+        // qui signifie "aucune limite" et non "reprends la valeur par defaut".
         return array_key_exists($key, $stored)
             ? $stored[$key]
             : self::REGISTRY[$key]['default'];
@@ -96,7 +111,7 @@ class Settings
      */
     public static function all(): array
     {
-        return Cache::rememberForever(self::CACHE_KEY, function () {
+        return Cache::rememberForever(self::cacheKey(), function () {
             $stored = Setting::pluck('value', 'key')->all();
 
             $resolved = [];
@@ -129,7 +144,7 @@ class Settings
 
     public static function forget(): void
     {
-        Cache::forget(self::CACHE_KEY);
+        Cache::forget(self::cacheKey());
     }
 
     /**

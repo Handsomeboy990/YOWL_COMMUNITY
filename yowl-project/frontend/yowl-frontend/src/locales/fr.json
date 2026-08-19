@@ -96,5 +96,41 @@
     "french": "Français",
     "english": "English",
     "digest": "Résumé hebdomadaire par email"
+  },
+  "legal": {
+    "charter": "Charte",
+    "privacy": "Confidentialité",
+    "terms": "Conditions d'utilisation",
+    "notices": "Mentions légales",
+    "updated": "Dernière mise à jour le {date}",
+    "unavailable": "Page indisponible",
+    "notPublished": "Ce texte n'est pas encore publié."
+  },
+  "member": {
+    "notFound": "Membre introuvable",
+    "block": "Bloquer",
+    "unblock": "Débloquer",
+    "blocked": "Tu as bloqué ce membre. Ses publications ne s'affichent pas.",
+    "nothing": "Ce membre n'a encore rien publié.",
+    "followers": "Abonnés",
+    "following": "Abonnements",
+    "views": "Vues"
+  },
+  "onboarding": {
+    "step1": "Tes sujets",
+    "step2": "Qui suivre",
+    "step3": "Ton premier avis",
+    "interests": "Qu'est-ce qui t'intéresse ?",
+    "continue": "Continuer",
+    "skip": "Passer",
+    "seeFeed": "Voir mon fil",
+    "ready": "C'est prêt"
+  },
+  "auth": {
+    "remember": "Se souvenir de moi",
+    "forgot": "Mot de passe oublié ?",
+    "welcomeBack": "Bon retour parmi nous",
+    "noAccount": "Pas encore de compte ?",
+    "signIn": "Se connecter"
   }
 }

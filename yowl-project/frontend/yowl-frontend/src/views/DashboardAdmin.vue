@@ -425,6 +425,9 @@
           description="Les idées envoyées par les membres apparaîtront ici." />
       </section>
 
+      <!-- ===== PAGES LEGALES ===== -->
+      <AdminLegalPages v-else-if="activeTab === 'legal'" />
+
       <!-- ===== REGLAGES ===== -->
       <AdminSettings v-else-if="activeTab === 'settings'" />
 
@@ -452,6 +455,7 @@ import { computed, onMounted, ref } from 'vue';
 import { useNotify } from '@/composables/useNotify';
 import { useConfirm } from '@/composables/useConfirm';
 import api from '@/services/apiService';
+import AdminLegalPages from '@/components/admin/AdminLegalPages.vue';
 import AdminSettings from '@/components/admin/AdminSettings.vue';
 import AdminRoles from '@/components/admin/AdminRoles.vue';
 import AdminAuditLog from '@/components/admin/AdminAuditLog.vue';
@@ -508,6 +512,7 @@ const tabs = computed(() => [
   { key: 'reviews', label: 'Avis', icon: 'fa-regular fa-newspaper' },
   { key: 'comments', label: 'Commentaires', icon: 'fa-regular fa-comments' },
   { key: 'suggestions', label: 'Suggestions', icon: 'fa-regular fa-lightbulb', badge: newSuggestions.value },
+  { key: 'legal', label: 'Pages légales', icon: 'fa-regular fa-file-lines' },
   { key: 'settings', label: 'Réglages', icon: 'fa-solid fa-sliders' },
   { key: 'roles', label: 'Rôles et droits', icon: 'fa-solid fa-user-shield' },
   { key: 'audit', label: 'Journal', icon: 'fa-solid fa-clipboard-list' },

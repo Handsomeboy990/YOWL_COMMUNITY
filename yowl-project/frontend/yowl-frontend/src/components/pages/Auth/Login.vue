@@ -54,7 +54,7 @@
           />
 
           <div class="flex items-center justify-between">
-            <BaseCheckbox v-model="rememberMe" label="Se souvenir de moi" />
+            <BaseCheckbox v-model="rememberMe" :label="t('auth.remember')" />
             <router-link to="/forgot-password" class="text-sm text-orange-text font-medium hover:underline">
               Mot de passe oublié ?
             </router-link>
@@ -126,6 +126,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import { useUserStore } from '@/stores/user';
 import { useFollowStore } from '@/stores/follow';
 import MailVerificationModal from '@/components/layouts/MailVerificationModal.vue';
@@ -135,6 +136,7 @@ import BaseCheckbox from '@/components/ui/BaseCheckbox.vue';
 
 const router = useRouter();
 const route = useRoute();
+const { t } = useI18n();
 const userStore = useUserStore();
 const followStore = useFollowStore();
 

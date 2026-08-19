@@ -56,9 +56,8 @@
     <!-- Contenu.
          La carte s'etire avec sa colonne, le texte non : au dela d'environ
          quatre-vingts caracteres l'oeil perd la ligne suivante. -->
-    <p class="font-roboto text-sm md:text-base text-gray-700 mb-3 line-clamp-3 max-w-[80ch]">
-      {{ review.content }}
-    </p>
+    <RichContent :text="review.content"
+      classes="font-roboto text-sm md:text-base text-gray-700 mb-3 line-clamp-3 max-w-[80ch]" />
     <router-link :to="{ name: 'review-detail', params: { id: review.id } }"
       class="text-orange-text hover:text-orange-primary-dark font-medium text-sm transition-colors duration-200 inline-flex items-center gap-1">
       Voir plus
@@ -155,6 +154,7 @@ import LinkPreviewCard from './LinkPreviewCard.vue'
 import PollCard from './PollCard.vue'
 import HelpfulVote from './HelpfulVote.vue'
 import FollowButton from '@/components/ui/FollowButton.vue'
+import RichContent from '@/components/ui/RichContent.vue'
 import { useBookmarkStore } from '@/stores/bookmark'
 import { useConfirm } from '@/composables/useConfirm'
 import api from '@/services/apiService'

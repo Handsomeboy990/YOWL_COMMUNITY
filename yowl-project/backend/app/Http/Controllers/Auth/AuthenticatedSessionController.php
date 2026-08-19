@@ -12,11 +12,27 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
+    /**
+     * Sign in and issue a token.
+     *
+     * "Se souvenir de moi" was sent by the form and read by nobody: the token
+     * lasted the same fourteen days either way, so ticking the box or not made
+     * no difference at all. It now decides the lifetime, and the client keeps
+     * the token accordingly.
+     */
     public function store(LoginRequest $request)
     {
         $request->authenticate();
 
-        $token = $request->user()->createToken('yowl-access-token');
+        $remember = $request->boolean('remember');
+
+        // Sans la case, la session dure la journee : sur un poste partage,
+        // c'est le comportement attendu.
+        $expiresAt = $remember
+            ? now()->addMinutes((int) config('sanctum.expiration', 20160))
+            : now()->addDay();
+
+        $token = $request->user()->createToken('yowl-access-token', ['*'], $expiresAt);
 
         $user = $request->user();
         $user['roles'] = $user->getRoleNames();
@@ -26,6 +42,8 @@ class AuthenticatedSessionController extends Controller
         return response()->json([
             'success' => true,
             'token' => $token->plainTextToken,
+            'remember' => $remember,
+            'expires_at' => $expiresAt,
             'user' => $user,
         ]);
     }

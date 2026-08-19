@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\BookmarkController;
 use App\Http\Controllers\Api\DigestController;
 use App\Http\Controllers\Api\FollowController;
 use App\Http\Controllers\Api\HelpfulController;
+use App\Http\Controllers\Api\LegalPageController;
 use App\Http\Controllers\Api\PollController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\RoleController;
@@ -42,6 +43,13 @@ Route::get('/reviews/{review}', [ReviewController::class, 'show']);
 Route::get('/tags', [\App\Http\Controllers\Api\TagController::class, 'index']);
 
 Route::get('/polls/{poll}', [PollController::class, 'show']);
+
+// Pages legales, lues par tout le monde.
+Route::get('/legal/{slug}', [LegalPageController::class, 'show']);
+
+// Profil public d'un membre, cible des mentions.
+Route::get('/membres/{username}', [UserController::class, 'publicProfile']);
+Route::get('/membres/{username}/avis', [UserController::class, 'publicReviews']);
 
 // Desabonnement du resume, sans connexion : un lien depuis un email.
 Route::match(['get', 'post'], '/digest/unsubscribe/{token}', [DigestController::class, 'unsubscribe'])
@@ -89,6 +97,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/follows', [FollowController::class, 'store']);
     Route::delete('/follows', [FollowController::class, 'destroy']);
     Route::get('/follows/suggestions', [FollowController::class, 'suggestions']);
+
+    // Autocompletion des mentions
+    Route::get('/members/search', [FollowController::class, 'searchMembers'])->middleware('throttle:120,1');
 
     // Blocage : la decision individuelle, sans arbitrage
     Route::get('/blocks', [BlockController::class, 'index']);
@@ -141,6 +152,13 @@ Route::middleware(['auth:sanctum','role:admin'])->prefix('admin')->group(functio
   Route::get('/users/{user}', [AdminController::class, 'showUser']);
   Route::patch('/users/{user}', [AdminController::class, 'updateUser']);
   Route::post('/users/{user}/password', [AdminController::class, 'regeneratePassword']);
+
+  // Pages legales : edition, brouillon, publication
+  Route::get('/legal', [LegalPageController::class, 'index']);
+  Route::get('/legal/{slug}', [LegalPageController::class, 'edit']);
+  Route::put('/legal/{slug}', [LegalPageController::class, 'update']);
+  Route::delete('/legal/{slug}/draft', [LegalPageController::class, 'discardDraft']);
+  Route::post('/legal-images', [LegalPageController::class, 'uploadImage']);
 
   // Reglages de la plateforme, sans redeploiement
   Route::get('/settings', [SettingController::class, 'index']);

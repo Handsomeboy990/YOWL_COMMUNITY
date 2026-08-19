@@ -70,7 +70,7 @@
 
             <!-- Texte -->
             <div class="flex-1">
-              <p class="text-gray-700 leading-relaxed whitespace-pre-wrap">{{ review.content }}</p>
+              <RichContent :text="review.content" classes="text-gray-700 leading-relaxed whitespace-pre-wrap" />
 
               <!-- Tags -->
               <div v-if="review.tags?.length" class="mt-5 flex flex-wrap gap-2">
@@ -156,6 +156,7 @@ import { useRoute } from 'vue-router'
 import CommentList from '../CommentList.vue'
 import ImageCarousel from '@/components/layouts/ImageCarousel.vue'
 import LinkPreviewCard from '@/components/cards/LinkPreviewCard.vue'
+import RichContent from '@/components/ui/RichContent.vue'
 import { useCommentStore } from '@/stores/comment'
 import { useNotify, apiErrorMessage } from '@/composables/useNotify';
 import { useUserStore } from '@/stores/user'

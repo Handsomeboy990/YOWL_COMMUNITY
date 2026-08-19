@@ -1,15 +1,19 @@
 <?php
+
 namespace App\Http\Controllers\Auth;
+
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
-class EmailOtpController extends Controller {
-    public function resend(Request $request) {
+class EmailOtpController extends Controller
+{
+    public function resend(Request $request)
+    {
         $data = $request->only('email');
-        $validator = Validator::make($data, [ 'email' => ['required','email'] ]);
+        $validator = Validator::make($data, ['email' => ['required', 'email']]);
         if ($validator->fails()) {
             return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }
@@ -27,9 +31,10 @@ class EmailOtpController extends Controller {
         Mail::to($user->email)->send(new \App\Mail\EmailVerificationCode($code));
         return response()->json(['success' => true, 'message' => 'Code envoyé']);
     }
-    public function verify(Request $request) {
-        $data = $request->only('email','code');
-        $validator = Validator::make($data, [ 'email' => ['required','email'], 'code' => ['required','digits:6'] ]);
+    public function verify(Request $request)
+    {
+        $data = $request->only('email', 'code');
+        $validator = Validator::make($data, ['email' => ['required', 'email'], 'code' => ['required', 'digits:6']]);
         if ($validator->fails()) {
             return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }

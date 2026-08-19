@@ -32,7 +32,7 @@
 
             <ReportModal :is-open="isReportOpen" type="comment" :id="comment.id" @close="isReportOpen = false" />
 
-            <p class="mt-2 text-base text-gray-800">{{ comment.content }}</p>
+            <RichContent :text="comment.content" classes="" />
 
             <!-- Actions -->
             <footer class="flex items-center justify-between pt-4">
@@ -112,6 +112,7 @@
 import { computed, ref } from "vue";
 import CommentForm from "../layouts/CommentForm.vue";
 import ReportModal from "../layouts/ReportModal.vue";
+import RichContent from "@/components/ui/RichContent.vue";
 import { useCommentStore } from "@/stores/comment";
 import { useUserStore } from "@/stores/user";
 import { useNotify, apiErrorMessage } from '@/composables/useNotify';

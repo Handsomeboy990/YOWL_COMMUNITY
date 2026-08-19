@@ -12,10 +12,11 @@ import Activity from '@/components/pages/profil/Activity.vue'
 import MyPost from '@/components/pages/profil/MyPost.vue'
 import Saved from '@/components/pages/profil/Saved.vue'
 import Onboarding from '@/components/pages/Onboarding.vue'
+import MemberProfile from '@/views/MemberProfile.vue'
 import About from '@/components/pages/About.vue'
 import Faq from '@/components/pages/Faq.vue'
 import Suggestion from '@/components/pages/Suggestion.vue'
-import Policy from '@/components/pages/Policy.vue'
+import LegalPage from '@/components/pages/LegalPage.vue'
 import NotFound from '@/views/NotFound.vue'
 import ShareView from '@/views/ShareView.vue'
 import DashboardAdmin from '@/views/DashboardAdmin.vue';
@@ -80,6 +81,11 @@ const router = createRouter({
             meta: { requiresAuth: true }
         },
         {
+            path: '/membres/:username',
+            name: 'member-profile',
+            component: MemberProfile,
+        },
+        {
             path: '/bienvenue',
             name: 'onboarding',
             component: Onboarding,
@@ -103,9 +109,35 @@ const router = createRouter({
             component: About,
         },
         {
+            // Les quatre textes légaux passent par le même composant, alimenté
+            // par la base : les corriger ne demande plus de déploiement.
+            path: '/charte',
+            name: 'charte',
+            component: LegalPage,
+            meta: { slug: 'charte' },
+        },
+        {
+            path: '/confidentialite',
+            name: 'confidentialite',
+            component: LegalPage,
+            meta: { slug: 'confidentialite' },
+        },
+        {
+            path: '/conditions',
+            name: 'conditions',
+            component: LegalPage,
+            meta: { slug: 'conditions' },
+        },
+        {
+            path: '/mentions-legales',
+            name: 'mentions-legales',
+            component: LegalPage,
+            meta: { slug: 'mentions-legales' },
+        },
+        {
+            // L'ancienne adresse reste valable.
             path: '/policy',
-            name: 'policy',
-            component: Policy,
+            redirect: '/charte',
         },
         {
             path: '/faq',

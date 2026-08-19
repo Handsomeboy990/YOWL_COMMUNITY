@@ -1,6 +1,35 @@
 import { defineStore } from 'pinia';
 import api from '@/services/apiService';
 
+/**
+ * Stockage du compte selon « se souvenir de moi ».
+ *
+ * Coché, la session survit à la fermeture du navigateur ; décoché, elle
+ * s'arrête avec l'onglet. La case était envoyée au serveur et lue par
+ * personne, et le jeton restait de toute façon dans localStorage.
+ */
+const REMEMBER_KEY = 'yowl.remember';
+
+const authStorage = {
+  getItem(key) {
+    return localStorage.getItem(key) ?? sessionStorage.getItem(key);
+  },
+  setItem(key, value) {
+    const remembered = localStorage.getItem(REMEMBER_KEY) === '1';
+    if (remembered) {
+      localStorage.setItem(key, value);
+      sessionStorage.removeItem(key);
+    } else {
+      sessionStorage.setItem(key, value);
+      localStorage.removeItem(key);
+    }
+  },
+  removeItem(key) {
+    localStorage.removeItem(key);
+    sessionStorage.removeItem(key);
+  },
+};
+
 export const useUserStore = defineStore('user', {
   state: () => ({
     user: null,
@@ -62,9 +91,15 @@ export const useUserStore = defineStore('user', {
     //user login
     async loginUser(data) {
       try {
+        const remember = Boolean(data.rememberMe);
+        // Le choix est posé avant l'écriture du store, pour que la
+        // persistance vise le bon stockage dès la première sauvegarde.
+        localStorage.setItem(REMEMBER_KEY, remember ? '1' : '0');
+
         const result = await api.post('/login', {
           email: data.identifier,
           password: data.password,
+          remember,
         });
 
         this.user = result.data.user;
@@ -147,6 +182,7 @@ export const useUserStore = defineStore('user', {
       }
       this.user = null;
       this.token = null;
+      localStorage.removeItem(REMEMBER_KEY);
     },
 
     async leaveCommunity() {
@@ -166,5 +202,5 @@ export const useUserStore = defineStore('user', {
       }
     },
   },
-  persist: true,
+  persist: { storage: authStorage },
 });
