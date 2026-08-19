@@ -1,220 +1,124 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <AppShell>
-  <div class="w-full py-6">
-    <div class="w-full px-4 md:px-8">
+    <div class="w-full px-4 xl:px-6 py-6">
+      <ProfileHeader />
 
-      <div class="animate-fade-in-up">
-        <UserProfilData />
+      <!-- Erreur de chargement -->
+      <div v-if="profileStore.statsError"
+        class="mt-6 flex flex-col items-center text-center bg-white border border-gray-200 rounded-2xl py-14 px-4">
+        <i class="fa-solid fa-plug-circle-exclamation text-4xl text-gray-300"></i>
+        <h2 class="mt-5 text-lg font-semibold text-gray-800">Statistiques indisponibles</h2>
+        <p class="mt-2 text-sm text-gray-600 max-w-md">{{ profileStore.statsError }}</p>
+        <BaseButton class="mt-5" variant="primary" size="sm" @click="profileStore.fetchStats()">
+          Réessayer
+        </BaseButton>
       </div>
 
-      <!-- Onglets -->
-      <div class="flex flex-wrap gap-3 mb-8 animate-fade-in-up animation-delay-200">
-        <router-link to="/user/summary"
-          class="px-4 md:px-6 py-2 md:py-3 rounded-lg text-white bg-orange-primary hover:bg-orange-primary-dark transition-all shadow-md hover:shadow-lg font-medium flex-1 sm:flex-none text-center">
-          <i class="fa-solid fa-chart-line mr-2"></i>
-          <span>Résumé</span>
-        </router-link>
-        <router-link to="/user/my-reviews"
-          class="px-4 md:px-6 py-2 md:py-3 rounded-lg text-white bg-blue-night hover:bg-orange-primary transition-all shadow-md hover:shadow-lg font-medium flex-1 sm:flex-none text-center">
-          <i class="fa-solid fa-newspaper mr-2"></i>
-          <span>Mes reviews</span>
-        </router-link>
-        <router-link to="/user/activity"
-          class="px-4 md:px-6 py-2 md:py-3 rounded-lg text-white bg-blue-night hover:bg-orange-primary transition-all shadow-md hover:shadow-lg font-medium flex-1 sm:flex-none text-center">
-          <i class="fa-solid fa-clock-rotate-left mr-2"></i>
-          <span>Activité</span>
-        </router-link>
-      </div>
-
-      <!-- Statistiques -->
-      <div class="bg-white border border-orange-200 rounded-xl p-4 md:p-6 lg:p-8 shadow-lg animate-fade-in-up animation-delay-400">
-        <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-          <i class="fa-solid fa-chart-pie text-orange-primary"></i>
-          <span>Tes statistiques</span>
-        </h2>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-          <!-- Tuiles de compteurs -->
-          <div class="bg-gradient-to-br from-orange-50 to-white rounded-lg p-6 flex flex-col items-center justify-center hover:shadow-md transition-shadow border border-orange-100">
-            <i class="fa-solid fa-eye text-4xl md:text-5xl text-orange-primary mb-4"></i>
-            <span class="text-3xl md:text-4xl font-bold text-blue-night mb-2">
-              {{ totalViews.toLocaleString('fr-FR') }}
-            </span>
-            <p class="text-gray-600 font-medium text-sm md:text-base">Vues cumulées</p>
+      <div v-else class="mt-6 grid grid-cols-1 xl:grid-cols-3 gap-4 animate-fade-in-up">
+        <!-- Publications sur six mois -->
+        <section class="xl:col-span-2 bg-white border border-gray-200 rounded-2xl p-5">
+          <header class="flex items-center justify-between mb-4">
+            <h2 class="font-poppins font-bold text-blue-night">Tes publications</h2>
+            <span class="text-xs text-gray-400">6 derniers mois</span>
+          </header>
+          <div class="h-64">
+            <LineChart v-if="!profileStore.loadingStats" :data="timelineData" :options="lineOptions" />
+            <div v-else class="h-full rounded-xl skeleton"></div>
           </div>
+        </section>
 
-          <div class="bg-gradient-to-br from-orange-50 to-white rounded-lg p-6 flex flex-col items-center justify-center hover:shadow-md transition-shadow border border-orange-100">
-            <i class="fa-solid fa-newspaper text-4xl md:text-5xl text-orange-primary mb-4"></i>
-            <span class="text-3xl md:text-4xl font-bold text-blue-night mb-2">
-              {{ myReviews.length }}
-            </span>
-            <p class="text-gray-600 font-medium text-sm md:text-base">Reviews publiées</p>
-          </div>
-
-          <!-- Répartition des réactions (doughnut) -->
-          <div class="bg-gray-50 rounded-lg p-4 flex flex-col items-center justify-center hover:shadow-md transition-shadow">
-            <div class="w-full h-48 md:h-56">
-              <DoughnutChart v-if="hasEngagement" :data="chartDataType" :options="chartOptions" class="w-full h-full" />
-              <p v-else class="h-full grid place-items-center text-sm text-gray-400 text-center px-4">
-                Pas encore de réactions sur tes reviews
-              </p>
-            </div>
-            <p class="text-blue-night font-semibold mt-4 text-sm md:text-base">
-              Réactions sur tes reviews
+        <!-- Reactions recues -->
+        <section class="bg-white border border-gray-200 rounded-2xl p-5">
+          <h2 class="font-poppins font-bold text-blue-night mb-4">Réactions reçues</h2>
+          <div class="h-64 grid place-items-center">
+            <DoughnutChart v-if="hasEngagement" :data="reactionData" :options="doughnutOptions" />
+            <p v-else class="text-sm text-gray-400 text-center px-4">
+              Personne n'a encore réagi à tes reviews. Publie, ça viendra.
             </p>
           </div>
+        </section>
 
-          <!-- Répartition par âge de la communauté (bar) -->
-          <div class="bg-gray-50 rounded-lg p-4 flex flex-col items-center justify-center hover:shadow-md transition-shadow md:col-span-2 lg:col-span-1">
-            <div class="w-full h-48 md:h-56">
-              <BarChart :data="chartDataByAge" :options="chartOptions" class="w-full h-full" />
+        <!-- Detail chiffre -->
+        <section class="xl:col-span-3 bg-white border border-gray-200 rounded-2xl p-5">
+          <h2 class="font-poppins font-bold text-blue-night mb-4">Le détail</h2>
+          <dl class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
+            <div v-for="row in details" :key="row.label" class="min-w-0">
+              <dt class="text-xs text-gray-500 truncate">{{ row.label }}</dt>
+              <dd class="mt-1 font-poppins font-bold text-xl text-blue-night">{{ row.value }}</dd>
             </div>
-            <p class="text-blue-night font-semibold mt-4 text-sm md:text-base">
-              La communauté par tranche d'âge
-            </p>
-          </div>
-
-          <!-- Publications sur 6 mois (line) -->
-          <div class="bg-gray-50 rounded-lg p-4 flex flex-col items-center justify-center hover:shadow-md transition-shadow md:col-span-2">
-            <div class="w-full h-48 md:h-64">
-              <LineChart :data="chartDataTimeline" :options="chartOptions" class="w-full h-full" />
-            </div>
-            <p class="text-blue-night font-semibold mt-4 text-sm md:text-base">
-              Tes publications sur les 6 derniers mois
-            </p>
-          </div>
-        </div>
+          </dl>
+        </section>
       </div>
 
-      <!-- Quitter la communauté -->
-      <div class="mt-8 animate-fade-in-up animation-delay-400">
-        <LeaveCommunity />
-      </div>
+      <LeaveCommunity />
     </div>
-  </div>
-
   </AppShell>
 </template>
 
 <script setup>
-import AppShell from '@/components/layouts/AppShell.vue';
 import { computed, onMounted } from 'vue';
-
 import {
   Chart as ChartJS,
-  BarElement,
   ArcElement,
   LineElement,
   CategoryScale,
   LinearScale,
   PointElement,
+  Filler,
   Tooltip,
-  Legend,
 } from 'chart.js';
-import { Bar, Doughnut, Line } from 'vue-chartjs';
-import UserProfilData from '@/components/layouts/UserProfilData.vue';
+import { Doughnut, Line } from 'vue-chartjs';
+import AppShell from '@/components/layouts/AppShell.vue';
+import ProfileHeader from '@/components/layouts/ProfileHeader.vue';
 import LeaveCommunity from '@/components/layouts/LeaveCommunity.vue';
-import { useReviewStore } from '@/stores/review';
-import { useUserStore } from '@/stores/user';
+import BaseButton from '@/components/ui/BaseButton.vue';
+import { useProfileStore } from '@/stores/profile';
 
-ChartJS.register(
-  BarElement,
-  ArcElement,
-  LineElement,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  Tooltip,
-  Legend
-);
+ChartJS.register(ArcElement, LineElement, CategoryScale, LinearScale, PointElement, Filler, Tooltip);
 
-const BarChart = Bar;
-const DoughnutChart = Doughnut;
 const LineChart = Line;
+const DoughnutChart = Doughnut;
 
-const reviewStore = useReviewStore();
-const userStore = useUserStore();
+const profileStore = useProfileStore();
 
-onMounted(() => {
-  reviewStore.getReviews();
-  reviewStore.getKPI();
+onMounted(() => profileStore.fetchStats());
+
+const format = (value) => (value ?? 0).toLocaleString('fr-FR');
+
+const hasEngagement = computed(() => {
+  const stats = profileStore.stats;
+  if (!stats) return false;
+  return stats.likes + stats.dislikes + stats.comments_received > 0;
 });
 
-// Reviews de l'utilisateur connecté (données réelles)
-const myReviews = computed(() =>
-  reviewStore.reviews.filter((review) => review.user_id === userStore.user?.id)
-);
-
-const totalViews = computed(() =>
-  myReviews.value.reduce((sum, review) => sum + (review.nb_views || 0), 0)
-);
-
-const totalLikes = computed(() =>
-  myReviews.value.reduce((sum, review) => sum + (review.nb_like || 0), 0)
-);
-
-const totalDislikes = computed(() =>
-  myReviews.value.reduce((sum, review) => sum + (review.nb_dislike || 0), 0)
-);
-
-const totalComments = computed(() =>
-  myReviews.value.reduce((sum, review) => sum + (review.comments?.length || 0), 0)
-);
-
-const hasEngagement = computed(
-  () => totalLikes.value + totalDislikes.value + totalComments.value > 0
-);
-
-// Doughnut : réactions sur mes reviews
-const chartDataType = computed(() => ({
-  labels: ["J'aime", "Je n'aime pas", 'Commentaires'],
-  datasets: [
-    {
-      data: [totalLikes.value, totalDislikes.value, totalComments.value],
-      backgroundColor: ['#FF6B35', '#1E2A38', '#FDBA74'],
-    },
-  ],
-}));
-
-// Bar : répartition par âge de la communauté (KPI global)
-const chartDataByAge = computed(() => {
-  const ranges = reviewStore.kpi?.nbUsersByAgeRange || {};
-  return {
-    labels: Object.keys(ranges),
-    datasets: [
-      {
-        label: 'Membres',
-        data: Object.values(ranges),
-        backgroundColor: '#FF6B35',
-        borderRadius: 6,
-      },
-    ],
-  };
+const details = computed(() => {
+  const stats = profileStore.stats;
+  return [
+    { label: 'Reviews publiées', value: format(stats?.reviews) },
+    { label: 'Vues cumulées', value: format(stats?.views) },
+    { label: "J'aime reçus", value: format(stats?.likes) },
+    { label: "Je n'aime pas reçus", value: format(stats?.dislikes) },
+    { label: 'Commentaires reçus', value: format(stats?.comments_received) },
+    { label: 'Commentaires écrits', value: format(stats?.comments_written) },
+  ];
 });
 
-// Line : mes publications par mois (6 derniers mois)
-const chartDataTimeline = computed(() => {
-  const now = new Date();
-  const months = [];
-  const counts = [];
-  for (let i = 5; i >= 0; i--) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    months.push(d.toLocaleDateString('fr-FR', { month: 'short' }));
-    counts.push(
-      myReviews.value.filter((review) => {
-        const created = new Date(review.created_at);
-        return created.getFullYear() === d.getFullYear() && created.getMonth() === d.getMonth();
-      }).length
-    );
-  }
+// Le libelle vient du serveur au format AAAA-MM, affiche en mois court.
+const monthLabel = (key) => {
+  const [year, month] = key.split('-');
+  return new Date(Number(year), Number(month) - 1, 1)
+    .toLocaleDateString('fr-FR', { month: 'short' });
+};
+
+const timelineData = computed(() => {
+  const series = profileStore.stats?.reviews_per_month ?? [];
   return {
-    labels: months,
+    labels: series.map((point) => monthLabel(point.month)),
     datasets: [
       {
         label: 'Reviews publiées',
-        data: counts,
+        data: series.map((point) => point.count),
         borderColor: '#FF6B35',
         backgroundColor: 'rgba(255, 107, 53, 0.15)',
         tension: 0.4,
@@ -226,15 +130,34 @@ const chartDataTimeline = computed(() => {
   };
 });
 
-const chartOptions = {
+const reactionData = computed(() => {
+  const stats = profileStore.stats;
+  return {
+    labels: ["J'aime", "Je n'aime pas", 'Commentaires'],
+    datasets: [
+      {
+        data: [stats?.likes ?? 0, stats?.dislikes ?? 0, stats?.comments_received ?? 0],
+        backgroundColor: ['#FF6B35', '#1E2A38', '#FDBA74'],
+        borderWidth: 0,
+      },
+    ],
+  };
+});
+
+const lineOptions = {
   responsive: true,
   maintainAspectRatio: false,
-  plugins: {
-    legend: { display: false },
-  },
+  plugins: { legend: { display: false } },
   scales: {
     x: { grid: { display: false } },
-    y: { grid: { color: '#E5E7EB' }, ticks: { precision: 0 } },
+    y: { grid: { color: '#E5E7EB' }, ticks: { precision: 0 }, beginAtZero: true },
   },
+};
+
+const doughnutOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  cutout: '62%',
+  plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 16 } } },
 };
 </script>

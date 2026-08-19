@@ -44,6 +44,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
   Route::get('users/{user}', [UserController::class, 'show']);
   Route::post('users/{user}', [UserController::class, 'update']);
   Route::get('users/{user}/activity', [UserController::class, 'activity']);
+  Route::get('users/{user}/reviews', [UserController::class, 'reviews']);
+  Route::get('users/{user}/stats', [UserController::class, 'stats']);
     Route::delete('/users/{user}', [UserController::class, 'destroy']);
 
     // La publication accepte jusqu'a 5 fichiers : cadence resserree.

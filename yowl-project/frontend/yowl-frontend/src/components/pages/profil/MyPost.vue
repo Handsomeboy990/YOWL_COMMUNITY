@@ -1,159 +1,194 @@
 <template>
   <AppShell>
-  <div class="w-full px-4 md:px-8 py-6">
-    <UserProfilData />
+    <div class="w-full px-4 xl:px-6 py-6">
+      <ProfileHeader />
 
-    <!-- Onglets -->
-    <div class="flex space-x-4 mb-10">
-      <router-link to="/user/summary"
-        class="px-6 py-2 rounded-lg font-roboto text-[14px] text-white bg-blue-night hover:bg-orange-primary transition">
-        Résumé
-      </router-link>
-      <router-link to="/user/my-reviews"
-        class="px-6 py-2 rounded-lg font-roboto text-[14px] text-white bg-orange-primary hover:bg-orange-primary-dark transition">
-        Mes reviews
-      </router-link>
-      <router-link to="/user/activity"
-        class="px-6 py-2 rounded-lg font-roboto text-[14px] text-white bg-blue-night hover:bg-orange-primary transition">
-        Activité
-      </router-link>
-    </div>
+      <div class="mt-6 flex items-center justify-between gap-4">
+        <p class="text-sm text-gray-500">
+          <span v-if="profileStore.pagination.total">
+            {{ profileStore.pagination.total }} review<span v-if="profileStore.pagination.total > 1">s</span>
+          </span>
+        </p>
+        <BaseButton variant="primary" size="sm" icon="fa-solid fa-plus" @click="openCreateModal">
+          Publier une review
+        </BaseButton>
+      </div>
 
-    <!-- Etat vide -->
-    <div v-if="posts.length === 0" class="flex flex-col items-center justify-center text-center py-16">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-24 h-24 mb-6 text-gray-400" viewBox="0 0 24 24" fill="none"
-        stroke="currentColor" stroke-width="1.5">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M3 7h18M3 12h18M3 17h18M8 3v18M16 3v18" />
-      </svg>
-      <h2 class="text-2xl font-semibold text-gray-800">Aucune review pour le moment</h2>
-      <p class="mt-2 text-gray-700 text-md max-w-md">
-        Tu n'as encore rien publié. Lance-toi et partage ton premier avis !
-      </p>
-    </div>
+      <!-- Chargement -->
+      <div v-if="profileStore.loadingReviews" class="mt-4 grid gap-4 lg:grid-cols-2">
+        <div v-for="n in 4" :key="n" class="bg-white border border-gray-200 rounded-2xl p-5">
+          <div class="h-4 w-32 rounded skeleton"></div>
+          <div class="mt-4 h-3 rounded skeleton"></div>
+          <div class="mt-2 h-3 w-4/5 rounded skeleton"></div>
+          <div class="mt-4 h-32 rounded-xl skeleton"></div>
+        </div>
+      </div>
 
-    <!-- Liste des reviews -->
-    <div class="grid lg:grid-cols-3 md:grid-cols-1 gap-6">
-      <div v-for="review in posts" :key="review.id"
-        class="bg-gray-100 rounded-lg border-4 border-orange-primary p-6">
-        <!-- En-tête -->
-        <header>
-          <div class="flex justify-between items-center mb-2">
-            <span class="text-blue-night text-sm">{{ formatDate(review.created_at) }}</span>
-            <div class="flex gap-x-2">
-              <button
-                class="cursor-pointer text-white p-2 rounded-full bg-blue-night transition-all hover:-translate-y-1 duration-200"
-                aria-label="Modifier la review"
+      <!-- Erreur -->
+      <div v-else-if="profileStore.reviewsError"
+        class="mt-4 flex flex-col items-center text-center bg-white border border-gray-200 rounded-2xl py-14 px-4">
+        <i class="fa-solid fa-plug-circle-exclamation text-4xl text-gray-300"></i>
+        <h2 class="mt-5 text-lg font-semibold text-gray-800">Tes reviews n'ont pas pu être chargées</h2>
+        <p class="mt-2 text-sm text-gray-600 max-w-md">{{ profileStore.reviewsError }}</p>
+        <BaseButton class="mt-5" variant="primary" size="sm"
+          @click="profileStore.fetchReviews(profileStore.pagination.current_page)">
+          Réessayer
+        </BaseButton>
+      </div>
+
+      <!-- Etat vide -->
+      <div v-else-if="!profileStore.reviews.length"
+        class="mt-4 flex flex-col items-center text-center bg-white border border-gray-200 rounded-2xl py-16 px-4">
+        <i class="fa-regular fa-pen-to-square text-5xl text-gray-300"></i>
+        <h2 class="mt-5 text-xl font-semibold text-gray-800">Aucune review pour le moment</h2>
+        <p class="mt-2 text-gray-600 text-sm max-w-md">
+          Tu n'as encore rien publié. Partage ton premier avis, la communauté t'attend.
+        </p>
+        <BaseButton class="mt-5" variant="primary" icon="fa-solid fa-plus" @click="openCreateModal">
+          Publier ma première review
+        </BaseButton>
+      </div>
+
+      <!-- Liste -->
+      <div v-else class="mt-4 grid gap-4 lg:grid-cols-2 stagger">
+        <article v-for="review in profileStore.reviews" :key="review.id"
+          class="animate-fade-in-up bg-white border border-gray-200 rounded-2xl p-5 flex flex-col transition-shadow hover:shadow-md">
+          <header class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <p class="text-sm text-gray-500">{{ formatDate(review.created_at) }}</p>
+              <span v-if="!review.is_published"
+                class="inline-flex items-center gap-1.5 mt-1.5 px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 text-xs font-medium">
+                <i class="fa-solid fa-eye-slash"></i> Retirée du fil
+              </span>
+            </div>
+            <div class="flex gap-2 shrink-0">
+              <button type="button" aria-label="Modifier la review"
+                class="w-9 h-9 rounded-full grid place-items-center text-gray-500 hover:text-blue-night hover:bg-gray-100 transition-colors cursor-pointer"
                 @click="openEditModal(review)">
                 <i class="fa-solid fa-pen-to-square"></i>
               </button>
-              <button
-                class="cursor-pointer text-white rounded-full p-2 bg-red-500 transition-all hover:-translate-y-1 duration-200"
-                aria-label="Supprimer la review"
+              <button type="button" aria-label="Supprimer la review"
+                class="w-9 h-9 rounded-full grid place-items-center text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
                 @click="deletePost(review.id)">
                 <i class="fa-solid fa-trash"></i>
               </button>
             </div>
-          </div>
-        </header>
+          </header>
 
-        <!-- Contenu -->
-        <div class="flex flex-row md:flex-row gap-4">
-          <div v-if="getMedias(review).length && !review.link" class="w-1/2 h-50 object-cover rounded-lg">
+          <p class="mt-3 text-gray-700 text-sm leading-relaxed line-clamp-4 max-w-[80ch]">
+            {{ review.content }}
+          </p>
+
+          <div v-if="getMedias(review).length" class="mt-4">
             <ImageCarousel :images="getMedias(review)" />
           </div>
 
-          <div v-if="review.link && !getMedias(review).length" class="w-1/2 h-50 object-cover rounded-lg">
-            <div class="border rounded-lg overflow-hidden">
-              <iframe :src="review.link" class="w-full h-45 border-0" title="Aperçu du contenu"
-                sandbox="allow-same-origin allow-scripts allow-popups" referrerpolicy="no-referrer"></iframe>
-              <a :href="review.link" target="_blank" rel="noopener"
-                class="text-orange-primary text-[10px] flex items-center justify-center hover:underline ml-1">
-                Voir le contenu dont je parle
-              </a>
+          <!-- Lien cite. Une iframe pointant vers une URL fournie par le
+               membre, avec allow-same-origin et allow-scripts a la fois,
+               laissait la page encadree retirer son propre bac a sable. -->
+          <a v-if="safeLink(review)" :href="safeLink(review)" target="_blank" rel="noopener noreferrer"
+            class="group mt-4 flex items-center gap-3 p-3 rounded-xl border border-gray-200 hover:border-orange-primary hover:bg-orange-50/40 transition-colors">
+            <span class="w-9 h-9 shrink-0 rounded-lg bg-orange-primary/10 grid place-items-center text-orange-primary">
+              <i class="fa-solid fa-link"></i>
+            </span>
+            <span class="min-w-0 flex-1">
+              <span class="block text-sm font-medium text-blue-night truncate">{{ linkHost(review) }}</span>
+              <span class="block text-xs text-gray-400 truncate">{{ safeLink(review) }}</span>
+            </span>
+            <i class="fa-solid fa-arrow-up-right-from-square text-gray-300 group-hover:text-orange-primary transition-colors"></i>
+          </a>
+
+          <footer class="mt-auto pt-4 flex items-center justify-between border-t border-gray-100 text-sm">
+            <div class="flex items-center gap-4 text-gray-600">
+              <span class="flex items-center gap-1.5">
+                <i class="fa-solid fa-thumbs-up text-orange-primary"></i>{{ review.nb_like }}
+              </span>
+              <span class="flex items-center gap-1.5">
+                <i class="fa-solid fa-thumbs-down"></i>{{ review.nb_dislike }}
+              </span>
+              <span class="flex items-center gap-1.5">
+                <i class="fa-regular fa-eye"></i>{{ review.nb_views }}
+              </span>
             </div>
-          </div>
-
-          <div v-if="getMedias(review).length && review.link" class="w-1/2 h-50 object-cover rounded-lg">
-            <ImageCarousel :images="getMedias(review)" />
-            <a :href="review.link" target="_blank" rel="noopener"
-              class="text-orange-primary text-[10px] flex items-center justify-center hover:underline ml-1">
-              Voir le contenu dont je parle
-            </a>
-          </div>
-
-          <div class="flex-1 max-h-50 overflow-y-auto h-50">
-            <p class="text-gray-900">{{ review.content }}</p>
-          </div>
-        </div>
-
-        <!-- Statistiques -->
-        <footer class="flex items-center justify-between pt-4 border-t border-gray-200">
-          <div class="flex items-center space-x-4 text-blue-night text-sm">
-            <span class="flex items-center gap-1.5">
-              <i class="fa-solid fa-thumbs-up text-orange-primary"></i> {{ review.nb_like }}
-            </span>
-            <span class="flex items-center gap-1.5">
-              <i class="fa-solid fa-thumbs-down text-blue-night"></i> {{ review.nb_dislike }}
-            </span>
-            <span class="flex items-center gap-1.5">
-              <i class="fa-regular fa-eye"></i> {{ review.nb_views }}
-            </span>
-          </div>
-
-          <router-link :to="{ name: 'review-detail', params: { id: review.id } }"
-            class="text-blue-night hover:underline text-sm">
-            {{ review.comments?.length || 0 }} commentaires
-          </router-link>
-        </footer>
+            <router-link :to="{ name: 'review-detail', params: { id: review.id } }"
+              class="text-blue-night hover:text-orange-primary transition-colors">
+              {{ review.comments_count ?? 0 }} commentaire<span v-if="(review.comments_count ?? 0) > 1">s</span>
+            </router-link>
+          </footer>
+        </article>
       </div>
+
+      <Pagination v-if="profileStore.pagination.last_page > 1" class="mt-8"
+        :pagination="profileStore.pagination" @changePage="profileStore.fetchReviews" />
+
+      <LeaveCommunity />
     </div>
 
-    <!-- Pagination -->
-    <Pagination v-if="reviewStore.pagination.total > 10" :pagination="reviewStore.pagination" @changePage="getPage" />
-
-    <!-- Quitter la communauté -->
-    <LeaveCommunity />
-  </div>
-
-  <!-- Modale d'ajout / édition -->
-  <AddReviewModal :isOpen="isModalOpen" :editedReview="selectedReview" @close="closeModal" @publish="addPost"
-    @update="updatePost" />
-
+    <AddReviewModal :isOpen="isModalOpen" :editedReview="selectedReview" @close="closeModal" @publish="addPost"
+      @update="updatePost" />
   </AppShell>
 </template>
 
 <script setup>
+import { onMounted, ref } from 'vue';
 import AppShell from '@/components/layouts/AppShell.vue';
-import { computed, ref, onMounted } from 'vue';
+import ProfileHeader from '@/components/layouts/ProfileHeader.vue';
 import Pagination from '@/components/layouts/Pagination.vue';
-import UserProfilData from '@/components/layouts/UserProfilData.vue';
 import LeaveCommunity from '@/components/layouts/LeaveCommunity.vue';
 import AddReviewModal from '@/components/layouts/AddReviewModal.vue';
+import BaseButton from '@/components/ui/BaseButton.vue';
+import ImageCarousel from '@/components/layouts/ImageCarouselMyPost.vue';
 import { useConfirm } from '@/composables/useConfirm';
 import { useReviewStore } from '@/stores/review';
-import { useUserStore } from '@/stores/user';
-import ImageCarousel from '@/components/layouts/ImageCarouselMyPost.vue';
+import { useProfileStore } from '@/stores/profile';
 
 const reviewStore = useReviewStore();
+const profileStore = useProfileStore();
 const confirm = useConfirm();
-const userStore = useUserStore();
-
-// Reviews de l'utilisateur connecté
-const posts = computed(() =>
-  reviewStore.reviews.filter((review) => review.user_id === userStore.user?.id)
-);
 
 const isModalOpen = ref(false);
 const selectedReview = ref(null);
 
+onMounted(() => {
+  profileStore.fetchReviews(1);
+  profileStore.fetchStats();
+});
+
 const formatDate = (value) =>
   new Date(value).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
 
-onMounted(async () => {
-  await reviewStore.getReviews();
-});
+const getMedias = (review) => {
+  if (!review.medias) return [];
+  if (Array.isArray(review.medias)) return review.medias;
+  try {
+    return JSON.parse(review.medias);
+  } catch {
+    return [];
+  }
+};
 
-// Contrôles de la modale
+// Seuls http et https sont ouverts : un lien javascript: rendu tel quel
+// s'executerait au clic.
+const safeLink = (review) => {
+  if (!review.link) return null;
+  try {
+    const url = new URL(review.link);
+    return url.protocol === 'http:' || url.protocol === 'https:' ? url.href : null;
+  } catch {
+    return null;
+  }
+};
+
+const linkHost = (review) => {
+  const link = safeLink(review);
+  return link ? new URL(link).hostname.replace(/^www\./, '') : '';
+};
+
+const openCreateModal = () => {
+  selectedReview.value = null;
+  isModalOpen.value = true;
+};
+
 const openEditModal = (post) => {
   selectedReview.value = { ...post };
   isModalOpen.value = true;
@@ -164,16 +199,21 @@ const closeModal = () => {
   isModalOpen.value = false;
 };
 
-// Ajouter, modifier, supprimer
+const refresh = async () => {
+  await profileStore.fetchReviews(profileStore.pagination.current_page);
+  profileStore.fetchStats();
+};
+
 const addPost = async (reviewData) => {
   await reviewStore.createReviews(reviewData);
   closeModal();
+  await refresh();
 };
 
-const updatePost = async (updatedReview) => {
-  if (!selectedReview.value) return;
-  await reviewStore.updateReviews(selectedReview.value.id, updatedReview);
+const updatePost = async (id, reviewData) => {
+  await reviewStore.updateReviews(id, reviewData);
   closeModal();
+  await refresh();
 };
 
 const deletePost = async (reviewId) => {
@@ -185,22 +225,9 @@ const deletePost = async (reviewId) => {
   });
   if (!confirmed) return;
 
-  // Le store affiche deja l'echec eventuel.
+  // Le store rapporte lui-meme l'echec eventuel.
   await reviewStore.deleteReviews(reviewId);
-};
-
-const getMedias = (review) => {
-  if (!review.medias) return [];
-  try {
-    if (Array.isArray(review.medias)) return review.medias;
-    return JSON.parse(review.medias);
-  } catch {
-    return [];
-  }
-};
-
-// Pagination
-const getPage = async (page) => {
-  await reviewStore.getReviews(page);
+  profileStore.forget(reviewId);
+  profileStore.fetchStats();
 };
 </script>

@@ -1,32 +1,22 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <AppShell>
-  <div class="w-full px-4 md:px-8 py-6">
-    <UserProfilData />
+  <div class="w-full px-4 xl:px-6 py-6">
+    <ProfileHeader />
 
-    <!-- Onglets -->
-    <div class="flex space-x-4 mb-10">
-      <router-link to="/user/summary"
-        class="px-6 py-2 rounded-lg font-roboto text-[14px] text-white bg-blue-night hover:bg-orange-primary transition">
-        Résumé
-      </router-link>
-      <router-link to="/user/my-reviews"
-        class="px-6 py-2 rounded-lg font-roboto text-[14px] text-white bg-blue-night hover:bg-orange-primary transition">
-        Mes reviews
-      </router-link>
-      <router-link to="/user/activity"
-        class="px-6 py-2 rounded-lg font-roboto text-[14px] text-white bg-orange-primary hover:bg-orange-primary-dark transition">
-        Activité
-      </router-link>
-    </div>
-
-    <div class="bg-gray-100 rounded-lg border-4 border-orange-primary p-6 min-h-[200px]">
-      <div v-if="loading" class="flex items-center justify-center h-32">
-        <span class="text-gray-500">Chargement des activités...</span>
+    <div class="mt-6 bg-white border border-gray-200 rounded-2xl p-5 sm:p-6 min-h-[200px] animate-fade-in-up">
+      <div v-if="loading" class="space-y-3">
+        <div v-for="n in 5" :key="n" class="h-5 rounded skeleton"></div>
       </div>
       <div v-else>
         <template v-if="!groups.length">
-          <div class="text-center text-gray-500 py-8">Aucune activité récente.</div>
+          <div class="flex flex-col items-center text-center py-12">
+            <i class="fa-regular fa-clock text-4xl text-gray-300"></i>
+            <h2 class="mt-4 text-lg font-semibold text-gray-800">Aucune activité récente</h2>
+            <p class="mt-2 text-sm text-gray-600 max-w-md">
+              Publie, commente ou réagis : tout ce que tu fais apparaîtra ici.
+            </p>
+          </div>
         </template>
         <template v-else>
           <div v-for="(group, groupIndex) in groups" :key="group.label">
@@ -34,10 +24,10 @@
             <h2 class="font-bold text-lg mb-4 text-blue-night">{{ group.label }}</h2>
             <ul class="space-y-3 mb-6">
               <li v-for="(activity, index) in group.items" :key="group.label + '-' + index"
-                class="flex justify-between items-center gap-4">
+                class="flex justify-between items-start gap-4 py-2 border-b border-gray-50 last:border-0">
                 <span class="text-gray-700">
                   <span v-if="activity.type"
-                    class="font-bold text-xs px-2 py-1 rounded bg-orange-100 text-orange-700 mr-2 capitalize">
+                    class="font-medium text-xs px-2 py-0.5 rounded-full bg-orange-50 text-orange-700 mr-2 capitalize">
                     {{ activity.type }}
                   </span>
                   {{ activity.text }}
@@ -58,7 +48,7 @@
 
 <script setup>
 import AppShell from '@/components/layouts/AppShell.vue';
-import UserProfilData from '@/components/layouts/UserProfilData.vue';
+import ProfileHeader from '@/components/layouts/ProfileHeader.vue';
 import LeaveCommunity from '@/components/layouts/LeaveCommunity.vue';
 import { ref, onMounted } from 'vue';
 import { useUserStore } from '@/stores/user';

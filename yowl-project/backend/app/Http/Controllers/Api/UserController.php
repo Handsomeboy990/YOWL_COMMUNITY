@@ -8,6 +8,7 @@ use App\Support\Media;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
 use App\Mail\EmailVerificationCode;
+use App\Models\Comment;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -167,6 +168,102 @@ class UserController extends Controller
             'success' => true,
             'message' => 'Compte supprimé. Tes données personnelles ont été effacées.',
         ]);
+    }
+
+    /**
+     * The reviews written by a member, newest first.
+     *
+     * The profile used to build this list by filtering the global feed held in
+     * the client store, which only ever holds one page of ten. A member with
+     * more than a handful of reviews simply never saw most of them.
+     */
+    public function reviews(Request $request, User $user)
+    {
+        $isOwner = $request->user()->id === $user->id;
+
+        $reviews = $user->reviews()
+            ->when(! $isOwner, fn ($query) => $query->where('is_published', true))
+            ->with(['tags'])
+            ->withCount('comments')
+            ->orderByDesc('created_at')
+            ->paginate(10);
+
+        return response()->json([
+            'success' => true,
+            'data' => $reviews,
+            'message' => 'Reviews retrieved successfully.',
+        ]);
+    }
+
+    /**
+     * Aggregate statistics of a member, computed in the database.
+     *
+     * These figures used to be summed in the browser over the same partial
+     * feed page, so the counters shown on the profile were wrong for anyone
+     * with more than a page of activity.
+     */
+    public function stats(Request $request, User $user)
+    {
+        if ($request->user()->id !== $user->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Action non autorisée',
+            ], 403);
+        }
+
+        $totals = $user->reviews()
+            ->selectRaw('COUNT(*) AS reviews')
+            ->selectRaw('COALESCE(SUM(nb_views), 0) AS views')
+            ->selectRaw('COALESCE(SUM(nb_like), 0) AS likes')
+            ->selectRaw('COALESCE(SUM(nb_dislike), 0) AS dislikes')
+            ->first();
+
+        $commentsReceived = Comment::whereIn('review_id', $user->reviews()->select('id'))
+            ->where('user_id', '!=', $user->id)
+            ->count();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'reviews' => (int) $totals->reviews,
+                'views' => (int) $totals->views,
+                'likes' => (int) $totals->likes,
+                'dislikes' => (int) $totals->dislikes,
+                'comments_written' => $user->comments()->count(),
+                'comments_received' => $commentsReceived,
+                'reviews_per_month' => $this->reviewsPerMonth($user),
+            ],
+            'message' => 'Stats retrieved successfully.',
+        ]);
+    }
+
+    /**
+     * Reviews published each month over the last six months, oldest first.
+     *
+     * Counted month by month with date boundaries rather than with a grouped
+     * date expression, which keeps it portable and fills the empty months
+     * that a GROUP BY would silently omit.
+     *
+     * @return array<int, array{month: string, count: int}>
+     */
+    private function reviewsPerMonth(User $user): array
+    {
+        $series = [];
+
+        for ($offset = 5; $offset >= 0; $offset--) {
+            $start = now()->startOfMonth()->subMonths($offset);
+            $end = $start->copy()->addMonth();
+
+            $series[] = [
+                'month' => $start->format('Y-m'),
+                'count' => $user->reviews()
+                    ->where('created_at', '>=', $start)
+                    ->where('created_at', '<', $end)
+                    ->count(),
+            ];
+        }
+
+        return $series;
     }
 
     /**
