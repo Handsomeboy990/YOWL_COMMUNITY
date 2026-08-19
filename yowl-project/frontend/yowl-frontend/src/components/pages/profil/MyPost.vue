@@ -61,7 +61,8 @@
                    attend simplement son heure. -->
               <span v-if="isScheduled(review)"
                 class="inline-flex items-center gap-1.5 mt-1.5 px-2 py-0.5 rounded-full bg-sky-50 text-sky-700 text-xs font-medium">
-                <i class="fa-regular fa-clock"></i> Programmé pour le {{ formatDateTime(review.scheduled_for) }}
+                <i class="fa-regular fa-clock"></i>
+                {{ t('compose.scheduledBadge', { date: formatDateTime(review.scheduled_for) }) }}
               </span>
               <span v-else-if="!review.is_published"
                 class="inline-flex items-center gap-1.5 mt-1.5 px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 text-xs font-medium">
@@ -109,13 +110,11 @@
                sinon la seule reponse possible est de partir. -->
           <div v-if="!review.is_published && !isScheduled(review)"
             class="mt-4 rounded-xl bg-amber-50/70 border border-amber-100 p-3 flex items-center justify-between gap-3">
-            <p class="text-xs text-amber-800">
-              Tu penses que cette décision est une erreur ?
-            </p>
+            <p class="text-xs text-amber-800">{{ t('appeal.mistake') }}</p>
             <button type="button"
               class="shrink-0 text-xs font-medium text-orange-text hover:underline cursor-pointer"
               @click="openAppeal(review.id)">
-              Contester
+              {{ t('appeal.contest') }}
             </button>
           </div>
 
@@ -154,6 +153,7 @@
 
 <script setup>
 import { onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import AppShell from '@/components/layouts/AppShell.vue';
 import ProfileHeader from '@/components/layouts/ProfileHeader.vue';
 import Pagination from '@/components/layouts/Pagination.vue';
@@ -166,6 +166,10 @@ import { useConfirm } from '@/composables/useConfirm';
 import { useReviewStore } from '@/stores/review';
 import { useProfileStore } from '@/stores/profile';
 
+const { t, locale } = useI18n();
+
+// Une date lue dans une phrase anglaise ne doit pas rester au format francais.
+const dateLocale = () => (locale.value === 'en' ? 'en-GB' : 'fr-FR');
 const reviewStore = useReviewStore();
 const profileStore = useProfileStore();
 const confirm = useConfirm();
@@ -181,13 +185,13 @@ onMounted(() => {
 });
 
 const formatDate = (value) =>
-  new Date(value).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+  new Date(value).toLocaleDateString(dateLocale(), { day: 'numeric', month: 'short', year: 'numeric' });
 
 const isScheduled = (review) =>
   !review.is_published && review.scheduled_for && new Date(review.scheduled_for) > new Date();
 
 const formatDateTime = (value) =>
-  new Date(value).toLocaleString('fr-FR', {
+  new Date(value).toLocaleString(dateLocale(), {
     day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit',
   });
 

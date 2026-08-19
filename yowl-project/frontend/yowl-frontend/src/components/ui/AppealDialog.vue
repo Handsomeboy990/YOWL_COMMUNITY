@@ -8,27 +8,21 @@
         <div class="relative w-full max-w-lg bg-white rounded-2xl shadow-xl overflow-hidden">
           <div class="px-6 pt-6">
             <h2 :id="titleId" class="text-lg font-semibold text-blue-night">
-              Contester cette décision
+              {{ t('appeal.dialogTitle') }}
             </h2>
-            <p class="mt-1.5 text-sm text-gray-600">
-              Explique pourquoi tu penses que ce texte devait rester en ligne. Un
-              modérateur le relit et te répond, quelle que soit sa conclusion.
-            </p>
+            <p class="mt-1.5 text-sm text-gray-600">{{ t('appeal.dialogIntro') }}</p>
           </div>
 
           <div class="px-6 py-5">
-            <BaseTextarea v-model="message" label="Ton explication" :rows="6" :maxlength="2000"
-              :error="error" required
-              placeholder="Par exemple : le passage signalé cite un article, il ne reprend pas le propos à mon compte." />
-            <p class="mt-2 text-xs text-gray-500">
-              Vingt caractères minimum. Une contestation par contenu.
-            </p>
+            <BaseTextarea v-model="message" :label="t('appeal.yourExplanation')" :rows="6" :maxlength="2000"
+              :error="error" required :placeholder="t('appeal.placeholder')" />
+            <p class="mt-2 text-xs text-gray-500">{{ t('appeal.rules') }}</p>
           </div>
 
           <div class="flex justify-end gap-3 px-6 py-4 bg-gray-50 border-t border-gray-100">
-            <BaseButton variant="ghost" size="sm" @click="close">Annuler</BaseButton>
+            <BaseButton variant="ghost" size="sm" @click="close">{{ t('common.cancel') }}</BaseButton>
             <BaseButton variant="primary" size="sm" :loading="store.submitting" @click="send">
-              Envoyer la contestation
+              {{ t('appeal.send') }}
             </BaseButton>
           </div>
         </div>
@@ -39,6 +33,7 @@
 
 <script setup>
 import { ref, useId, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import BaseTextarea from '@/components/ui/BaseTextarea.vue';
 import BaseButton from '@/components/ui/BaseButton.vue';
 import { useAppealStore } from '@/stores/appeal';
@@ -51,6 +46,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update:open', 'sent']);
 
+const { t } = useI18n();
 const store = useAppealStore();
 const message = ref('');
 const error = ref('');
@@ -60,7 +56,7 @@ const titleId = useId();
 // un texte trop court fait perdre la saisie a qui ecrit vite.
 async function send() {
   if (message.value.trim().length < 20) {
-    error.value = 'Vingt caractères au minimum, pour que la relecture ait de quoi se faire une idée.';
+    error.value = t('appeal.tooShort');
     return;
   }
 

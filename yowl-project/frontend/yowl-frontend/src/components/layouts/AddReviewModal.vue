@@ -1,11 +1,11 @@
 <template>
-    <BaseModal :isOpen="isOpen" :title="form.id ? 'Modifier cet avis' : 'Publier un avis'" size="lg" @close="closeModal">
+    <BaseModal :isOpen="isOpen" :title="form.id ? t('compose.editTitle') : t('compose.newTitle')" size="lg" @close="closeModal">
         <form class="space-y-5 text-blue-night" @submit.prevent="submitReview">
             <!-- Contenu -->
             <BaseTextarea
                 v-model="form.content"
-                label="Ton avis"
-                placeholder="Partage ton avis avec la communauté..."
+                :label="t('compose.contentLabel')"
+                :placeholder="t('compose.contentPlaceholder')"
                 :rows="5"
                 required
             />
@@ -13,11 +13,11 @@
             <!-- Lien -->
             <BaseInput
                 v-model="form.link"
-                label="Lien (optionnel)"
+                :label="t('compose.linkLabel')"
                 type="url"
                 placeholder="https://exemple.com"
                 icon="fa-solid fa-link"
-                hint="Le contenu du web dont tu parles"
+                :hint="t('compose.linkHint')"
             />
 
             <!-- Rappel de l'hôte cité. L'aperçu Open Graph complet est
@@ -29,7 +29,7 @@
                 </span>
                 <span class="min-w-0">
                     <span class="block text-sm font-medium text-blue-night truncate">{{ linkHost }}</span>
-                    <span class="block text-xs text-gray-500">L'aperçu sera récupéré après publication.</span>
+                    <span class="block text-xs text-gray-500">{{ t('compose.previewLater') }}</span>
                 </span>
             </div>
 
@@ -39,11 +39,11 @@
             <div v-if="duplicates.length"
                 class="rounded-xl border border-sky-200 bg-sky-50/70 p-4 animate-fade-in-up">
                 <p class="text-sm font-medium text-sky-900">
-                    Ce lien est déjà discuté {{ duplicates.length > 1 ? 'à ' + duplicates.length + ' endroits' : 'ici' }}
+                    {{ duplicates.length > 1
+                        ? t('compose.duplicateMany', { count: duplicates.length })
+                        : t('compose.duplicateOne') }}
                 </p>
-                <p class="mt-1 text-xs text-sky-800">
-                    Rejoindre la conversation existante lui donne plus de portée qu'en ouvrir une seconde.
-                </p>
+                <p class="mt-1 text-xs text-sky-800">{{ t('compose.duplicateHint') }}</p>
                 <ul class="mt-3 space-y-2">
                     <li v-for="existing in duplicates" :key="existing.id">
                         <a :href="'/reviews/' + existing.id" target="_blank" rel="noopener"
@@ -56,7 +56,7 @@
                                 </span>
                                 <span class="block text-xs text-gray-600 line-clamp-2">{{ existing.content }}</span>
                                 <span class="mt-1 block text-[11px] text-gray-500">
-                                    {{ existing.comments_count }} réponse{{ existing.comments_count > 1 ? 's' : '' }}
+                                    {{ t('compose.replyCount', existing.comments_count, { count: existing.comments_count }) }}
                                 </span>
                             </span>
                             <i class="fa-solid fa-arrow-right text-sky-300 group-hover:text-sky-600 transition-colors mt-1"></i>
@@ -67,12 +67,12 @@
 
             <!-- Médias -->
             <div>
-                <span class="block text-sm font-medium text-blue-night mb-1.5">Images (optionnel)</span>
+                <span class="block text-sm font-medium text-blue-night mb-1.5">{{ t('compose.imagesLabel') }}</span>
                 <label
                     class="group flex flex-col items-center justify-center gap-2 w-full rounded-xl border-2 border-dashed border-gray-300 hover:border-orange-primary bg-gray-50 hover:bg-orange-50/50 px-4 py-6 cursor-pointer transition-colors"
                 >
                     <i class="fa-solid fa-cloud-arrow-up text-2xl text-gray-500 group-hover:text-orange-text transition-colors"></i>
-                    <span class="text-sm text-gray-500">Clique ou dépose tes images ici</span>
+                    <span class="text-sm text-gray-500">{{ t('compose.imagesDrop') }}</span>
                     <input type="file" accept="image/*" multiple class="hidden" @change="submitMedia" />
                 </label>
 
@@ -82,7 +82,7 @@
                         <img :src="src" alt="Aperçu" class="w-28 h-28 object-cover rounded-xl border border-gray-200" />
                         <button type="button"
                             class="absolute -top-2 -right-2 w-7 h-7 grid place-items-center bg-white rounded-full shadow text-red-500 hover:bg-red-50 cursor-pointer"
-                            aria-label="Retirer cette image"
+                            :aria-label="t('compose.removeImage')"
                             @click="removeNewMedia(index)">
                             <i class="fas fa-times text-xs"></i>
                         </button>
@@ -96,7 +96,7 @@
                             class="w-28 h-28 object-cover rounded-xl border border-gray-200" />
                         <button type="button"
                             class="absolute -top-2 -right-2 w-7 h-7 grid place-items-center bg-white rounded-full shadow text-red-500 hover:bg-red-50 cursor-pointer"
-                            aria-label="Retirer cette image"
+                            :aria-label="t('compose.removeImage')"
                             @click="removeExistingMedia(idx)">
                             <i class="fas fa-times text-xs"></i>
                         </button>
@@ -106,7 +106,7 @@
 
             <!-- Tags -->
             <div>
-                <span class="block text-sm font-medium text-blue-night mb-1.5">Tags</span>
+                <span class="block text-sm font-medium text-blue-night mb-1.5">{{ t('compose.tagsLabel') }}</span>
 
                 <div v-if="form.tags.length" class="flex flex-wrap gap-2 mb-2">
                     <span v-for="(tag, index) in form.tags" :key="'tag-' + index"
@@ -124,7 +124,7 @@
                 <div class="relative">
                     <BaseInput
                         :modelValue="form.tagInput"
-                        placeholder="Ajoute un tag puis Entrée ou virgule"
+                        :placeholder="t('compose.tagsPlaceholder')"
                         icon="fa-solid fa-hashtag"
                         @update:modelValue="onTagInput"
                         @keydown="onTagKeydown"
@@ -150,7 +150,9 @@
                     @click="toggleScheduling">
                     <span class="flex items-center gap-2.5 text-sm text-blue-night">
                         <i class="fa-regular fa-clock text-gray-500" aria-hidden="true"></i>
-                        {{ form.scheduled_for ? 'Publication le ' + formatSchedule(form.scheduled_for) : 'Programmer la publication' }}
+                        {{ form.scheduled_for
+                            ? t('compose.scheduledFor', { date: formatSchedule(form.scheduled_for) })
+                            : t('compose.schedule') }}
                     </span>
                     <i class="fa-solid fa-chevron-down text-xs text-gray-400 transition-transform"
                         :class="scheduling ? 'rotate-180' : ''" aria-hidden="true"></i>
@@ -158,25 +160,22 @@
 
                 <div v-if="scheduling" class="border-t border-gray-100 px-4 py-4 space-y-3">
                     <label class="block text-sm font-medium text-blue-night" :for="scheduleId">
-                        Date et heure de publication
+                        {{ t('compose.scheduleField') }}
                     </label>
                     <input :id="scheduleId" v-model="form.scheduled_for" type="datetime-local" :min="minSchedule"
                         class="w-full rounded-xl border-2 border-gray-200 px-4 py-2.5 text-blue-night outline-none focus:border-orange-primary transition-colors" />
-                    <p class="text-xs text-gray-500">
-                        L'avis reste hors du fil jusqu'à cette heure, à cinq minutes près.
-                        Tu le retrouves dans « Mes avis » en attendant.
-                    </p>
+                    <p class="text-xs text-gray-500">{{ t('compose.scheduleHint') }}</p>
                     <button v-if="form.scheduled_for" type="button"
                         class="text-xs font-medium text-orange-text hover:underline cursor-pointer"
                         @click="form.scheduled_for = ''">
-                        Publier tout de suite plutôt
+                        {{ t('compose.publishNow') }}
                     </button>
                 </div>
             </div>
 
             <!-- Actions -->
             <div class="flex justify-end gap-3 pt-2">
-                <BaseButton variant="ghost" :shine="false" @click="closeModal">Annuler</BaseButton>
+                <BaseButton variant="ghost" :shine="false" @click="closeModal">{{ t('common.cancel') }}</BaseButton>
                 <BaseButton type="submit" variant="primary" :loading="submitting">
                     {{ submitLabel }}
                 </BaseButton>
@@ -188,6 +187,7 @@
 <script setup>
 import { getStorageUrl } from '@/config';
 import { computed, ref, useId, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useNotify } from '@/composables/useNotify';
 import { useUserStore } from '@/stores/user';
 import { useRouter } from 'vue-router';
@@ -204,6 +204,7 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'publish', 'update']);
 
+const { t, locale } = useI18n();
 const router = useRouter();
 const userStore = useUserStore();
 const notify = useNotify();
@@ -247,12 +248,12 @@ const minSchedule = computed(() => {
 });
 
 const submitLabel = computed(() => {
-    if (form.value.id) return 'Mettre à jour';
-    return form.value.scheduled_for ? 'Programmer' : 'Publier';
+    if (form.value.id) return t('compose.update');
+    return form.value.scheduled_for ? t('compose.scheduleAction') : t('common.publish');
 });
 
 const formatSchedule = (value) =>
-    new Date(value).toLocaleString('fr-FR', {
+    new Date(value).toLocaleString(locale.value === 'en' ? 'en-GB' : 'fr-FR', {
         day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit',
     });
 

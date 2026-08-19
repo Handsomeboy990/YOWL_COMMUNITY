@@ -5,11 +5,8 @@
       <ProfileHeader />
 
       <div class="mt-6 max-w-3xl">
-        <h1 class="text-xl font-semibold text-blue-night">Mes contestations</h1>
-        <p class="mt-1.5 text-sm text-gray-600">
-          Quand un de tes textes est masqué, tu peux demander un réexamen. Un
-          modérateur relit et te répond par écrit.
-        </p>
+        <h1 class="text-xl font-semibold text-blue-night">{{ t('appeal.title') }}</h1>
+        <p class="mt-1.5 text-sm text-gray-600">{{ t('appeal.intro') }}</p>
 
         <div v-if="store.loading" class="mt-6 space-y-4">
           <div v-for="n in 2" :key="n" class="h-40 rounded-2xl skeleton"></div>
@@ -18,10 +15,8 @@
         <div v-else-if="!store.mine.length"
           class="mt-6 flex flex-col items-center text-center bg-white border border-gray-200 rounded-2xl py-16 px-4">
           <i class="fa-regular fa-comments text-5xl text-gray-400" aria-hidden="true"></i>
-          <h2 class="mt-5 text-lg font-semibold text-gray-800">Aucune contestation</h2>
-          <p class="mt-2 text-gray-600 text-sm max-w-md">
-            C'est plutôt bon signe : rien de ce que tu as écrit n'a été masqué.
-          </p>
+          <h2 class="mt-5 text-lg font-semibold text-gray-800">{{ t('appeal.empty') }}</h2>
+          <p class="mt-2 text-gray-600 text-sm max-w-md">{{ t('appeal.emptyHint') }}</p>
         </div>
 
         <ul v-else class="mt-6 space-y-4 stagger">
@@ -34,7 +29,7 @@
                   {{ statusStyle(appeal.status).label }}
                 </span>
                 <p class="mt-1 text-xs text-gray-500">
-                  Déposée le {{ formatDate(appeal.created_at) }}
+                  {{ t('appeal.filedOn', { date: formatDate(appeal.created_at) }) }}
                 </p>
               </div>
               <span class="shrink-0 rounded-full px-3 py-1 text-xs font-medium"
@@ -48,14 +43,14 @@
             <div v-if="appeal.response"
               class="mt-4 rounded-xl border-l-4 border-orange-primary bg-orange-50/60 p-4">
               <p class="text-xs font-semibold text-orange-text uppercase tracking-wide">
-                Réponse de la modération
+                {{ t('appeal.answer') }}
               </p>
               <p class="mt-1.5 text-sm text-gray-700 whitespace-pre-line">{{ appeal.response }}</p>
             </div>
 
             <p v-else class="mt-4 text-sm text-gray-500 flex items-center gap-2">
               <i class="fa-regular fa-clock" aria-hidden="true"></i>
-              En attente de relecture. Les contestations sont traitées dans l'ordre d'arrivée.
+              {{ t('appeal.waiting') }}
             </p>
           </li>
         </ul>
@@ -66,10 +61,12 @@
 
 <script setup>
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import AppShell from '@/components/layouts/AppShell.vue';
 import ProfileHeader from '@/components/layouts/ProfileHeader.vue';
 import { useAppealStore } from '@/stores/appeal';
 
+const { t, locale } = useI18n();
 const store = useAppealStore();
 
 /**
@@ -79,22 +76,22 @@ const store = useAppealStore();
 function statusStyle(status) {
   return {
     pending: {
-      label: 'En cours d\'examen', short: 'En attente',
+      label: t('appeal.pending'), short: t('appeal.pendingShort'),
       text: 'text-gray-500', badge: 'bg-gray-100 text-gray-700',
     },
     granted: {
-      label: 'Contestation acceptée', short: 'Acceptée',
+      label: t('appeal.granted'), short: t('appeal.grantedShort'),
       text: 'text-emerald-600', badge: 'bg-emerald-50 text-emerald-700',
     },
     upheld: {
-      label: 'Décision maintenue', short: 'Maintenue',
+      label: t('appeal.upheld'), short: t('appeal.upheldShort'),
       text: 'text-gray-600', badge: 'bg-amber-50 text-amber-700',
     },
   }[status] ?? { label: status, short: status, text: 'text-gray-500', badge: 'bg-gray-100 text-gray-700' };
 }
 
 function formatDate(value) {
-  return new Date(value).toLocaleDateString('fr-FR', {
+  return new Date(value).toLocaleDateString(locale.value === 'en' ? 'en-GB' : 'fr-FR', {
     day: 'numeric', month: 'long', year: 'numeric',
   });
 }

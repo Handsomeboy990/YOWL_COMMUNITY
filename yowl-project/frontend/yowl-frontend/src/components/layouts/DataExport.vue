@@ -5,11 +5,8 @@
         <i class="fa-solid fa-file-arrow-down" aria-hidden="true"></i>
       </span>
       <div class="min-w-0 flex-1">
-        <h2 class="font-poppins font-bold text-blue-night">Mes données</h2>
-        <p class="mt-1 text-sm text-gray-600">
-          Tout ce que la plateforme conserve à ton sujet, dans un seul fichier
-          que tu peux garder ou emporter ailleurs.
-        </p>
+        <h2 class="font-poppins font-bold text-blue-night">{{ t('data.title') }}</h2>
+        <p class="mt-1 text-sm text-gray-600">{{ t('data.intro') }}</p>
 
         <dl v-if="summary" class="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
           <div v-for="row in rows" :key="row.label"
@@ -25,7 +22,7 @@
 
         <BaseButton class="mt-5" variant="night" size="sm" icon="fa-solid fa-download"
           :loading="downloading" @click="download">
-          Télécharger mes données
+          {{ t('data.download') }}
         </BaseButton>
       </div>
     </div>
@@ -34,22 +31,24 @@
 
 <script setup>
 import { computed, onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import BaseButton from '@/components/ui/BaseButton.vue';
 import api from '@/services/apiService';
 import { useNotify, apiErrorMessage } from '@/composables/useNotify';
 
+const { t } = useI18n();
 const summary = ref(null);
 const loading = ref(true);
 const downloading = ref(false);
 const notify = useNotify();
 
 const rows = computed(() => [
-  { label: 'Avis', value: summary.value.avis },
-  { label: 'Commentaires', value: summary.value.commentaires },
-  { label: 'Réactions', value: summary.value.reactions },
-  { label: 'Abonnements', value: summary.value.abonnements },
-  { label: 'Enregistrements', value: summary.value.enregistrements },
-  { label: 'Notifications', value: summary.value.notifications },
+  { label: t('data.reviews'), value: summary.value.avis },
+  { label: t('data.comments'), value: summary.value.commentaires },
+  { label: t('data.reactions'), value: summary.value.reactions },
+  { label: t('data.follows'), value: summary.value.abonnements },
+  { label: t('data.bookmarks'), value: summary.value.enregistrements },
+  { label: t('data.notifications'), value: summary.value.notifications },
 ]);
 
 async function load() {
@@ -81,9 +80,9 @@ async function download() {
     lien.click();
     lien.remove();
     URL.revokeObjectURL(url);
-    notify.success('Export téléchargé', 'Le fichier est dans tes téléchargements.');
+    notify.success(t('data.downloaded'), t('data.downloadedHint'));
   } catch (err) {
-    notify.error(apiErrorMessage(err, "L'export n'a pas pu être préparé."));
+    notify.error(apiErrorMessage(err, t('data.failed')));
   } finally {
     downloading.value = false;
   }
