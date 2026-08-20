@@ -428,6 +428,8 @@
       <!-- ===== PAGES LEGALES ===== -->
       <AdminGrowth v-else-if="activeTab === 'growth'" />
 
+      <AdminCampaigns v-else-if="activeTab === 'campaigns'" />
+
       <AdminAppeals v-else-if="activeTab === 'appeals'" />
 
       <AdminLegalPages v-else-if="activeTab === 'legal'" />
@@ -459,6 +461,7 @@ import { computed, onMounted, ref } from 'vue';
 import { useNotify } from '@/composables/useNotify';
 import { useConfirm } from '@/composables/useConfirm';
 import api from '@/services/apiService';
+import AdminCampaigns from '@/components/admin/AdminCampaigns.vue';
 import AdminGrowth from '@/components/admin/AdminGrowth.vue';
 import AdminAppeals from '@/components/admin/AdminAppeals.vue';
 import AdminLegalPages from '@/components/admin/AdminLegalPages.vue';
@@ -524,6 +527,7 @@ const tabs = computed(() => [
   { key: 'reviews', label: 'Avis', icon: 'fa-regular fa-newspaper' },
   { key: 'comments', label: 'Commentaires', icon: 'fa-regular fa-comments' },
   { key: 'suggestions', label: 'Suggestions', icon: 'fa-regular fa-lightbulb', badge: newSuggestions.value },
+  { key: 'campaigns', label: 'Campagnes', icon: 'fa-regular fa-envelope' },
   { key: 'legal', label: 'Pages du site', icon: 'fa-regular fa-file-lines' },
   { key: 'settings', label: 'Réglages', icon: 'fa-solid fa-sliders' },
   { key: 'roles', label: 'Rôles et droits', icon: 'fa-solid fa-user-shield' },

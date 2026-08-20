@@ -18,6 +18,7 @@ import TagFeed from '@/views/TagFeed.vue'
 import TagDirectory from '@/views/TagDirectory.vue'
 import Suggestion from '@/components/pages/Suggestion.vue'
 import LegalPage from '@/components/pages/LegalPage.vue'
+import Unsubscribe from '@/components/pages/Unsubscribe.vue'
 import NotFound from '@/views/NotFound.vue'
 import ShareView from '@/views/ShareView.vue'
 import DashboardAdmin from '@/views/DashboardAdmin.vue';
@@ -162,6 +163,12 @@ const router = createRouter({
             name: 'faq',
             component: LegalPage,
             meta: { slug: 'faq' },
+        },
+        {
+            // Atteinte depuis un email, sans connexion.
+            path: '/desinscription/:token',
+            name: 'unsubscribe',
+            component: Unsubscribe,
         },
         {
             path: '/suggestion',

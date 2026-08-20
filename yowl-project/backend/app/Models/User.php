@@ -59,6 +59,7 @@ class User extends Authenticatable
             'email_verification_expires_at' => 'datetime',
             'is_active' => 'boolean',
             'digest_optin' => 'boolean',
+            'email_optout' => 'boolean',
             'digest_sent_at' => 'datetime',
             'anonymized_at' => 'datetime',
         ];

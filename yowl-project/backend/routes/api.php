@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AdminController;
+use App\Http\Controllers\Api\CampaignController;
 use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\DashboardKPIController;
 use App\Http\Controllers\Api\NotificationController;
@@ -26,6 +27,10 @@ use App\Http\Controllers\Api\CommentReactionController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
+// Desinscription des campagnes, sans connexion : un lien depuis un email.
+Route::match(['get', 'post'], '/campagnes/desinscription/{token}', [CampaignController::class, 'unsubscribe'])
+    ->middleware('throttle:20,1');
 
 // Identite du site, lue avant toute connexion : logo, pied de page, partage.
 Route::get('/site', [SettingController::class, 'site']);
@@ -160,6 +165,16 @@ Route::middleware(['auth:sanctum'])->group(function () {
 Route::middleware(['auth:sanctum','role:admin'])->prefix('admin')->group(function(){
   Route::patch('/users/{user}/role', [AdminController::class, 'changeUserRole']);
   Route::get('/stats', [AdminController::class, 'stats']);
+
+  // Campagnes email vers la communaute
+  Route::get('/campagnes', [CampaignController::class, 'index']);
+  Route::get('/campagnes/options', [CampaignController::class, 'options']);
+  Route::post('/campagnes/audience', [CampaignController::class, 'audience']);
+  Route::post('/campagnes', [CampaignController::class, 'store']);
+  Route::put('/campagnes/{campaign}', [CampaignController::class, 'update']);
+  Route::post('/campagnes/{campaign}/test', [CampaignController::class, 'test'])->middleware('throttle:10,10');
+  Route::post('/campagnes/{campaign}/envoi', [CampaignController::class, 'send'])->middleware('throttle:5,10');
+  Route::delete('/campagnes/{campaign}', [CampaignController::class, 'destroy']);
 
   // Croissance : les cinq indicateurs du cahier des charges
   Route::get('/croissance', [GrowthController::class, 'index']);
