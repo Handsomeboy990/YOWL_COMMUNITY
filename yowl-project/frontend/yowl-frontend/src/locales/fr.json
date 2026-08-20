@@ -228,5 +228,25 @@
     "tagsLabel": "Tags",
     "tagsPlaceholder": "Ajoute un tag puis Entrée ou virgule",
     "removeImage": "Retirer cette image"
+  },
+  "security": {
+    "title": "Sécurité",
+    "intro": "Ton mot de passe protège ton compte. Change-le si tu penses que quelqu'un d'autre le connaît.",
+    "change": "Changer mon mot de passe",
+    "current": "Mot de passe actuel",
+    "next": "Nouveau mot de passe",
+    "confirm": "Confirmer le nouveau mot de passe",
+    "rule": "Huit caractères au minimum.",
+    "mismatch": "Les deux saisies ne correspondent pas.",
+    "save": "Enregistrer le nouveau mot de passe",
+    "otherDevices": "Tes autres appareils seront déconnectés.",
+    "done": "Mot de passe modifié",
+    "failed": "Le changement n'a pas pu être enregistré.",
+    "strength0": "Saisis un mot de passe",
+    "strength1": "Très faible",
+    "strength2": "Faible",
+    "strength3": "Correct",
+    "strength4": "Bon",
+    "strength5": "Excellent"
   }
 }

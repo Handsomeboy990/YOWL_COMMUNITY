@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\FollowController;
 use App\Http\Controllers\Api\GrowthController;
 use App\Http\Controllers\Api\HelpfulController;
 use App\Http\Controllers\Api\LegalPageController;
+use App\Http\Controllers\Api\PasswordController;
 use App\Http\Controllers\Api\PollController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\RoleController;
@@ -117,6 +118,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/blocks', [BlockController::class, 'index']);
     Route::post('/blocks/{user}', [BlockController::class, 'store']);
     Route::delete('/blocks/{user}', [BlockController::class, 'destroy']);
+
+    // Changement de mot de passe : l'ancien d'abord, puis le nouveau confirme
+    Route::patch('/mot-de-passe', [PasswordController::class, 'update'])->middleware('throttle:6,10');
 
     Route::patch('/digest', [DigestController::class, 'update']);
 

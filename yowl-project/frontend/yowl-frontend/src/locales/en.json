@@ -228,5 +228,25 @@
     "tagsLabel": "Tags",
     "tagsPlaceholder": "Add a tag, then Enter or comma",
     "removeImage": "Remove this image"
+  },
+  "security": {
+    "title": "Security",
+    "intro": "Your password protects your account. Change it if you think somebody else knows it.",
+    "change": "Change my password",
+    "current": "Current password",
+    "next": "New password",
+    "confirm": "Confirm the new password",
+    "rule": "Eight characters minimum.",
+    "mismatch": "The two entries do not match.",
+    "save": "Save the new password",
+    "otherDevices": "Your other devices will be signed out.",
+    "done": "Password changed",
+    "failed": "The change could not be saved.",
+    "strength0": "Type a password",
+    "strength1": "Very weak",
+    "strength2": "Weak",
+    "strength3": "Fair",
+    "strength4": "Good",
+    "strength5": "Excellent"
   }
 }

@@ -51,6 +51,8 @@
         </section>
       </div>
 
+      <PasswordChange />
+
       <DataExport />
 
       <LeaveCommunity />
@@ -60,6 +62,7 @@
 
 <script setup>
 import DataExport from '@/components/layouts/DataExport.vue';
+import PasswordChange from '@/components/layouts/PasswordChange.vue';
 import { computed, onMounted } from 'vue';
 import {
   Chart as ChartJS,

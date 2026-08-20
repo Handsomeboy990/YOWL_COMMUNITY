@@ -53,7 +53,6 @@ class UserController extends Controller
                 'fullname' => ['string', 'max:255', 'min:5'],
                 'email' => ['string', 'lowercase', 'email', 'max:255', 'unique:users,email,' . $user->id],
                 'picture' => ['nullable', 'file', 'image', 'max:2048'],
-                'password' => ['nullable', Rules\Password::defaults()],
             ]);
 
             if ($request->hasFile('picture')) {
@@ -62,10 +61,6 @@ class UserController extends Controller
                 if ($previous) {
                     Media::delete($previous);
                 }
-            }
-
-            if (isset($validated['password'])) {
-                $validated['password'] = Hash::make($request->string('password'));
             }
 
             // Changer d'adresse annule la verification : sans cela, on
