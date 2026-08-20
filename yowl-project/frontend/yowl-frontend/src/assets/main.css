@@ -391,3 +391,269 @@ main:focus {
     white-space: nowrap;
     border-width: 0;
 }
+
+/* ==========================================================================
+   Contenu long : pages légales et éditeur d'administration.
+
+   Les deux affichent le même HTML, reconstruit côté serveur à partir d'une
+   liste blanche de balises. Ils partagent donc la même mise en forme, définie
+   ici plutôt que dans le composant d'édition : la page publique ne doit pas
+   dépendre du chargement d'un écran d'administration.
+   ========================================================================== */
+
+.contenu-legal,
+.editeur .prose-editeur {
+    line-height: 1.75;
+    color: #1e2a38;
+    font-size: 1.0625rem;
+}
+
+.editeur .prose-editeur {
+    padding: 1.25rem;
+    min-height: 24rem;
+}
+
+.contenu-legal > :first-child {
+    margin-top: 0;
+}
+
+/* Le premier paragraphe sert de chapô : il annonce le document. */
+.contenu-legal > p:first-of-type {
+    font-size: 1.1875rem;
+    line-height: 1.65;
+    color: #46536a;
+}
+
+.contenu-legal h2,
+.editeur .prose-editeur h2 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 1.5rem;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    color: #16202e;
+    margin: 3rem 0 0.875rem;
+    scroll-margin-top: 6rem;
+}
+
+/* Un filet court sous chaque section : il découpe un texte long sans peser. */
+.contenu-legal h2::after {
+    content: '';
+    display: block;
+    width: 2.5rem;
+    height: 3px;
+    margin-top: 0.75rem;
+    border-radius: 2px;
+    background: #ff6b35;
+}
+
+.contenu-legal h3,
+.editeur .prose-editeur h3 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 1.1875rem;
+    color: #1e2a38;
+    margin: 2rem 0 0.5rem;
+    scroll-margin-top: 6rem;
+}
+
+.contenu-legal h4,
+.editeur .prose-editeur h4 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 1.0625rem;
+    margin: 1.5rem 0 0.4rem;
+}
+
+.contenu-legal p,
+.editeur .prose-editeur p {
+    margin: 0 0 1.1rem;
+    /* La ligne reste lisible même quand la colonne est large. */
+    max-width: 74ch;
+}
+
+.contenu-legal ul,
+.editeur .prose-editeur ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0 0 1.25rem;
+    max-width: 74ch;
+}
+
+.contenu-legal ul li,
+.editeur .prose-editeur ul li {
+    position: relative;
+    padding-left: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.contenu-legal ul li::before,
+.editeur .prose-editeur ul li::before {
+    content: '';
+    position: absolute;
+    left: 0.25rem;
+    top: 0.72em;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #ff6b35;
+}
+
+.contenu-legal ol,
+.editeur .prose-editeur ol {
+    list-style: decimal;
+    padding-left: 1.5rem;
+    margin: 0 0 1.25rem;
+    max-width: 74ch;
+}
+
+.contenu-legal ol li,
+.editeur .prose-editeur ol li {
+    margin-bottom: 0.5rem;
+    padding-left: 0.25rem;
+}
+
+.contenu-legal ol li::marker {
+    color: #c2410c;
+    font-weight: 600;
+}
+
+.contenu-legal blockquote,
+.editeur .prose-editeur blockquote {
+    border-left: 3px solid #ff6b35;
+    background: #fff7f3;
+    padding: 1rem 1.25rem;
+    margin: 1.5rem 0;
+    border-radius: 0 0.75rem 0.75rem 0;
+    max-width: 74ch;
+    font-size: 1.0625rem;
+}
+
+.contenu-legal blockquote p:last-child,
+.editeur .prose-editeur blockquote p:last-child {
+    margin-bottom: 0;
+}
+
+.contenu-legal a,
+.editeur .prose-editeur a {
+    color: #c2410c;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: color 0.15s ease;
+}
+
+.contenu-legal a:hover {
+    color: #9a3412;
+}
+
+.contenu-legal img,
+.editeur .prose-editeur img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.75rem;
+    margin: 0 0 1rem;
+}
+
+.contenu-legal hr,
+.editeur .prose-editeur hr {
+    border: 0;
+    border-top: 1px solid #e5e7eb;
+    margin: 2.5rem 0;
+}
+
+.contenu-legal code,
+.editeur .prose-editeur code {
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 0.875em;
+    background: #f3f4f6;
+    padding: 0.1rem 0.35rem;
+    border-radius: 0.25rem;
+}
+
+/* Un tableau large doit défiler dans sa propre boîte, jamais pousser la page. */
+.contenu-legal table,
+.editeur .prose-editeur table {
+    display: block;
+    overflow-x: auto;
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 0.9375rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+}
+
+.contenu-legal th,
+.contenu-legal td,
+.editeur .prose-editeur th,
+.editeur .prose-editeur td {
+    text-align: left;
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid #e5e7eb;
+    vertical-align: top;
+    line-height: 1.55;
+}
+
+.contenu-legal thead th,
+.editeur .prose-editeur thead th {
+    background: #f6f8fb;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #56637a;
+    white-space: nowrap;
+}
+
+/* Les tableaux sans en-tête de colonne ont un en-tête de ligne : il porte le
+   libellé, et doit se distinguer de la valeur qu'il annonce. */
+.contenu-legal tbody th {
+    background: #f9fafb;
+    font-weight: 600;
+    color: #16202e;
+    white-space: nowrap;
+}
+
+.contenu-legal tbody tr:last-child th,
+.contenu-legal tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.contenu-legal tbody tr:hover td {
+    background: #fafbfc;
+}
+
+/* Les valeurs à remplir avant mise en ligne sautent aux yeux de l'éditeur. */
+.contenu-legal strong {
+    font-weight: 600;
+    color: #16202e;
+}
+
+/* Apparition des sections à la lecture. La classe est posée par la page, et
+   le repli sans JavaScript laisse tout visible. */
+.contenu-legal h2,
+.contenu-legal h3 {
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.reveler-actif .contenu-legal h2,
+.reveler-actif .contenu-legal h3 {
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+.reveler-actif .contenu-legal h2.vu,
+.reveler-actif .contenu-legal h3.vu {
+    opacity: 1;
+    transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .reveler-actif .contenu-legal h2,
+    .reveler-actif .contenu-legal h3 {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+}

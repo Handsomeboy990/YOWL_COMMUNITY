@@ -110,7 +110,11 @@
     "documents": "Les textes",
     "onThisPage": "Sur cette page",
     "readingTime": "{count} min de lecture",
-    "question": "Une question sur ce texte ?"
+    "question": "Une question sur ce texte ?",
+    "thisDocument": "Ce document",
+    "sections": "Sections",
+    "words": "Mots",
+    "duration": "Lecture"
   },
   "member": {
     "notFound": "Membre introuvable",

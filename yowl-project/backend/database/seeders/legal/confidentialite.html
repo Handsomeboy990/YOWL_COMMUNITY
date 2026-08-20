@@ -1,0 +1,180 @@
+<p>Cette page dit quelles données YOWL collecte, pourquoi, combien de temps elle
+les garde, et ce que tu peux exiger. Elle est écrite pour être lue, pas pour être
+opposée. Si un passage te paraît obscur, dis-le nous : c'est un défaut de notre
+côté, pas du tien.</p>
+
+<h2>En résumé</h2>
+<ul>
+<li>On collecte le <strong>minimum</strong> pour que la plateforme fonctionne.</li>
+<li>On ne <strong>vend rien</strong>, à personne, jamais.</li>
+<li>Il n'y a <strong>aucun traceur publicitaire</strong>, aucun pixel, aucune régie.</li>
+<li>Tu peux <strong>tout récupérer en un clic</strong>, dans un fichier lisible.</li>
+<li>Tu peux <strong>tout faire effacer</strong>, et c'est immédiat.</li>
+</ul>
+
+<h2>Qui est responsable</h2>
+<p>Le responsable du traitement est <strong>[RAISON SOCIALE]</strong>,
+<strong>[FORME JURIDIQUE]</strong> au capital de <strong>[MONTANT]</strong>, dont le
+siège est <strong>[ADRESSE COMPLÈTE]</strong>, immatriculée sous le numéro
+<strong>[SIREN]</strong>.</p>
+<p>Pour toute question relative à tes données : <strong>[ADRESSE EMAIL DE CONTACT]</strong>.</p>
+
+<h2>Ce que nous collectons</h2>
+
+<h3>Ce que tu nous donnes</h3>
+<table>
+<thead>
+<tr><th>Donnée</th><th>Pourquoi</th><th>Obligatoire</th></tr>
+</thead>
+<tbody>
+<tr><td>Adresse email</td><td>Identifier ton compte, réinitialiser un mot de passe, t'écrire</td><td>Oui</td></tr>
+<tr><td>Pseudo</td><td>Te désigner publiquement, permettre les mentions</td><td>Oui</td></tr>
+<tr><td>Nom affiché</td><td>Apparaître autrement que par ton pseudo</td><td>Non</td></tr>
+<tr><td>Date de naissance</td><td>Vérifier l'âge minimum d'accès</td><td>Oui</td></tr>
+<tr><td>Photo de profil</td><td>Te reconnaître dans le fil</td><td>Non</td></tr>
+<tr><td>Mot de passe</td><td>Protéger ton compte</td><td>Oui</td></tr>
+</tbody>
+</table>
+<p>Le mot de passe n'est jamais conservé en clair. Il est haché avec
+<strong>bcrypt</strong>, une fonction conçue pour être lente à inverser. Personne
+chez nous ne peut le lire, y compris l'administration.</p>
+
+<h3>Ce que tu publies</h3>
+<p>Tes avis, tes commentaires, tes réactions, les sujets et les membres que tu suis,
+tes enregistrements, tes sondages et tes votes. Ces contenus sont publics par nature :
+c'est ce que tu viens faire ici.</p>
+
+<h3>Ce que la plateforme observe</h3>
+<table>
+<thead>
+<tr><th>Donnée</th><th>À quoi elle sert</th><th>Durée</th></tr>
+</thead>
+<tbody>
+<tr><td>Signal de présence</td><td>Mesurer le temps moyen par session, agrégé</td><td>120 jours</td></tr>
+<tr><td>Nombre de vues d'un avis</td><td>Classer le fil</td><td>Durée de vie de l'avis</td></tr>
+<tr><td>Journal d'administration</td><td>Tracer les décisions de modération</td><td>12 mois</td></tr>
+<tr><td>Journaux techniques</td><td>Diagnostiquer une panne</td><td>30 jours</td></tr>
+</tbody>
+</table>
+<p>Le signal de présence mérite une explication, parce qu'il n'est pas évident. Les
+horodatages de publication disent <em>quand</em> quelqu'un a écrit, jamais
+<em>combien de temps</em> il est resté. Pour mesurer une durée de session, l'onglet
+ouvert envoie un signal par minute tant qu'il est visible. Ce signal ne contient que
+ton identifiant de compte et l'heure. Il ne dit pas quelle page tu regardais.</p>
+
+<h2>Ce que nous ne collectons pas</h2>
+<ul>
+<li>Aucune donnée de localisation.</li>
+<li>Aucun carnet d'adresses, aucun contact.</li>
+<li>Aucune empreinte de navigateur à des fins publicitaires.</li>
+<li>Aucun profil déduit de tes opinions politiques, religieuses ou de ta santé.</li>
+<li>Aucune donnée bancaire : la plateforme est gratuite et ne prend aucun paiement.</li>
+</ul>
+
+<h2>Sur quelle base légale</h2>
+<table>
+<thead>
+<tr><th>Traitement</th><th>Base légale</th></tr>
+</thead>
+<tbody>
+<tr><td>Gérer ton compte et publier tes contenus</td><td>Exécution du contrat</td></tr>
+<tr><td>Vérifier l'âge d'accès</td><td>Obligation légale</td></tr>
+<tr><td>Modérer les contenus signalés</td><td>Intérêt légitime, et obligation légale selon les cas</td></tr>
+<tr><td>Mesurer l'audience de façon agrégée</td><td>Intérêt légitime</td></tr>
+<tr><td>Résumé hebdomadaire par email</td><td>Consentement, retirable à tout moment</td></tr>
+<tr><td>Notifications sur ton appareil</td><td>Consentement, retirable à tout moment</td></tr>
+</tbody>
+</table>
+
+<h2>Qui d'autre y a accès</h2>
+<p>Aucun de ces prestataires n'exploite tes données pour son propre compte. Chacun
+agit sur nos instructions et pour la seule fourniture du service.</p>
+<table>
+<thead>
+<tr><th>Prestataire</th><th>Rôle</th><th>Où</th></tr>
+</thead>
+<tbody>
+<tr><td>Neon</td><td>Base de données</td><td>Union européenne</td></tr>
+<tr><td>Cloudflare R2</td><td>Stockage des images</td><td>Union européenne</td></tr>
+<tr><td>Upstash</td><td>Cache technique, sans donnée personnelle durable</td><td>Union européenne</td></tr>
+<tr><td>Koyeb</td><td>Hébergement de l'application</td><td>Union européenne</td></tr>
+<tr><td>Vercel</td><td>Distribution du site</td><td>Mondial, sans stockage de contenu</td></tr>
+</tbody>
+</table>
+<p><strong>Nous ne vendons aucune donnée et n'en cédons à aucun courtier.</strong>
+Une transmission n'a lieu que sur réquisition judiciaire régulière.</p>
+
+<h2>Cookies et stockage local</h2>
+<p>YOWL n'utilise <strong>aucun cookie publicitaire</strong> et n'affiche donc pas
+de bandeau de consentement : il n'y a rien à consentir. Le navigateur conserve
+seulement ce qui est nécessaire au fonctionnement.</p>
+<table>
+<thead>
+<tr><th>Élément</th><th>Rôle</th><th>Durée</th></tr>
+</thead>
+<tbody>
+<tr><td>Jeton de session</td><td>Te garder connecté</td><td>Jusqu'à la fermeture de l'onglet, ou 14 jours si tu coches « se souvenir de moi »</td></tr>
+<tr><td>Préférence de langue</td><td>Retenir français ou anglais</td><td>Jusqu'à effacement</td></tr>
+<tr><td>Brouillon en cours</td><td>Ne pas perdre un texte pendant une connexion</td><td>Jusqu'à la fermeture de l'onglet</td></tr>
+</tbody>
+</table>
+
+<h2>Combien de temps</h2>
+<ul>
+<li><strong>Compte actif</strong> : tant que tu l'utilises.</li>
+<li><strong>Compte inactif</strong> : au bout de 36 mois sans connexion, nous te prévenons, puis nous supprimons.</li>
+<li><strong>Après suppression</strong> : ton compte est anonymisé immédiatement. Les sauvegardes chiffrées sont écrasées sous 30 jours.</li>
+<li><strong>Contenus signalés</strong> : conservés 12 mois après la décision, pour pouvoir la justifier.</li>
+</ul>
+
+<h2>Tes droits</h2>
+<p>Le règlement européen t'en donne plusieurs. Deux sont directement dans
+l'interface, sans passer par nous.</p>
+
+<h3>Récupérer tes données</h3>
+<p><strong>Profil, onglet Résumé, section Mes données.</strong> Tu vois d'abord ce
+que contient le fichier, puis tu le télécharges. Le format est du JSON, lisible par
+un humain comme par un autre service. Il contient ton compte, tes avis, tes
+commentaires, tes réactions, tes abonnements, tes enregistrements, tes signalements
+émis, tes suggestions et tes notifications.</p>
+
+<h3>Effacer ton compte</h3>
+<p><strong>Profil, bouton Quitter la communauté YOWL.</strong> L'effacement est
+immédiat et définitif. Tes contenus publics sont dissociés de ton identité plutôt
+que supprimés, pour ne pas trouer les conversations auxquelles d'autres ont
+participé. Si tu veux aussi la suppression de ces contenus, écris-nous : c'est ton
+droit et nous l'exécutons.</p>
+
+<h3>Les autres droits</h3>
+<ul>
+<li><strong>Accès</strong> : savoir ce que nous détenons. L'export y répond.</li>
+<li><strong>Rectification</strong> : corriger une donnée inexacte, depuis ton profil.</li>
+<li><strong>Opposition</strong> : t'opposer à un traitement fondé sur l'intérêt légitime.</li>
+<li><strong>Limitation</strong> : demander le gel d'un traitement pendant une contestation.</li>
+<li><strong>Retrait du consentement</strong> : pour le résumé hebdomadaire et les notifications, à tout moment, sans justification.</li>
+</ul>
+<p>Écris à <strong>[ADRESSE EMAIL DE CONTACT]</strong>. Nous répondons sous un mois.
+Si notre réponse ne te satisfait pas, tu peux saisir la CNIL, 3 place de Fontenoy,
+75007 Paris, ou déposer une plainte sur <strong>cnil.fr</strong>.</p>
+
+<h2>Comment c'est protégé</h2>
+<ul>
+<li>Tout le trafic passe en HTTPS, de bout en bout.</li>
+<li>Les mots de passe sont hachés avec bcrypt, jamais stockés en clair.</li>
+<li>Les jetons d'accès expirent au bout de quatorze jours.</li>
+<li>Les adresses appelées pour générer un aperçu de lien sont filtrées, afin qu'un lien ne puisse pas faire appeler notre réseau interne.</li>
+<li>Le contenu affiché est reconstruit à partir d'une liste blanche de balises, ce qui ferme la porte à l'injection de script.</li>
+<li>L'accès à l'administration est restreint par rôle et chaque décision est journalisée.</li>
+</ul>
+<p>Aucune protection n'est parfaite. En cas de violation présentant un risque pour
+tes droits, nous te prévenons et nous notifions la CNIL dans les 72 heures, comme
+la loi l'exige.</p>
+
+<h2>Les mineurs</h2>
+<p>L'accès est ouvert à partir de 13 ans. Entre 13 et 15 ans, le consentement d'un
+titulaire de l'autorité parentale est requis. Un parent peut demander l'effacement
+du compte de son enfant en écrivant à l'adresse ci-dessus.</p>
+
+<h2>Modifications</h2>
+<p>Toute modification substantielle est annoncée dans le fil et par email aux membres
+inscrits au résumé. La date de dernière mise à jour figure en haut de cette page.</p>
