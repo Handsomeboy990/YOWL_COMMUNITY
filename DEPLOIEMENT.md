@@ -96,6 +96,35 @@ copie :
   vider le quota Redis en une matinée.
 - `VAPID_PUBLIC_KEY` doit valoir exactement `VITE_VAPID_PUBLIC_KEY`. Un écart
   entre les deux fait échouer les notifications sans le moindre message.
+- `BROADCAST_CONNECTION` et `MAIL_MAILER` se ressemblent et acceptent tous deux
+  la valeur `log`. Le premier n'accepte que `reverb`, `pusher`, `ably`, `log` ou
+  `null` : y écrire `smtp` désactivait la diffusion et, avant le garde-fou
+  ajouté depuis, empêchait l'application entière de démarrer.
+
+## Les emails
+
+`MAIL_MAILER=log` n'envoie rien et écrit le message dans les journaux. C'est ce
+qu'on laisse tant qu'aucun fournisseur n'est branché : la plateforme fonctionne,
+mais personne ne reçoit sa réinitialisation de mot de passe.
+
+Pour envoyer réellement, il faut un relais SMTP. Gmail en est un, mais il compte
+par destinataire, plafonne à 500 par jour et délivre mal le courrier
+transactionnel envoyé depuis un compte personnel : une réinitialisation de mot
+de passe qui tombe dans les indésirables est un compte perdu.
+
+Brevo convient mieux et reste gratuit jusqu'à 300 destinataires par jour :
+
+```
+MAIL_MAILER=smtp
+MAIL_HOST=smtp-relay.brevo.com
+MAIL_PORT=587
+MAIL_USERNAME=<identifiant fourni par Brevo>
+MAIL_PASSWORD=<clé SMTP fournie par Brevo>
+MAIL_FROM_ADDRESS=<une adresse vérifiée chez Brevo>
+```
+
+L'adresse d'expédition doit être vérifiée chez le fournisseur, sinon le message
+est refusé à l'envoi.
 
 ## Le premier administrateur
 

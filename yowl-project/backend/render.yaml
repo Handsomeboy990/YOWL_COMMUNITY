@@ -67,10 +67,19 @@ services:
 
       - key: SANCTUM_EXPIRATION
         value: 20160
+      # Diffusion en direct. Valeurs acceptées : reverb, pusher, ably, log,
+      # null. Ne jamais y écrire une valeur de MAIL_MAILER : les deux se
+      # ressemblent et la confusion coûte un déploiement.
       - key: BROADCAST_CONNECTION
         value: log
+
+      # Envoi des emails. "log" n'envoie rien et journalise. Passer à "smtp"
+      # et remplir MAIL_HOST, MAIL_PORT, MAIL_USERNAME et MAIL_PASSWORD pour
+      # envoyer réellement.
       - key: MAIL_MAILER
         value: log
+      - key: MAIL_PORT
+        value: 587
 
       # Secrets et adresses, saisis à la création
       - key: APP_KEY
@@ -108,6 +117,12 @@ services:
       - key: VAPID_PRIVATE_KEY
         sync: false
       - key: MAIL_FROM_ADDRESS
+        sync: false
+      - key: MAIL_HOST
+        sync: false
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
         sync: false
       - key: CRON_TOKEN
         sync: false

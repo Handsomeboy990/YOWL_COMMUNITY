@@ -12,6 +12,7 @@ use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -21,7 +22,37 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->guardBroadcastConnection();
+    }
+
+    /**
+     * Refuse to let a mistyped broadcast driver take the whole site down.
+     *
+     * routes/channels.php resolves the driver while the application boots. An
+     * unknown name throws there, before anything is served: no pages, no
+     * queue, not even a migration. That is a wildly disproportionate outcome
+     * for a feature this deployment does not use, and the name is easy to get
+     * wrong since MAIL_MAILER and BROADCAST_CONNECTION sit next to each other
+     * and both accept the value "log".
+     *
+     * An unknown name now falls back to the null driver and says so in the
+     * logs, which degrades broadcasting instead of stopping everything.
+     */
+    private function guardBroadcastConnection(): void
+    {
+        $demandee = config('broadcasting.default');
+        $connues = array_keys(config('broadcasting.connections', []));
+
+        if ($demandee === null || in_array($demandee, $connues, true)) {
+            return;
+        }
+
+        Log::error('BROADCAST_CONNECTION vaut une valeur inconnue, diffusion désactivée.', [
+            'recu' => $demandee,
+            'attendu' => $connues,
+        ]);
+
+        config(['broadcasting.default' => 'null']);
     }
 
     /**
