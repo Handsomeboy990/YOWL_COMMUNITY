@@ -10,10 +10,9 @@
       </router-link>
 
       <template v-if="!sent">
-        <h1 class="font-poppins font-extrabold text-2xl text-blue-night">Mot de passe oublié ?</h1>
+        <h1 class="font-poppins font-extrabold text-2xl text-blue-night">{{ t('auth.forgotTitle') }}</h1>
         <p class="text-gray-500 mt-2 mb-6 text-sm leading-relaxed">
-          Pas de panique. Donne-nous ton adresse email et nous t'enverrons un lien pour
-          réinitialiser ton mot de passe.
+          {{ t('auth.forgotIntro') }}
         </p>
 
         <form class="space-y-5" @submit.prevent="submit">
@@ -38,7 +37,7 @@
           />
 
           <BaseButton type="submit" variant="primary" size="lg" block :loading="loading">
-            Envoyer le lien de réinitialisation
+            {{ t('auth.forgotSend') }}
           </BaseButton>
         </form>
       </template>
@@ -48,10 +47,9 @@
           <div class="mx-auto w-16 h-16 rounded-2xl bg-emerald-500/10 grid place-items-center text-emerald-500 text-2xl mb-5">
             <i class="fa-regular fa-paper-plane"></i>
           </div>
-          <h1 class="font-poppins font-extrabold text-2xl text-blue-night">Email envoyé !</h1>
+          <h1 class="font-poppins font-extrabold text-2xl text-blue-night">{{ t('auth.forgotSent') }}</h1>
           <p class="text-gray-500 mt-3 text-sm leading-relaxed">
-            Si un compte existe pour <span class="font-semibold text-orange-text">{{ email }}</span>,
-            un lien de réinitialisation vient de lui être envoyé. Pense à vérifier tes spams.
+            Si un compte existe pour <span class="font-semibold text-orange-text">{{ email }}</span> {{ t('auth.forgotSentHint') }}
           </p>
         </div>
       </template>
@@ -59,7 +57,7 @@
       <p class="mt-6 text-center text-sm text-gray-500">
         <router-link to="/login" class="text-orange-text font-semibold hover:underline">
           <i class="fa-solid fa-arrow-left text-xs mr-1"></i>
-          Retour à la connexion
+          {{ t('auth.backToLogin') }}
         </router-link>
       </p>
     </div>
@@ -67,10 +65,13 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n';
 import { ref } from 'vue';
 import api from '@/services/apiService';
 import BaseInput from '@/components/ui/BaseInput.vue';
 import BaseButton from '@/components/ui/BaseButton.vue';
+
+const { t } = useI18n();
 
 const email = ref('');
 const loading = ref(false);

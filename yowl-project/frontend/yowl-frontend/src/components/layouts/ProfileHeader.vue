@@ -16,7 +16,7 @@
 
         <div class="flex-1 min-w-0">
           <h1 class="font-poppins font-extrabold text-2xl sm:text-3xl text-white leading-tight truncate">
-            {{ user?.fullname || 'Membre YOWL' }}
+            {{ user?.fullname || t('profile.defaultName') }}
           </h1>
           <p class="text-white/75 text-sm mt-0.5">@{{ user?.username }}</p>
           <p class="text-white/70 text-sm mt-2">
@@ -64,6 +64,7 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n';
 import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { getStorageUrl } from '@/config';
@@ -71,6 +72,8 @@ import BaseButton from '@/components/ui/BaseButton.vue';
 import EditProfilModal from '@/components/pages/profil/EditProfilModal.vue';
 import { useUserStore } from '@/stores/user';
 import { useProfileStore } from '@/stores/profile';
+
+const { t, locale } = useI18n();
 
 const route = useRoute();
 const userStore = useUserStore();
@@ -92,29 +95,30 @@ const initials = computed(() => {
 
 const memberSince = computed(() => {
   if (!user.value?.created_at) return '';
-  return new Date(user.value.created_at).toLocaleDateString('fr-FR', {
+  return new Date(user.value.created_at).toLocaleDateString(
+    locale.value === 'en' ? 'en-GB' : 'fr-FR', {
     year: 'numeric',
     month: 'long',
   });
 });
 
-const format = (value) => (value ?? 0).toLocaleString('fr-FR');
+const format = (value) => (value ?? 0).toLocaleString(locale.value === 'en' ? 'en-GB' : 'fr-FR');
 
 const tiles = computed(() => {
   const stats = profileStore.stats;
   return [
-    { label: 'Avis', icon: 'fa-solid fa-newspaper', value: format(stats?.reviews) },
-    { label: 'Vues cumulées', icon: 'fa-regular fa-eye', value: format(stats?.views) },
-    { label: "J'aime reçus", icon: 'fa-regular fa-thumbs-up', value: format(stats?.likes) },
-    { label: 'Commentaires reçus', icon: 'fa-regular fa-comment', value: format(stats?.comments_received) },
+    { label: t('profile.statReviews'), icon: 'fa-solid fa-newspaper', value: format(stats?.reviews) },
+    { label: t('profile.statViews'), icon: 'fa-regular fa-eye', value: format(stats?.views) },
+    { label: t('profile.statLikes'), icon: 'fa-regular fa-thumbs-up', value: format(stats?.likes) },
+    { label: t('profile.statComments'), icon: 'fa-regular fa-comment', value: format(stats?.comments_received) },
   ];
 });
 
-const tabs = [
-  { to: '/user/summary', name: 'summary', label: 'Résumé', icon: 'fa-solid fa-chart-pie' },
-  { to: '/user/my-reviews', name: 'my-reviews', label: 'Mes avis', icon: 'fa-solid fa-newspaper' },
-  { to: '/user/saved', name: 'saved', label: 'Enregistrés', icon: 'fa-regular fa-bookmark' },
-  { to: '/user/activity', name: 'activity', label: 'Activité', icon: 'fa-solid fa-clock-rotate-left' },
-  { to: '/user/contestations', name: 'appeals', label: 'Contestations', icon: 'fa-solid fa-scale-balanced' },
-];
+const tabs = computed(() => [
+  { to: '/user/summary', name: 'summary', label: t('profile.tabSummary'), icon: 'fa-solid fa-chart-pie' },
+  { to: '/user/my-reviews', name: 'my-reviews', label: t('profile.tabReviews'), icon: 'fa-solid fa-newspaper' },
+  { to: '/user/saved', name: 'saved', label: t('profile.tabSaved'), icon: 'fa-regular fa-bookmark' },
+  { to: '/user/activity', name: 'activity', label: t('profile.tabActivity'), icon: 'fa-solid fa-clock-rotate-left' },
+  { to: '/user/contestations', name: 'appeals', label: t('profile.tabAppeals'), icon: 'fa-solid fa-scale-balanced' },
+]);
 </script>

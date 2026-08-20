@@ -124,14 +124,14 @@
                     class="mt-5 rounded-2xl border border-orange-200 bg-gradient-to-br from-orange-50 to-white p-4">
                     <p class="font-poppins font-bold text-blue-night">{{ t('nav.joinSite', { name: siteStore.name }) }}</p>
                     <p class="mt-1 text-sm text-gray-600 leading-relaxed">
-                        Publie tes avis, réagis et suis les sujets qui comptent pour toi.
+                        {{ t('nav.joinPitch') }}
                     </p>
                     <BaseButton class="mt-3" :tag="'router-link'" :to="'/signup'" variant="primary" size="sm" block>
-                        Créer mon compte
+                        {{ t('nav.createAccount') }}
                     </BaseButton>
                     <router-link to="/login"
                         class="mt-2 block text-center text-sm text-gray-500 hover:text-blue-night transition-colors">
-                        J'ai déjà un compte
+                        {{ t('nav.haveAccount') }}
                     </router-link>
                 </div>
             </div>

@@ -152,6 +152,7 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n';
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { useReviewStore } from '@/stores/review'
@@ -167,6 +168,11 @@ import { useBookmarkStore } from '@/stores/bookmark'
 import { useConfirm } from '@/composables/useConfirm'
 import api from '@/services/apiService'
 import { getStorageUrl } from '@/config'
+
+const { t, locale } = useI18n();
+
+// Une date lue dans une phrase anglaise ne reste pas au format francais.
+const dateLocale = () => (locale.value === 'en' ? 'en-GB' : 'fr-FR');
 
 const notify = useNotify()
 const bookmarkStore = useBookmarkStore()
@@ -261,12 +267,12 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
 // Date formatée en français
 const dateFormatted = computed(() => {
   const d = new Date(props.review.created_at)
-  return d.toLocaleDateString('fr-FR', {
+  return d.toLocaleDateString(dateLocale(), {
     weekday: 'short',
     day: 'numeric',
     month: 'short',
     year: 'numeric',
-  }) + ' à ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+  }) + ` ${t('common.atTime')} ` + d.toLocaleTimeString(dateLocale(), { hour: '2-digit', minute: '2-digit' })
 })
 
 // Décoder le champ medias (tableau ou chaîne JSON héritée)

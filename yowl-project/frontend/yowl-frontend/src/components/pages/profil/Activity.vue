@@ -12,9 +12,9 @@
         <template v-if="!groups.length">
           <div class="flex flex-col items-center text-center py-12">
             <i class="fa-regular fa-clock text-4xl text-gray-400" aria-hidden="true"></i>
-            <h2 class="mt-4 text-lg font-semibold text-gray-800">Aucune activité récente</h2>
+            <h2 class="mt-4 text-lg font-semibold text-gray-800">{{ t('profile.activityEmpty') }}</h2>
             <p class="mt-2 text-sm text-gray-600 max-w-md">
-              Publie, commente ou réagis : tout ce que tu fais apparaîtra ici.
+              {{ t('profile.activityEmptyHelp') }}
             </p>
           </div>
         </template>
@@ -47,12 +47,15 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n';
 import AppShell from '@/components/layouts/AppShell.vue';
 import ProfileHeader from '@/components/layouts/ProfileHeader.vue';
 import LeaveCommunity from '@/components/layouts/LeaveCommunity.vue';
 import { ref, onMounted } from 'vue';
 import { useUserStore } from '@/stores/user';
 import api from '@/services/apiService';
+
+const { t } = useI18n();
 
 const groups = ref([]);
 const loading = ref(true);

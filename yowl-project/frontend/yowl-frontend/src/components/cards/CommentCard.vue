@@ -110,6 +110,7 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n';
 import { computed, ref } from "vue";
 import CommentForm from "../layouts/CommentForm.vue";
 import ReportModal from "../layouts/ReportModal.vue";
@@ -118,6 +119,11 @@ import { useCommentStore } from "@/stores/comment";
 import { useUserStore } from "@/stores/user";
 import { useNotify, apiErrorMessage } from '@/composables/useNotify';
 import { useConfirm } from '@/composables/useConfirm';
+
+const { t, locale } = useI18n();
+
+// Une date lue dans une phrase anglaise ne reste pas au format francais.
+const dateLocale = () => (locale.value === 'en' ? 'en-GB' : 'fr-FR');
 
 const storeUser = useUserStore()
 const user = storeUser.user
@@ -154,8 +160,8 @@ const replies = computed(() =>
 
 const dateFormatted = computed(() => {
     const d = new Date(props.comment.created_at);
-    return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }) +
-        ' à ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    return d.toLocaleDateString(dateLocale(), { day: 'numeric', month: 'short', year: 'numeric' }) +
+        ` ${t('common.atTime')} ` + d.toLocaleTimeString(dateLocale(), { hour: '2-digit', minute: '2-digit' });
 });
 
 const toggleReply = () => {

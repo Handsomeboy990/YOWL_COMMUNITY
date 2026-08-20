@@ -11,19 +11,19 @@
       <div v-else-if="error"
         class="mt-6 flex flex-col items-center text-center bg-white border border-gray-200 rounded-2xl py-14 px-4">
         <i class="fa-solid fa-plug-circle-exclamation text-4xl text-gray-400" aria-hidden="true"></i>
-        <h2 class="mt-5 text-lg font-semibold text-gray-800">Tes enregistrements n'ont pas pu être chargés</h2>
+        <h2 class="mt-5 text-lg font-semibold text-gray-800">{{ t('profile.savedError') }}</h2>
         <p class="mt-2 text-sm text-gray-600 max-w-md">{{ error }}</p>
         <BaseButton class="mt-5" variant="primary" size="sm" @click="load(pagination.current_page)">
-          Réessayer
+          {{ t('common.retry') }}
         </BaseButton>
       </div>
 
       <div v-else-if="!reviews.length"
         class="mt-6 flex flex-col items-center text-center bg-white border border-gray-200 rounded-2xl py-16 px-4">
         <i class="fa-regular fa-bookmark text-5xl text-gray-400" aria-hidden="true"></i>
-        <h2 class="mt-5 text-xl font-semibold text-gray-800">Rien d'enregistré pour l'instant</h2>
+        <h2 class="mt-5 text-xl font-semibold text-gray-800">{{ t('profile.savedEmptyTitle') }}</h2>
         <p class="mt-2 text-gray-600 text-sm max-w-md">
-          Le signet sur un avis le met de côté ici, pour le relire quand tu veux.
+          {{ t('profile.savedEmptyHelp') }}
         </p>
         <BaseButton class="mt-5" :tag="'router-link'" :to="'/feed'" variant="primary">
           Parcourir le fil
@@ -40,6 +40,7 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n';
 import { onMounted, ref } from 'vue';
 import AppShell from '@/components/layouts/AppShell.vue';
 import ProfileHeader from '@/components/layouts/ProfileHeader.vue';
@@ -49,6 +50,8 @@ import BaseButton from '@/components/ui/BaseButton.vue';
 import api from '@/services/apiService';
 import { apiErrorMessage } from '@/composables/useNotify';
 import { useBookmarkStore } from '@/stores/bookmark';
+
+const { t } = useI18n();
 
 const reviews = ref([]);
 const pagination = ref({ current_page: 1, last_page: 1, total: 0 });

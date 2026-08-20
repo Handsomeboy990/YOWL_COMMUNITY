@@ -147,6 +147,7 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n';
 import { usePageMeta } from '@/composables/usePageMeta';
 import AppShell from '@/components/layouts/AppShell.vue';
 import { getStorageUrl } from '@/config';
@@ -160,6 +161,11 @@ import { useCommentStore } from '@/stores/comment'
 import { useNotify, apiErrorMessage } from '@/composables/useNotify';
 import { useUserStore } from '@/stores/user'
 import api from '@/services/apiService'
+
+const { t, locale } = useI18n();
+
+// Une date lue dans une phrase anglaise ne reste pas au format francais.
+const dateLocale = () => (locale.value === 'en' ? 'en-GB' : 'fr-FR');
 
 const route = useRoute()
 const userStore = useUserStore()
@@ -190,12 +196,12 @@ const commentCount = computed(() =>
 
 const formatDate = (value) => {
   const d = new Date(value)
-  return d.toLocaleDateString('fr-FR', {
+  return d.toLocaleDateString(dateLocale(), {
     weekday: 'short',
     day: 'numeric',
     month: 'short',
     year: 'numeric',
-  }) + ' à ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+  }) + ` ${t('common.atTime')} ` + d.toLocaleTimeString(dateLocale(), { hour: '2-digit', minute: '2-digit' })
 }
 
 onBeforeMount(async () => {

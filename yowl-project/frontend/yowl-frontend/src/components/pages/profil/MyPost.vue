@@ -29,11 +29,11 @@
         <div v-else-if="profileStore.reviewsError"
           class="mt-4 flex flex-col items-center text-center bg-white border border-gray-200 rounded-2xl py-14 px-4">
           <i class="fa-solid fa-plug-circle-exclamation text-4xl text-gray-400" aria-hidden="true"></i>
-          <h2 class="mt-5 text-lg font-semibold text-gray-800">Tes avis n'ont pas pu être chargés</h2>
+          <h2 class="mt-5 text-lg font-semibold text-gray-800">{{ t('profile.reviewsError') }}</h2>
           <p class="mt-2 text-sm text-gray-600 max-w-md">{{ profileStore.reviewsError }}</p>
           <BaseButton class="mt-5" variant="primary" size="sm"
             @click="profileStore.fetchReviews(profileStore.pagination.current_page)">
-            Réessayer
+            {{ t('common.retry') }}
           </BaseButton>
         </div>
 
@@ -43,7 +43,7 @@
           <i class="fa-regular fa-pen-to-square text-5xl text-gray-400" aria-hidden="true"></i>
           <h2 class="mt-5 text-xl font-semibold text-gray-800">Aucun avis pour le moment</h2>
           <p class="mt-2 text-gray-600 text-sm max-w-md">
-            Tu n'as encore rien publié. Partage ton premier avis, la communauté t'attend.
+            {{ t('profile.reviewsEmpty') }}
           </p>
           <BaseButton class="mt-5" variant="primary" icon="fa-solid fa-plus" @click="openCreateModal">
             Publier mon premier avis
@@ -67,7 +67,7 @@
                 </span>
                 <span v-else-if="!review.is_published"
                   class="inline-flex items-center gap-1.5 mt-1.5 px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 text-xs font-medium">
-                  <i class="fa-solid fa-eye-slash"></i> Retiré du fil
+                  <i class="fa-solid fa-eye-slash"></i> {{ t('profile.removedFromFeed') }}
                 </span>
               </div>
               <div class="flex gap-2 shrink-0">

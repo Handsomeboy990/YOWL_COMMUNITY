@@ -16,8 +16,7 @@
             Exprime-toi librement
           </h2>
           <p class="mt-4 text-white/70 leading-relaxed animate-fade-in-up animation-delay-400">
-            Partage tes avis sans filtre sur n'importe quel contenu du web,
-            avec une communauté de 13 à 35 ans qui te ressemble.
+            {{ t('auth.signupPitch') }}
           </p>
 
           <ul class="mt-10 space-y-4 animate-fade-in-up animation-delay-400">
@@ -43,7 +42,7 @@
             Rejoins l'aventure
           </h1>
           <p class="text-gray-500 mt-3 mb-8">
-            Déjà membre ?
+            {{ t('auth.alreadyMember') }}
             <router-link to="/login" class="text-orange-text font-semibold hover:underline">
               Connecte-toi
             </router-link>
@@ -64,7 +63,7 @@
             <div class="grid sm:grid-cols-2 gap-4">
               <BaseInput
                 v-model="form.firstname"
-                label="Prénom"
+                :label="t('auth.firstName')"
                 placeholder="Jean"
                 icon="fa-regular fa-user"
                 autocomplete="given-name"
@@ -85,7 +84,7 @@
               label="Pseudo"
               placeholder="Le_J0k3r"
               icon="fa-solid fa-at"
-              hint="Visible par toute la communauté"
+              :hint="t('auth.visibleToAll')"
               required
             />
 
@@ -104,7 +103,7 @@
               label="Date de naissance"
               type="date"
               icon="fa-regular fa-calendar"
-              hint="La communauté est réservée aux 13-35 ans"
+              :hint="t('auth.ageRule')"
               required
             />
 
@@ -113,7 +112,7 @@
                 v-model="form.password"
                 label="Mot de passe"
                 type="password"
-                placeholder="8 caractères min."
+                :placeholder="t('auth.passwordHint')"
                 icon="fa-solid fa-lock"
                 autocomplete="new-password"
                 required
@@ -132,12 +131,12 @@
             <BaseCheckbox v-model="form.agreeTerms">
               J'ai lu et j'accepte la
               <router-link to="/policy" class="text-orange-text font-semibold hover:underline">
-                charte de la communauté
+                {{ t('auth.charterLink') }}
               </router-link>
             </BaseCheckbox>
 
             <BaseButton type="submit" variant="night" size="lg" block :loading="loading">
-              Créer mon compte
+              {{ t('auth.createAccount') }}
             </BaseButton>
           </form>
         </div>
@@ -160,13 +159,15 @@
         class="fixed top-8 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-emerald-500 text-white px-6 py-3 rounded-xl shadow-xl z-[110]"
       >
         <i class="fa-solid fa-circle-check"></i>
-        Email vérifié avec succès ! Vous pouvez maintenant vous connecter.
+        {{ t('auth.verified') }}
       </div>
     </Transition>
   </div>
 </template>
 
 <script setup>
+import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
@@ -175,14 +176,16 @@ import BaseInput from '@/components/ui/BaseInput.vue';
 import BaseButton from '@/components/ui/BaseButton.vue';
 import BaseCheckbox from '@/components/ui/BaseCheckbox.vue';
 
+const { t } = useI18n();
+
 const userStore = useUserStore();
 const router = useRouter();
 
-const perks = [
-  'Inscription gratuite en 2 minutes',
-  'Publie des avis illimités',
-  'Une communauté modérée et bienveillante',
-];
+const perks = computed(() => [
+  t('auth.perkFree'),
+  t('auth.perkUnlimited'),
+  t('auth.perkModerated'),
+]);
 
 const isMailModalOpen = ref(false);
 const registeredEmail = ref('');

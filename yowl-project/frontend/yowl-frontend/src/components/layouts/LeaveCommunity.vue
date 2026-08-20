@@ -1,17 +1,20 @@
 <template>
   <div class="mt-10 text-right pb-10">
     <BaseButton variant="danger" icon="fa-solid fa-door-open" :shine="false" @click="leave">
-      Quitter la communauté YOWL
+      {{ t('profile.leave') }}
     </BaseButton>
   </div>
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n';
 import router from '@/router';
 import { useUserStore } from '@/stores/user';
 import BaseButton from '@/components/ui/BaseButton.vue';
 import { useNotify, apiErrorMessage } from '@/composables/useNotify';
 import { useConfirm } from '@/composables/useConfirm';
+
+const { t } = useI18n();
 
 const userStore = useUserStore();
 const notify = useNotify();

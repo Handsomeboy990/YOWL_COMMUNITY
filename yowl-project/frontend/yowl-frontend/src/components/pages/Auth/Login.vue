@@ -57,7 +57,7 @@
             <div class="flex items-center justify-between">
               <BaseCheckbox v-model="rememberMe" :label="t('auth.remember')" />
               <router-link to="/forgot-password" class="text-sm text-orange-text font-medium hover:underline">
-                Mot de passe oublié ?
+                {{ t('auth.forgotTitle') }}
               </router-link>
             </div>
 
@@ -80,11 +80,10 @@
             <i class="fa-solid fa-comments"></i>
           </div>
           <h2 class="mt-8 font-poppins font-extrabold text-3xl text-white leading-snug animate-fade-in-up animation-delay-200">
-            Retrouve ta communauté
+            {{ t('auth.loginTitle') }}
           </h2>
           <p class="mt-4 text-white/70 leading-relaxed animate-fade-in-up animation-delay-400">
-            Tes avis, ta voix. Reprends la conversation là où tu l'avais laissée et découvre
-            ce que la communauté a partagé pendant ton absence.
+            {{ t('auth.loginPitch') }}
           </p>
 
           <blockquote class="mt-10 bg-white/5 border border-white/10 backdrop-blur-sm rounded-2xl p-6 text-left animate-fade-in-up animation-delay-400">
@@ -92,7 +91,7 @@
               <i v-for="s in 5" :key="s" class="fa-solid fa-star"></i>
             </div>
             <p class="text-white/80 text-sm italic leading-relaxed">
-              « La communauté YOWL est devenue mon réflexe avant chaque découverte sur le web. »
+              {{ t('auth.loginQuote') }}
             </p>
             <footer class="mt-4 flex items-center gap-3">
               <span class="w-9 h-9 rounded-full bg-[#5B3FD4] grid place-items-center text-white text-xs font-poppins font-bold">SA</span>
@@ -119,7 +118,7 @@
         class="fixed top-8 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-emerald-500 text-white px-6 py-3 rounded-xl shadow-xl z-[110]"
       >
         <i class="fa-solid fa-circle-check"></i>
-        Email vérifié avec succès ! Vous pouvez maintenant vous connecter.
+        {{ t('auth.verified') }}
       </div>
     </Transition>
   </div>

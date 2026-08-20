@@ -1,6 +1,6 @@
 <template>
   <div v-if="visible" class="flex items-center gap-2 text-sm">
-    <span class="text-gray-500">Cet avis t'a aidé ?</span>
+    <span class="text-gray-500">{{ t('review.helpfulQuestion') }}</span>
     <button type="button"
       class="px-2.5 py-1 rounded-full border text-xs transition-colors cursor-pointer"
       :class="vote === true
@@ -21,10 +21,13 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n';
 import { computed, ref } from 'vue';
 import api from '@/services/apiService';
 import { useUserStore } from '@/stores/user';
 import { useNotify, apiErrorMessage } from '@/composables/useNotify';
+
+const { t } = useI18n();
 
 const props = defineProps({
   review: { type: Object, required: true },

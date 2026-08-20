@@ -7,7 +7,7 @@
         <i class="fa-regular fa-envelope-open"></i>
       </div>
 
-      <h2 class="text-2xl font-poppins font-bold text-blue-night mb-2">Vérifie ton email</h2>
+      <h2 class="text-2xl font-poppins font-bold text-blue-night mb-2">{{ t('auth.verifyTitle') }}</h2>
 
       <p class="text-gray-500 mb-6 text-sm leading-relaxed">
         Saisis le <span class="font-semibold text-blue-night">code à 6 chiffres</span> envoyé à
@@ -38,7 +38,7 @@
 
       <div class="flex flex-col gap-3 mt-5">
         <BaseButton variant="night" block :loading="loading" @click="verifyCode">
-          Vérifier mon compte
+          {{ t('auth.verifyAction') }}
         </BaseButton>
         <BaseButton variant="primary" block :disabled="resendCooldown > 0" :shine="false" @click="resendCode">
           {{ resendCooldown > 0 ? `Renvoyer le code (${resendCooldown}s)` : 'Renvoyer le code' }}
@@ -46,17 +46,20 @@
       </div>
 
       <p class="mt-4 text-xs text-gray-500">
-        Le code est valable 15 minutes. Pense à vérifier tes spams.
+        {{ t('auth.verifyHint') }}
       </p>
     </div>
   </BaseModal>
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n';
 import { nextTick, onBeforeUnmount, ref, watch } from 'vue';
 import { useNotify } from '@/composables/useNotify';
 import BaseModal from '@/components/ui/BaseModal.vue';
 import BaseButton from '@/components/ui/BaseButton.vue';
+
+const { t } = useI18n();
 
 const props = defineProps({
   isOpen: Boolean,

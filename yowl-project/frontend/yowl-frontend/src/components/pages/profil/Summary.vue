@@ -11,7 +11,7 @@
         <h2 class="mt-5 text-lg font-semibold text-gray-800">Statistiques indisponibles</h2>
         <p class="mt-2 text-sm text-gray-600 max-w-md">{{ profileStore.statsError }}</p>
         <BaseButton class="mt-5" variant="primary" size="sm" @click="profileStore.fetchStats()">
-          Réessayer
+          {{ t('common.retry') }}
         </BaseButton>
       </div>
 
@@ -30,18 +30,18 @@
 
         <!-- Reactions recues -->
         <section class="bg-white border border-gray-200 rounded-2xl p-5">
-          <h2 class="font-poppins font-bold text-blue-night mb-4">Réactions reçues</h2>
+          <h2 class="font-poppins font-bold text-blue-night mb-4">{{ t('profile.reactionsReceived') }}</h2>
           <div class="h-64 grid place-items-center">
             <DoughnutChart v-if="hasEngagement" :data="reactionData" :options="doughnutOptions" />
             <p v-else class="text-sm text-gray-500 text-center px-4">
-              Personne n'a encore réagi à tes avis. Publie, ça viendra.
+              {{ t('profile.noReactions') }}
             </p>
           </div>
         </section>
 
         <!-- Detail chiffre -->
         <section class="xl:col-span-3 bg-white border border-gray-200 rounded-2xl p-5">
-          <h2 class="font-poppins font-bold text-blue-night mb-4">Le détail</h2>
+          <h2 class="font-poppins font-bold text-blue-night mb-4">{{ t('profile.theDetail') }}</h2>
           <dl class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
             <div v-for="row in details" :key="row.label" class="min-w-0">
               <dt class="text-xs text-gray-500 truncate">{{ row.label }}</dt>
@@ -61,6 +61,7 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n';
 import DataExport from '@/components/layouts/DataExport.vue';
 import PasswordChange from '@/components/layouts/PasswordChange.vue';
 import { computed, onMounted } from 'vue';
@@ -80,6 +81,8 @@ import ProfileHeader from '@/components/layouts/ProfileHeader.vue';
 import LeaveCommunity from '@/components/layouts/LeaveCommunity.vue';
 import BaseButton from '@/components/ui/BaseButton.vue';
 import { useProfileStore } from '@/stores/profile';
+
+const { t } = useI18n();
 
 ChartJS.register(ArcElement, LineElement, CategoryScale, LinearScale, PointElement, Filler, Tooltip);
 
@@ -101,12 +104,12 @@ const hasEngagement = computed(() => {
 const details = computed(() => {
   const stats = profileStore.stats;
   return [
-    { label: 'Avis publiés', value: format(stats?.reviews) },
-    { label: 'Vues cumulées', value: format(stats?.views) },
-    { label: "J'aime reçus", value: format(stats?.likes) },
-    { label: "Je n'aime pas reçus", value: format(stats?.dislikes) },
-    { label: 'Commentaires reçus', value: format(stats?.comments_received) },
-    { label: 'Commentaires écrits', value: format(stats?.comments_written) },
+    { label: t('profile.published'), value: format(stats?.reviews) },
+    { label: t('profile.statViews'), value: format(stats?.views) },
+    { label: t('profile.statLikes'), value: format(stats?.likes) },
+    { label: t('profile.dislikesReceived'), value: format(stats?.dislikes) },
+    { label: t('profile.statComments'), value: format(stats?.comments_received) },
+    { label: t('profile.commentsWritten'), value: format(stats?.comments_written) },
   ];
 });
 
@@ -123,7 +126,7 @@ const timelineData = computed(() => {
     labels: series.map((point) => monthLabel(point.month)),
     datasets: [
       {
-        label: 'Avis publiés',
+        label: t('profile.published'),
         data: series.map((point) => point.count),
         borderColor: '#cc4a15',
         backgroundColor: 'rgba(255, 107, 53, 0.15)',

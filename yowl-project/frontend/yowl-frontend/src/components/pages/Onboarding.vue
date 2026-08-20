@@ -19,10 +19,9 @@
 
         <!-- 1. Centres d'intérêt -->
         <section v-if="step === 0">
-          <h1 class="font-poppins font-extrabold text-3xl text-blue-night">Qu'est-ce qui t'intéresse ?</h1>
+          <h1 class="font-poppins font-extrabold text-3xl text-blue-night">{{ t('onboarding.interestsTitle') }}</h1>
           <p class="mt-3 text-gray-600 leading-relaxed">
-            Choisis au moins trois sujets. Ton fil se remplira avec les avis qui parlent de ça,
-            même si tu ne connais encore personne ici.
+            {{ t('onboarding.interestsHint') }}
           </p>
 
           <div v-if="loadingTags" class="mt-6 flex flex-wrap gap-2">
@@ -50,9 +49,9 @@
 
         <!-- 2. Membres à suivre -->
         <section v-else-if="step === 1">
-          <h1 class="font-poppins font-extrabold text-3xl text-blue-night">Quelques membres à suivre</h1>
+          <h1 class="font-poppins font-extrabold text-3xl text-blue-night">{{ t('onboarding.followTitle') }}</h1>
           <p class="mt-3 text-gray-600 leading-relaxed">
-            Ceux qui publient le plus sur la plateforme. Tu pourras te désabonner quand tu veux.
+            {{ t('onboarding.followHint') }}
           </p>
 
           <div v-if="loadingPeople" class="mt-6 space-y-3">
@@ -77,7 +76,7 @@
           </ul>
 
           <p v-else class="mt-6 text-sm text-gray-500">
-            Personne à suggérer pour l'instant. Ton fil se remplira avec les sujets choisis.
+            {{ t('onboarding.followEmpty') }}
           </p>
 
           <div class="mt-8 flex items-center gap-3">
@@ -88,10 +87,9 @@
 
         <!-- 3. Premier avis -->
         <section v-else>
-          <h1 class="font-poppins font-extrabold text-3xl text-blue-night">C'est prêt</h1>
+          <h1 class="font-poppins font-extrabold text-3xl text-blue-night">{{ t('onboarding.doneTitle') }}</h1>
           <p class="mt-3 text-gray-600 leading-relaxed">
-            Ton fil est constitué. Il ne manque plus que ton premier avis : un lien, ce que tu en penses,
-            et la conversation démarre.
+            {{ t('onboarding.doneHint') }}
           </p>
 
           <div class="mt-8 flex flex-col sm:flex-row gap-3">
@@ -109,6 +107,7 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import AppShell from '@/components/layouts/AppShell.vue';
@@ -120,6 +119,8 @@ import { getStorageUrl } from '@/config';
 import { useFollowStore } from '@/stores/follow';
 import { useReviewStore } from '@/stores/review';
 import { useNotify, apiErrorMessage } from '@/composables/useNotify';
+
+const { t } = useI18n();
 
 const router = useRouter();
 const followStore = useFollowStore();

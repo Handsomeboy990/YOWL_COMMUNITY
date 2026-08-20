@@ -48,7 +48,7 @@
           />
 
           <BaseButton type="submit" variant="primary" size="lg" block :loading="loading">
-            Réinitialiser mon mot de passe
+            {{ t('auth.resetTitle') }}
           </BaseButton>
         </form>
       </template>
@@ -58,7 +58,7 @@
           <div class="mx-auto w-16 h-16 rounded-2xl bg-emerald-500/10 grid place-items-center text-emerald-500 text-2xl mb-5">
             <i class="fa-solid fa-circle-check"></i>
           </div>
-          <h1 class="font-poppins font-extrabold text-2xl text-blue-night">Mot de passe réinitialisé !</h1>
+          <h1 class="font-poppins font-extrabold text-2xl text-blue-night">{{ t('auth.resetDone') }}</h1>
           <p class="text-gray-500 mt-3 text-sm">
             Tu peux maintenant te connecter avec ton nouveau mot de passe.
           </p>
@@ -71,7 +71,7 @@
       <p v-if="!done" class="mt-6 text-center text-sm text-gray-500">
         <router-link to="/login" class="text-orange-text font-semibold hover:underline">
           <i class="fa-solid fa-arrow-left text-xs mr-1"></i>
-          Retour à la connexion
+          {{ t('auth.backToLogin') }}
         </router-link>
       </p>
     </div>
@@ -79,11 +79,14 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n';
 import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import api from '@/services/apiService';
 import BaseInput from '@/components/ui/BaseInput.vue';
 import BaseButton from '@/components/ui/BaseButton.vue';
+
+const { t } = useI18n();
 
 const route = useRoute();
 

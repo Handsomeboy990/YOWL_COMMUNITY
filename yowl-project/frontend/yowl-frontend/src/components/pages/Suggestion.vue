@@ -9,10 +9,9 @@
           <span class="w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-600 grid place-items-center mx-auto">
             <i class="fa-solid fa-check text-2xl"></i>
           </span>
-          <h1 class="mt-5 font-poppins font-bold text-2xl text-blue-night">Message reçu</h1>
+          <h1 class="mt-5 font-poppins font-bold text-2xl text-blue-night">{{ t('suggest.received') }}</h1>
           <p class="mt-3 text-gray-600 leading-relaxed">
-            Ta suggestion est arrivée dans la boîte de l'équipe. Elle sera lue, et si elle est retenue
-            tu la verras apparaître dans une prochaine version.
+            {{ t('suggest.receivedHint') }}
           </p>
           <div class="mt-6 flex flex-col sm:flex-row justify-center gap-3">
             <BaseButton variant="primary" @click="reset">Envoyer une autre suggestion</BaseButton>
@@ -22,10 +21,9 @@
 
         <template v-else>
           <header>
-            <h1 class="font-poppins font-extrabold text-3xl text-blue-night">Proposer une idée</h1>
+            <h1 class="font-poppins font-extrabold text-3xl text-blue-night">{{ t('suggest.title') }}</h1>
             <p class="mt-3 text-gray-600 leading-relaxed">
-              Une fonctionnalité qui manque, quelque chose qui ne marche pas, un contenu à corriger :
-              écris-le ici. C'est l'équipe qui gère YOWL qui te lit, pas la communauté.
+              {{ t('suggest.intro') }}
             </p>
           </header>
 
@@ -34,8 +32,7 @@
             <i class="fa-solid fa-circle-info text-orange-text mt-0.5"></i>
             <p class="text-sm text-gray-700 leading-relaxed">
               Pour signaler le message d'un membre, n'utilise pas ce formulaire :
-              passe par le bouton <span class="font-medium">Signaler</span> sur l'avis ou le commentaire concerné,
-              qui prévient directement la modération.
+              passe par le bouton <span class="font-medium">Signaler</span> {{ t('suggest.reportInstead') }}
             </p>
           </aside>
 
@@ -62,7 +59,7 @@
                 placeholder="Décris ton idée. Un exemple concret aide beaucoup." required />
               <div class="mt-1.5 flex items-center justify-between text-xs">
                 <span :class="tooShort ? 'text-red-500' : 'text-gray-500'">
-                  {{ tooShort ? 'Au moins 5 caractères' : 'Sois aussi précis que possible' }}
+                  {{ tooShort ? t('suggest.tooShort') : t('suggest.bePrecise') }}
                 </span>
                 <span class="text-gray-500">{{ form.message.length }} / 2000</span>
               </div>
@@ -70,13 +67,13 @@
 
             <!-- Identite -->
             <div>
-              <p class="text-sm font-medium text-blue-night">Pour te répondre, si besoin</p>
+              <p class="text-sm font-medium text-blue-night">{{ t('suggest.emailLabel') }}</p>
               <p class="text-xs text-gray-500 mt-0.5 mb-3">
                 <template v-if="userStore.isAuthenticated">
-                  Tu es connecté : ton compte est déjà rattaché à ce message, tu n'as rien à remplir.
+                  {{ t('suggest.signedIn') }}
                 </template>
                 <template v-else>
-                  Facultatif. Sans adresse, ta suggestion sera lue mais restera sans réponse.
+                  {{ t('suggest.emailOptional') }}
                 </template>
               </p>
               <div v-if="!userStore.isAuthenticated" class="grid sm:grid-cols-2 gap-3">
@@ -101,6 +98,7 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n';
 import { computed, ref } from 'vue';
 import AppShell from '@/components/layouts/AppShell.vue';
 import BaseInput from '@/components/ui/BaseInput.vue';
@@ -110,16 +108,18 @@ import { useNotify, apiErrorMessage } from '@/composables/useNotify';
 import { useUserStore } from '@/stores/user';
 import api from '@/services/apiService';
 
+const { t } = useI18n();
+
 const notify = useNotify();
 const userStore = useUserStore();
 
-const subjects = [
-  { value: 'feature', label: 'Une fonctionnalité', icon: 'fa-solid fa-wand-magic-sparkles' },
-  { value: 'improvement', label: 'Une amélioration', icon: 'fa-solid fa-arrow-trend-up' },
-  { value: 'bug', label: 'Quelque chose ne marche pas', icon: 'fa-solid fa-bug' },
-  { value: 'content', label: 'Un contenu à corriger', icon: 'fa-regular fa-pen-to-square' },
-  { value: 'other', label: 'Autre chose', icon: 'fa-regular fa-comment-dots' },
-];
+const subjects = computed(() => [
+  { value: 'feature', label: t('suggest.subjectFeature'), icon: 'fa-solid fa-wand-magic-sparkles' },
+  { value: 'improvement', label: t('suggest.subjectImprovement'), icon: 'fa-solid fa-arrow-trend-up' },
+  { value: 'bug', label: t('suggest.subjectBug'), icon: 'fa-solid fa-bug' },
+  { value: 'content', label: t('suggest.subjectContent'), icon: 'fa-regular fa-pen-to-square' },
+  { value: 'other', label: t('suggest.subjectOther'), icon: 'fa-regular fa-comment-dots' },
+]);
 
 const blank = () => ({ name: '', email: '', subject: 'feature', message: '' });
 const form = ref(blank());
