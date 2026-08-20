@@ -147,6 +147,7 @@
 </template>
 
 <script setup>
+import { usePageMeta } from '@/composables/usePageMeta';
 import AppShell from '@/components/layouts/AppShell.vue';
 import { getStorageUrl } from '@/config';
 import { computed, onBeforeMount, ref } from 'vue'
@@ -167,6 +168,17 @@ const commentStore = useCommentStore()
 
 const reviewId = parseInt(route.params.id)
 const review = ref(null)
+
+// L'avis est l'adresse que les membres partagent : elle doit se presenter.
+usePageMeta(() => {
+  if (!review.value) return {};
+  const texte = (review.value.content ?? '').replace(/\s+/g, ' ').trim();
+  return {
+    title: texte.slice(0, 60) || 'Un avis',
+    description: texte.slice(0, 155),
+    image: review.value.medias?.[0] ? getStorageUrl(review.value.medias[0]) : '',
+  };
+});
 const loading = ref(true)
 const dateFormatted = ref('')
 

@@ -117,6 +117,7 @@
 </template>
 
 <script setup>
+import { usePageMeta } from '@/composables/usePageMeta';
 import { computed, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
@@ -135,6 +136,11 @@ const route = useRoute();
 const userStore = useUserStore();
 
 const tag = ref(null);
+
+usePageMeta(() => (tag.value?.name
+  ? { title: '#' + tag.value.name,
+      description: 'Les avis de la communauté sur ' + tag.value.name + '.' }
+  : {}));
 const reviews = ref([]);
 const pagination = ref({ current_page: 1, last_page: 1, total: 0 });
 const loading = ref(true);

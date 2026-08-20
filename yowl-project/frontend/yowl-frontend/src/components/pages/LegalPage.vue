@@ -147,6 +147,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
+import { usePageMeta } from '@/composables/usePageMeta';
 import AppShell from '@/components/layouts/AppShell.vue';
 import BaseButton from '@/components/ui/BaseButton.vue';
 import api from '@/services/apiService';
@@ -192,6 +193,10 @@ const wordCount = computed(() =>
   )
 );
 const topSections = computed(() => sections.value.filter((s) => s.level === 2).length);
+usePageMeta(() => (page.value.title
+  ? { title: page.value.title, description: texteBrut.value.replace(/\s+/g, ' ').trim().slice(0, 155) }
+  : {}));
+
 
 // Avancement de lecture, en part de la hauteur reellement defilable.
 const progress = ref(0);

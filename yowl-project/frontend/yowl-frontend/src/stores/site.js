@@ -22,6 +22,10 @@ export const useSiteStore = defineStore('site', () => {
   const community = ref({ name: 'YOWL Community' });
   const seo = ref({ description: '', share_image: '', indexable: true });
   const loaded = ref(false);
+  // Vrai quand une page a posé son propre titre. applyHead est appelé après
+  // le chargement de l'identité, donc après le montage de la page : sans ce
+  // drapeau il écrasait systématiquement le titre de la page ouverte.
+  const pageOwnsTitle = ref(false);
 
   const name = computed(() => community.value.name || 'YOWL');
   const logoUrl = computed(() => (identity.value.logo ? getStorageUrl(identity.value.logo) : ''));
@@ -47,15 +51,24 @@ export const useSiteStore = defineStore('site', () => {
    * titre, description, icone d'onglet, balises de partage.
    */
   function applyHead() {
+    // Ce qui appartient au site, quelle que soit la page ouverte.
+    poserBalise('meta[property="og:site_name"]', 'content', name.value);
+    poserBalise('meta[property="og:type"]', 'content', 'website');
+    poserBalise('meta[name="robots"]', 'content', seo.value.indexable ? 'index,follow' : 'noindex,nofollow');
+
+    if (identity.value.favicon) {
+      poserBalise('link[rel="icon"]', 'href', getStorageUrl(identity.value.favicon));
+    }
+
+    // Ce qui décrit une page précise. Une page qui a posé le sien garde la
+    // main : l'identité se charge après le montage et gagnait la course.
+    if (pageOwnsTitle.value) return;
+
     document.title = name.value;
 
     poserBalise('meta[name="description"]', 'content', seo.value.description);
-    poserBalise('meta[name="robots"]', 'content', seo.value.indexable ? 'index,follow' : 'noindex,nofollow');
-
-    poserBalise('meta[property="og:site_name"]', 'content', name.value);
     poserBalise('meta[property="og:title"]', 'content', name.value);
     poserBalise('meta[property="og:description"]', 'content', seo.value.description);
-    poserBalise('meta[property="og:type"]', 'content', 'website');
     poserBalise('meta[property="og:url"]', 'content', window.location.origin);
 
     poserBalise('meta[name="twitter:card"]', 'content', shareImageUrl.value ? 'summary_large_image' : 'summary');
@@ -65,10 +78,6 @@ export const useSiteStore = defineStore('site', () => {
     if (shareImageUrl.value) {
       poserBalise('meta[property="og:image"]', 'content', shareImageUrl.value);
       poserBalise('meta[name="twitter:image"]', 'content', shareImageUrl.value);
-    }
-
-    if (identity.value.favicon) {
-      poserBalise('link[rel="icon"]', 'href', getStorageUrl(identity.value.favicon));
     }
   }
 
@@ -93,5 +102,8 @@ export const useSiteStore = defineStore('site', () => {
     balise.setAttribute(attribut, valeur);
   }
 
-  return { identity, community, seo, loaded, name, logoUrl, shareImageUrl, load, applyHead };
+  return {
+    identity, community, seo, loaded, pageOwnsTitle,
+    name, logoUrl, shareImageUrl, load, applyHead,
+  };
 });
