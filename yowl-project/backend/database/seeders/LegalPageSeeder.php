@@ -18,6 +18,8 @@ class LegalPageSeeder extends Seeder
      * which is what the files seed rather than replace.
      */
     private const PAGES = [
+        'a-propos' => 'À propos',
+        'faq' => 'Foire aux questions',
         'charte' => 'Charte de la communauté',
         'confidentialite' => 'Politique de confidentialité',
         'conditions' => "Conditions d'utilisation",

@@ -22,6 +22,7 @@ class SettingController extends Controller
             $fields[] = [
                 'key' => $key,
                 'label' => $definition['label'],
+                'help' => $definition['help'] ?? null,
                 'group' => $definition['group'],
                 'type' => $definition['type'],
                 'value' => array_key_exists($key, $values) ? $values[$key] : $definition['default'],
@@ -33,6 +34,54 @@ class SettingController extends Controller
             'success' => true,
             'data' => $fields,
             'message' => 'Settings retrieved successfully.',
+        ]);
+    }
+
+    /**
+     * The identity a visitor needs before signing in.
+     *
+     * Cached: it is read on every first paint, and it changes when an
+     * administrator saves the console, which already clears the settings.
+     */
+    public function site()
+    {
+        return response()->json([
+            'success' => true,
+            'data' => Settings::publicValues(),
+            'message' => 'Site settings retrieved successfully.',
+        ]);
+    }
+
+    /**
+     * Store an image for a setting and hand back its path.
+     *
+     * The value written into the setting is the stored path, so the logo
+     * follows the media disk like every other upload and survives a container
+     * restart once the disk is an object store.
+     */
+    public function uploadImage(Request $request)
+    {
+        $validated = $request->validate([
+            'image' => 'required|image|mimes:jpeg,jpg,png,webp,svg|max:2048',
+            'key' => ['required', 'string'],
+        ]);
+
+        $definition = Settings::REGISTRY[$validated['key']] ?? null;
+        if (! $definition || $definition['type'] !== 'image') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ce réglage ne reçoit pas d\'image.',
+            ], 422);
+        }
+
+        $chemin = \App\Support\Media::store($request->file('image'), 'site');
+
+        AuditLog::record('setting.image', null, ['key' => $validated['key']], $request);
+
+        return response()->json([
+            'success' => true,
+            'data' => ['path' => $chemin],
+            'message' => 'Image enregistrée.',
         ]);
     }
 

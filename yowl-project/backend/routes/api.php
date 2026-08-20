@@ -26,6 +26,9 @@ use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+// Identite du site, lue avant toute connexion : logo, pied de page, partage.
+Route::get('/site', [SettingController::class, 'site']);
+
 Route::get('/health', function () {
     return response()->json([
         'status' => 'ok',
@@ -194,6 +197,7 @@ Route::middleware(['auth:sanctum','role:admin'])->prefix('admin')->group(functio
 
   // Reglages de la plateforme, sans redeploiement
   Route::get('/settings', [SettingController::class, 'index']);
+  Route::post('/settings/image', [SettingController::class, 'uploadImage']);
   Route::patch('/settings', [SettingController::class, 'update']);
   Route::get('/audit-log', [SettingController::class, 'auditLog']);
 

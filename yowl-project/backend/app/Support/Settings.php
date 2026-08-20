@@ -70,8 +70,118 @@ class Settings
             'rules' => 'string|max:60',
             'label' => 'Nom affiché de la communauté',
             'group' => 'Communauté',
+            'public' => true,
+        ],
+
+        // Identite visible. Ces valeurs sont lues sans authentification :
+        // un visiteur voit le logo et le pied de page avant d'avoir un compte.
+        'identity.logo' => [
+            'type' => 'image',
+            'default' => '',
+            'rules' => 'nullable|string|max:255',
+            'label' => 'Logo du site',
+            'help' => 'Affiché dans la barre latérale et sur la page d\'accueil. Vide pour garder le logo fourni.',
+            'group' => 'Identité',
+            'public' => true,
+        ],
+        'identity.favicon' => [
+            'type' => 'image',
+            'default' => '',
+            'rules' => 'nullable|string|max:255',
+            'label' => 'Icône de l\'onglet',
+            'help' => 'Carrée, 512 pixels de côté au minimum.',
+            'group' => 'Identité',
+            'public' => true,
+        ],
+        'identity.tagline' => [
+            'type' => 'string',
+            'default' => 'Ton avis sur le web, sans filtre',
+            'rules' => 'nullable|string|max:120',
+            'label' => 'Accroche',
+            'help' => 'Une phrase, affichée sous le nom du site.',
+            'group' => 'Identité',
+            'public' => true,
+        ],
+        'identity.footer' => [
+            'type' => 'string',
+            'default' => '© 2026 YOWL — LONG Corp',
+            'rules' => 'nullable|string|max:120',
+            'label' => 'Mention de pied de page',
+            'group' => 'Identité',
+            'public' => true,
+        ],
+        'identity.contact_email' => [
+            'type' => 'string',
+            'default' => '',
+            'rules' => 'nullable|email|max:120',
+            'label' => 'Adresse de contact',
+            'help' => 'Publiée dans les pages légales et utilisée comme réponse aux emails.',
+            'group' => 'Identité',
+            'public' => true,
+        ],
+
+        // Referencement. Ce que les moteurs et les reseaux sociaux affichent
+        // quand une adresse du site est partagee.
+        'seo.description' => [
+            'type' => 'text',
+            'default' => 'Partage ton avis sur n\'importe quel contenu du web et rejoins la conversation.',
+            'rules' => 'nullable|string|max:160',
+            'label' => 'Description du site',
+            'help' => '160 caractères au maximum : au-delà, les moteurs coupent.',
+            'group' => 'Référencement',
+            'public' => true,
+        ],
+        'seo.share_image' => [
+            'type' => 'image',
+            'default' => '',
+            'rules' => 'nullable|string|max:255',
+            'label' => 'Image de partage',
+            'help' => 'Affichée quand un lien du site est partagé. 1200 sur 630 pixels.',
+            'group' => 'Référencement',
+            'public' => true,
+        ],
+        'seo.indexable' => [
+            'type' => 'bool',
+            'default' => true,
+            'rules' => 'boolean',
+            'label' => 'Autoriser l\'indexation par les moteurs',
+            'help' => 'À décocher tant que le site n\'est pas prêt à être trouvé.',
+            'group' => 'Référencement',
+            'public' => true,
         ],
     ];
+
+    /**
+     * The settings a visitor may read, with no account.
+     *
+     * The logo, the footer line and the sharing metadata are painted before
+     * anybody signs in, so they cannot live behind the administration guard.
+     * Everything else stays private by omission rather than by an allow list
+     * kept somewhere else.
+     */
+    public static function publicValues(): array
+    {
+        $valeurs = self::all();
+        $publiques = [];
+
+        foreach (self::REGISTRY as $cle => $definition) {
+            if (empty($definition['public'])) {
+                continue;
+            }
+
+            $valeur = array_key_exists($cle, $valeurs)
+                ? $valeurs[$cle]
+                : $definition['default'];
+
+            // Sortie imbriquee : identity.logo devient identity->logo. Le
+            // point est un separateur de chemin pour a peu pres tout ce qui
+            // lira ce document, du client JavaScript aux assertions de test.
+            [$groupe, $nom] = explode('.', $cle, 2);
+            $publiques[$groupe][$nom] = $valeur;
+        }
+
+        return $publiques;
+    }
 
     /**
      * The cache key, versioned by the shape of the registry.

@@ -524,7 +524,7 @@ const tabs = computed(() => [
   { key: 'reviews', label: 'Avis', icon: 'fa-regular fa-newspaper' },
   { key: 'comments', label: 'Commentaires', icon: 'fa-regular fa-comments' },
   { key: 'suggestions', label: 'Suggestions', icon: 'fa-regular fa-lightbulb', badge: newSuggestions.value },
-  { key: 'legal', label: 'Pages légales', icon: 'fa-regular fa-file-lines' },
+  { key: 'legal', label: 'Pages du site', icon: 'fa-regular fa-file-lines' },
   { key: 'settings', label: 'Réglages', icon: 'fa-solid fa-sliders' },
   { key: 'roles', label: 'Rôles et droits', icon: 'fa-solid fa-user-shield' },
   { key: 'audit', label: 'Journal', icon: 'fa-solid fa-clipboard-list' },

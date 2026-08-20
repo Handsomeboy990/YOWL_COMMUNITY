@@ -62,14 +62,14 @@
 
           <!-- ===== Rail de gauche : les quatre documents ===== -->
           <aside class="order-1 lg:order-2 xl:order-1 lg:sticky lg:top-24 lg:self-start space-y-6">
-            <nav aria-label="Pages légales">
+            <nav v-for="(groupe, g) in groupes" :key="groupe.titre" aria-label="Pages du site">
               <p class="text-[11px] uppercase tracking-wider text-gray-500 font-medium mb-3">
-                {{ t('legal.documents') }}
+                {{ groupe.titre }}
               </p>
               <ul class="space-y-1">
-                <li v-for="(item, index) in pages" :key="item.slug"
-                  class="animate-fade-in-up" :style="{ animationDelay: index * 40 + 'ms' }">
-                  <router-link :to="`/${item.slug}`"
+                <li v-for="(item, index) in groupe.pages" :key="item.slug"
+                  class="animate-fade-in-up" :style="{ animationDelay: (g * 80 + index * 40) + 'ms' }">
+                  <router-link :to="item.route"
                     class="group flex items-start gap-2.5 px-3 py-2.5 rounded-xl text-sm transition-colors"
                     :class="item.slug === slug
                       ? 'bg-orange-50 text-orange-text font-medium'
@@ -165,12 +165,25 @@ const active = ref(null);
 let observer = null;
 let revelateur = null;
 
-const pages = computed(() => [
-  { slug: 'charte', label: t('legal.charter'), icon: 'fa-solid fa-handshake-angle' },
-  { slug: 'confidentialite', label: t('legal.privacy'), icon: 'fa-solid fa-shield-halved' },
-  { slug: 'conditions', label: t('legal.terms'), icon: 'fa-solid fa-file-signature' },
-  { slug: 'mentions-legales', label: t('legal.notices'), icon: 'fa-solid fa-building-columns' },
+const groupes = computed(() => [
+  {
+    titre: t('legal.theService'),
+    pages: [
+      { slug: 'a-propos', route: '/about', label: t('legal.about'), icon: 'fa-solid fa-circle-info' },
+      { slug: 'faq', route: '/faq', label: t('legal.faq'), icon: 'fa-solid fa-circle-question' },
+    ],
+  },
+  {
+    titre: t('legal.documents'),
+    pages: [
+      { slug: 'charte', route: '/charte', label: t('legal.charter'), icon: 'fa-solid fa-handshake-angle' },
+      { slug: 'confidentialite', route: '/confidentialite', label: t('legal.privacy'), icon: 'fa-solid fa-shield-halved' },
+      { slug: 'conditions', route: '/conditions', label: t('legal.terms'), icon: 'fa-solid fa-file-signature' },
+      { slug: 'mentions-legales', route: '/mentions-legales', label: t('legal.notices'), icon: 'fa-solid fa-building-columns' },
+    ],
+  },
 ]);
+
 
 const texteBrut = computed(() => (page.value.body ?? '').replace(/<[^>]+>/g, ' '));
 const wordCount = computed(() =>

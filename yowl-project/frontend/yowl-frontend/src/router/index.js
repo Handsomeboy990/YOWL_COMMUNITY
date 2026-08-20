@@ -16,8 +16,6 @@ import Onboarding from '@/components/pages/Onboarding.vue'
 import MemberProfile from '@/views/MemberProfile.vue'
 import TagFeed from '@/views/TagFeed.vue'
 import TagDirectory from '@/views/TagDirectory.vue'
-import About from '@/components/pages/About.vue'
-import Faq from '@/components/pages/Faq.vue'
 import Suggestion from '@/components/pages/Suggestion.vue'
 import LegalPage from '@/components/pages/LegalPage.vue'
 import NotFound from '@/views/NotFound.vue'
@@ -123,13 +121,14 @@ const router = createRouter({
             meta: { requiresAuth: true }
         },
         {
+            // Les six pages éditables passent par le même composant, alimenté
+            // par la base : les corriger ne demande plus de déploiement.
             path: '/about',
             name: 'about',
-            component: About,
+            component: LegalPage,
+            meta: { slug: 'a-propos' },
         },
         {
-            // Les quatre textes légaux passent par le même composant, alimenté
-            // par la base : les corriger ne demande plus de déploiement.
             path: '/charte',
             name: 'charte',
             component: LegalPage,
@@ -161,7 +160,8 @@ const router = createRouter({
         {
             path: '/faq',
             name: 'faq',
-            component: Faq,
+            component: LegalPage,
+            meta: { slug: 'faq' },
         },
         {
             path: '/suggestion',

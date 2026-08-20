@@ -13,6 +13,12 @@ class LegalPage extends Model
      * legal page from the console, which would sit outside every route.
      */
     public const SLUGS = [
+        // Pages de presentation, editables au meme titre que les textes
+        // juridiques : elles decrivent le service, qui bouge plus souvent
+        // qu'une politique de confidentialite.
+        'a-propos' => 'À propos',
+        'faq' => 'Foire aux questions',
+
         'charte' => 'Charte de la communauté',
         'confidentialite' => 'Politique de confidentialité',
         'conditions' => "Conditions d'utilisation",

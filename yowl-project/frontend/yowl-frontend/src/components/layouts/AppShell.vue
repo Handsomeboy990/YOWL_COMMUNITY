@@ -10,9 +10,12 @@
                 <!-- Logo -->
                 <router-link to="/feed" class="flex items-center gap-2 shrink-0" @click="refreshFeed">
                     <span class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-primary to-orange-primary-dark grid place-items-center shadow-md shadow-orange-primary/30">
-                        <img src="@/assets/logo.png" alt="Logo YOWL" class="w-7 h-7">
+                        <img :src="siteStore.logoUrl || logoParDefaut" :alt="'Logo ' + siteStore.name"
+                            class="w-7 h-7 object-contain">
                     </span>
-                    <span class="hidden sm:inline font-poppins font-extrabold text-xl text-blue-night">YOWL</span>
+                    <span class="hidden sm:inline font-poppins font-extrabold text-xl text-blue-night">
+                        {{ siteStore.name }}
+                    </span>
                 </router-link>
 
                 <!-- Recherche -->
@@ -119,7 +122,7 @@
                      porte qu'un lien et laisse un vide sur toute sa hauteur. -->
                 <div v-if="!userStore.isAuthenticated"
                     class="mt-5 rounded-2xl border border-orange-200 bg-gradient-to-br from-orange-50 to-white p-4">
-                    <p class="font-poppins font-bold text-blue-night">Rejoins YOWL</p>
+                    <p class="font-poppins font-bold text-blue-night">{{ t('nav.joinSite', { name: siteStore.name }) }}</p>
                     <p class="mt-1 text-sm text-gray-600 leading-relaxed">
                         Publie tes avis, réagis et suis les sujets qui comptent pour toi.
                     </p>
@@ -144,7 +147,7 @@
                     <LanguageSwitcher />
                 </div>
                 <p class="px-4 pt-3 text-[11px] text-gray-500">
-                    © {{ new Date().getFullYear() }} YOWL — LONG Corp
+                    {{ siteStore.identity.footer }}
                 </p>
             </div>
         </nav>
@@ -213,6 +216,8 @@ import { useI18n } from 'vue-i18n';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher.vue';
 import { connectRealtime, disconnectRealtime, isRealtimeConfigured } from '@/services/realtime';
 import { usePresence } from '@/composables/usePresence';
+import { useSiteStore } from '@/stores/site';
+import logoParDefaut from '@/assets/logo.png';
 import { useUserStore } from '@/stores/user';
 import { useReviewStore } from '@/stores/review';
 import { getStorageUrl } from '@/config';
@@ -364,6 +369,11 @@ let unreadTimer = null;
 // Le coquillage entoure chaque page connectee : c'est le seul endroit d'ou
 // la presence se mesure une fois, et pas une fois par vue.
 usePresence();
+
+// L'identite est chargee une fois pour toute l'application : le coquillage
+// entoure chaque page, y compris pour un visiteur sans compte.
+const siteStore = useSiteStore();
+if (!siteStore.loaded) siteStore.load();
 
 const refreshUnread = () => {
     if (userStore.isAuthenticated) notificationStore.fetchUnreadCount();

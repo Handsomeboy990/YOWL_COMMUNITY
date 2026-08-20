@@ -30,7 +30,8 @@
     "suggestions": "Suggestions",
     "profile": "My profile",
     "publishReview": "Post a review",
-    "topics": "Topics"
+    "topics": "Topics",
+    "joinSite": "Join {name}"
   },
   "feed": {
     "all": "Everything",
@@ -114,7 +115,10 @@
     "thisDocument": "This document",
     "sections": "Sections",
     "words": "Words",
-    "duration": "Reading"
+    "duration": "Reading",
+    "theService": "The service",
+    "about": "About",
+    "faq": "FAQ"
   },
   "member": {
     "notFound": "Member not found",

@@ -3,7 +3,7 @@
     <!-- Choix de la page -->
     <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
       <header class="px-5 py-4 border-b border-gray-100">
-        <h2 class="font-semibold text-blue-night">Pages légales</h2>
+        <h2 class="font-semibold text-blue-night">Pages du site</h2>
         <p class="mt-1 text-sm text-gray-500">
           Le texte est enregistré en base : le modifier ici change la page en ligne, sans déploiement.
         </p>
