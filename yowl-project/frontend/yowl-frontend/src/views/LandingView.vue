@@ -68,7 +68,7 @@
             <span class="relative inline-block">
               <span class="gradient-text-hero">sans filtre</span>
               <svg class="absolute -bottom-2 left-0 w-full" height="10" viewBox="0 0 200 10" preserveAspectRatio="none" aria-hidden="true">
-                <path d="M0 8 Q 50 0 100 6 T 200 4" stroke="#FF6B35" stroke-width="4" fill="none" stroke-linecap="round" class="draw-line" />
+                <path d="M0 8 Q 50 0 100 6 T 200 4" stroke="#cc4a15" stroke-width="4" fill="none" stroke-linecap="round" class="draw-line" />
               </svg>
             </span>
           </h1>
@@ -220,7 +220,7 @@
         <div v-for="(step, i) in steps" :key="step.title" class="reveal relative text-center px-4">
           <div class="relative inline-block">
             <span
-              class="w-20 h-20 rounded-3xl bg-gradient-to-br from-orange-primary to-[#ff8c5a] text-white inline-grid place-items-center text-2xl shadow-xl shadow-orange-primary/30 rotate-3 hover:rotate-0 transition-transform duration-500"
+              class="w-20 h-20 rounded-3xl bg-gradient-to-br from-orange-primary to-orange-primary-dark text-white inline-grid place-items-center text-2xl shadow-xl shadow-orange-primary/30 rotate-3 hover:rotate-0 transition-transform duration-500"
             >
               <i :class="step.icon"></i>
             </span>
@@ -257,7 +257,7 @@
         <!-- Application (PWA) -->
         <article class="reveal bg-white rounded-2xl border border-gray-100 p-8 shadow-sm hover:shadow-2xl hover:shadow-orange-primary/10 hover:-translate-y-2 transition-all duration-500">
           <div class="flex items-center justify-between mb-6">
-            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-primary to-[#ff8c5a] grid place-items-center text-white text-xl">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-primary to-orange-primary-dark grid place-items-center text-white text-xl">
               <i class="fa-solid fa-mobile-screen-button"></i>
             </div>
             <span class="text-xs font-bold uppercase tracking-wide px-3 py-1 rounded-full bg-emerald-50 text-emerald-600">Recommandé</span>
@@ -353,7 +353,7 @@
     <!-- ====== CTA FINAL ====== -->
     <section class="w-full px-6 md:px-12 py-24">
       <div
-        class="reveal relative rounded-3xl bg-gradient-to-br from-orange-primary to-[#ff8c5a] px-8 md:px-16 py-16 text-center overflow-hidden"
+        class="reveal relative rounded-3xl bg-gradient-to-br from-orange-primary to-orange-primary-dark px-8 md:px-16 py-16 text-center overflow-hidden"
       >
         <div class="cta-rings" aria-hidden="true"></div>
         <h2 class="relative font-poppins font-extrabold text-white" style="font-size: clamp(1.8rem, 4vw, 3rem)">
@@ -422,7 +422,7 @@ const statsSection = ref(null);
 const counters = ref({ nbUsers: 0, nbReviews: 0, nbComments: 0, nbMeanReviewsPerDay: 0 });
 let observers = [];
 
-const avatarColors = ['#FF6B35', '#1E2A38', '#7C5CFC', '#12B886'];
+const avatarColors = ['#cc4a15', '#1E2A38', '#6D45E8', '#0F766E'];
 
 const marqueeTags = [
   'gaming', 'musique', 'cinéma', 'tech', 'mode', 'voyage', 'cuisine', 'sport',
@@ -453,7 +453,7 @@ const mockCards = [
   {
     author: 'Lisa M.',
     initials: 'LM',
-    color: '#FF6B35',
+    color: '#cc4a15',
     time: "il y a 1 h",
     tag: 'cuisine',
     content: 'Testé ce week-end : la meilleure recette de cookies que j\'ai trouvée sur le web. La communauté valide ?',
@@ -465,7 +465,7 @@ const mockCards = [
 const features = [
   {
     icon: 'fa-solid fa-pen-nib',
-    bg: 'bg-gradient-to-br from-orange-primary to-[#ff8c5a]',
+    bg: 'bg-gradient-to-br from-orange-primary to-orange-primary-dark',
     title: 'Publie tes avis',
     text: "Un article, une vidéo, un produit ? Partage le lien, ajoute tes photos et donne ton avis en toute liberté.",
   },
@@ -539,7 +539,7 @@ const testimonials = [
     author: 'Chloé, 27 ans',
     role: 'Membre active',
     initials: 'CH',
-    color: '#FF6B35',
+    color: '#cc4a15',
   },
 ];
 
@@ -649,8 +649,8 @@ onBeforeUnmount(() => {
   width: 22px;
   height: 22px;
   border-radius: 9999px;
-  background: rgba(255, 107, 53, 0.12);
-  color: #ff6b35;
+  background: rgba(204, 74, 21, 0.12);
+  color: #c2410c;
   font-weight: 700;
   font-size: 12px;
   display: grid;
@@ -674,7 +674,7 @@ onBeforeUnmount(() => {
 }
 
 .gradient-text-hero {
-  background: linear-gradient(120deg, #ff6b35 10%, #ffb02e 50%, #ff6b35 90%);
+  background: linear-gradient(120deg, #cc4a15 10%, #b45309 50%, #cc4a15 90%);
   background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
@@ -785,7 +785,7 @@ onBeforeUnmount(() => {
 .badge-like {
   top: 6%;
   right: 4%;
-  background: linear-gradient(135deg, #ff6b35, #ff8c5a);
+  background: linear-gradient(135deg, #cc4a15, #a63b10);
 }
 .badge-comment {
   top: 48%;

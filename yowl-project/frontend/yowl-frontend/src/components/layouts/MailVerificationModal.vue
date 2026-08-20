@@ -2,7 +2,7 @@
   <BaseModal :isOpen="isOpen" size="sm" @close="emit('close')">
     <div class="text-center">
       <div
-        class="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-primary to-[#ff8c5a] grid place-items-center text-white text-2xl shadow-lg shadow-orange-primary/30 mb-5"
+        class="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-primary to-orange-primary-dark grid place-items-center text-white text-2xl shadow-lg shadow-orange-primary/30 mb-5"
       >
         <i class="fa-regular fa-envelope-open"></i>
       </div>

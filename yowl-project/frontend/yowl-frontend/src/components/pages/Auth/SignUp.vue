@@ -8,7 +8,7 @@
 
         <div class="relative z-10 max-w-md px-12">
           <div
-            class="w-20 h-20 rounded-3xl bg-gradient-to-br from-orange-primary to-[#ff8c5a] grid place-items-center text-white text-3xl shadow-2xl shadow-orange-primary/40 -rotate-3 animate-fade-in-up"
+            class="w-20 h-20 rounded-3xl bg-gradient-to-br from-orange-primary to-orange-primary-dark grid place-items-center text-white text-3xl shadow-2xl shadow-orange-primary/40 -rotate-3 animate-fade-in-up"
           >
             <i class="fa-solid fa-bullhorn"></i>
           </div>

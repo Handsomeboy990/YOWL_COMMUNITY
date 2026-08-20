@@ -6,20 +6,20 @@
 
     <!-- left button -->
     <button aria-label="Image précédente" v-if="images.length > 1" @click="prev"
-      class="cursor-pointer absolute top-1/2 left-2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full hover:bg-[#FF6B35] transition">
+      class="cursor-pointer absolute top-1/2 left-2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full hover:bg-orange-primary transition">
       <i class="fa-solid fa-chevron-left"></i>
     </button>
 
     <!-- right button -->
     <button aria-label="Image suivante" v-if="images.length > 1" @click="next"
-      class="cursor-pointer absolute top-1/2 right-2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full hover:bg-[#FF6B35] transition">
+      class="cursor-pointer absolute top-1/2 right-2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full hover:bg-orange-primary transition">
       <i class="fa-solid fa-chevron-right "></i>
     </button>
 
     <!-- indicators -->
     <div v-if="images.length > 1" class="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
       <span v-for="(img, idx) in images" :key="idx" class="w-3 h-3 rounded-full cursor-pointer"
-        :class="idx === currentIndex ? 'bg-[#FF6B35]' : 'bg-gray-300'" @click="goTo(idx)"></span>
+        :class="idx === currentIndex ? 'bg-orange-primary' : 'bg-gray-300'" @click="goTo(idx)"></span>
     </div>
   </div>
 

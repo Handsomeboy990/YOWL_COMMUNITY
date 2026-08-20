@@ -3,7 +3,7 @@
     <!-- Banniere et identite -->
     <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-night to-blue-night-light">
       <div class="absolute inset-0 opacity-20"
-        style="background-image: radial-gradient(circle at 20% 20%, #ff6b35 0, transparent 45%), radial-gradient(circle at 80% 0, #ff8c5a 0, transparent 40%)">
+        style="background-image: radial-gradient(circle at 20% 20%, var(--color-orange-primary) 0, transparent 45%), radial-gradient(circle at 80% 0, var(--color-orange-glow) 0, transparent 40%)">
       </div>
 
       <div class="relative px-5 py-6 sm:px-8 sm:py-8 flex flex-col sm:flex-row sm:items-end gap-5">

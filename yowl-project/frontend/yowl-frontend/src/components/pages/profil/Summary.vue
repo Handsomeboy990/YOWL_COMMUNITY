@@ -122,12 +122,12 @@ const timelineData = computed(() => {
       {
         label: 'Avis publiés',
         data: series.map((point) => point.count),
-        borderColor: '#FF6B35',
+        borderColor: '#cc4a15',
         backgroundColor: 'rgba(255, 107, 53, 0.15)',
         tension: 0.4,
         fill: true,
         pointRadius: 4,
-        pointBackgroundColor: '#FF6B35',
+        pointBackgroundColor: '#cc4a15',
       },
     ],
   };
@@ -140,7 +140,7 @@ const reactionData = computed(() => {
     datasets: [
       {
         data: [stats?.likes ?? 0, stats?.dislikes ?? 0, stats?.comments_received ?? 0],
-        backgroundColor: ['#FF6B35', '#1E2A38', '#FDBA74'],
+        backgroundColor: ['#cc4a15', '#1E2A38', '#FDBA74'],
         borderWidth: 0,
       },
     ],

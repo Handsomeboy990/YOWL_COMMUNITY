@@ -97,7 +97,7 @@
             ? 'text-orange-text'
             : 'text-gray-600 hover:text-orange-text'
         ]" @click="toggleReaction('like')">
-          <div class="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-orange-primary to-[#ff8c5a] rounded-full grid place-items-center shadow-sm group-hover:shadow-md transition-all duration-300 group-active:scale-95">
+          <div class="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-orange-primary to-orange-primary-dark rounded-full grid place-items-center shadow-sm group-hover:shadow-md transition-all duration-300 group-active:scale-95">
             <i :class="[
               review.user_reaction === 'like' ? 'fa-solid fa-thumbs-up' : 'fa-regular fa-thumbs-up',
               'text-white text-sm'

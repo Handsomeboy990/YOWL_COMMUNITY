@@ -2,12 +2,19 @@
 @import 'tailwindcss';
 
 @theme {
-    --color-orange-primary: #ff6b35;
-    /* L'orange de marque tombe à 2,83 pour 1 sur blanc, sous le minimum de
-       4,5 exigé pour du texte courant. Cette variante plus sombre atteint
-       4,9 et sert partout où l'orange porte du texte. */
+    /* Orange de marque. L'ancien #ff6b35 mesurait 2,84 pour 1 sous du blanc,
+       sous le minimum de 4,5 exigé pour du texte courant et sous les 3 exigés
+       pour un composant d'interface. Celui-ci atteint 4,61 et reste dans la
+       même famille. */
+    --color-orange-primary: #cc4a15;
+    --color-orange-primary-dark: #a63b10;
+
+    /* Orange pour du texte posé sur un fond clair : 5,18 pour 1. */
     --color-orange-text: #c2410c;
-    --color-orange-primary-dark: #e75a27;
+
+    /* Ton clair décoratif. Il ne porte jamais de texte : 2,41 pour 1 sous du
+       blanc. Réservé aux lueurs, aux fonds de dégradé et aux illustrations. */
+    --color-orange-glow: #ff8552;
     --color-blue-night: #1e2a38;
     --color-blue-night-light: #344155;
 
@@ -278,7 +285,7 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #FF6B35;
+    background: #cc4a15;
     border-radius: 4px;
 }
 
@@ -312,7 +319,7 @@ html {
 
 /* Gradient text */
 .gradient-text {
-    background: linear-gradient(135deg, #FF6B35 0%, #ff8c5a 100%);
+    background: linear-gradient(135deg, #a63b10 0%, #cc4a15 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -348,7 +355,7 @@ html {
     z-index: 100;
     padding: 0.75rem 1.25rem;
     border-radius: 0.75rem;
-    background: #FF6B35;
+    background: #cc4a15;
     color: #ffffff;
     font-weight: 500;
     text-decoration: none;
@@ -368,7 +375,7 @@ select:focus-visible,
 textarea:focus-visible,
 summary:focus-visible,
 [tabindex]:focus-visible {
-    outline: 2px solid #FF6B35;
+    outline: 2px solid #cc4a15;
     outline-offset: 2px;
     border-radius: 0.375rem;
 }
@@ -444,7 +451,7 @@ main:focus {
     height: 3px;
     margin-top: 0.75rem;
     border-radius: 2px;
-    background: #ff6b35;
+    background: #cc4a15;
 }
 
 .contenu-legal h3,
@@ -496,7 +503,7 @@ main:focus {
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: #ff6b35;
+    background: #cc4a15;
 }
 
 .contenu-legal ol,
@@ -520,7 +527,7 @@ main:focus {
 
 .contenu-legal blockquote,
 .editeur .prose-editeur blockquote {
-    border-left: 3px solid #ff6b35;
+    border-left: 3px solid #cc4a15;
     background: #fff7f3;
     padding: 1rem 1.25rem;
     margin: 1.5rem 0;

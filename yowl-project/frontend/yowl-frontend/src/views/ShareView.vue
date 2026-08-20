@@ -3,7 +3,7 @@
     <!-- Mini en-tête -->
     <header class="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
       <router-link to="/feed" class="flex items-center gap-2">
-        <span class="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-primary to-[#ff8c5a] grid place-items-center">
+        <span class="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-primary to-orange-primary-dark grid place-items-center">
           <img src="@/assets/logo.png" alt="Logo YOWL" class="w-6 h-6">
         </span>
         <span class="font-poppins font-extrabold text-lg text-blue-night">YOWL</span>
