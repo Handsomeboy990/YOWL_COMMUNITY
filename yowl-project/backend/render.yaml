@@ -1,0 +1,113 @@
+# Description du service pour Render.
+#
+# Elle n'est pas obligatoire : tout se règle aussi dans l'interface. Elle sert
+# à ce que les valeurs qui font échouer un déploiement soient écrites quelque
+# part plutôt que retapées de mémoire.
+#
+# Les variables marquées sync: false sont demandées à la création et ne sont
+# jamais écrites ici : ce fichier est versionné.
+services:
+  - type: web
+    name: yowl-api
+    runtime: docker
+    plan: free
+    region: frankfurt
+    branch: dev
+
+    # Le Dockerfile n'est pas à la racine du dépôt.
+    dockerfilePath: ./yowl-project/backend/Dockerfile
+    dockerContext: ./yowl-project/backend
+
+    healthCheckPath: /api/health
+
+    envVars:
+      - key: APP_NAME
+        value: YOWL Community
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_LOCALE
+        value: fr
+      - key: APP_FALLBACK_LOCALE
+        value: fr
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: LOG_LEVEL
+        value: warning
+
+      # Base de données Neon
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_PORT
+        value: 5432
+      - key: DB_SSLMODE
+        value: require
+
+      # Cache Upstash. Les sessions et la file restent sur PostgreSQL pour ne
+      # pas vider le quota Redis.
+      - key: CACHE_STORE
+        value: redis
+      - key: REDIS_CLIENT
+        value: phpredis
+      - key: SESSION_DRIVER
+        value: database
+      - key: QUEUE_CONNECTION
+        value: database
+
+      # Médias sur Cloudflare R2
+      - key: MEDIA_DISK
+        value: s3
+      - key: FILESYSTEM_DISK
+        value: s3
+      - key: AWS_DEFAULT_REGION
+        value: auto
+      - key: AWS_USE_PATH_STYLE_ENDPOINT
+        value: true
+
+      - key: SANCTUM_EXPIRATION
+        value: 20160
+      - key: BROADCAST_CONNECTION
+        value: log
+      - key: MAIL_MAILER
+        value: log
+
+      # Secrets et adresses, saisis à la création
+      - key: APP_KEY
+        sync: false
+      - key: APP_URL
+        sync: false
+      - key: DB_HOST
+        sync: false
+      - key: DB_DATABASE
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: AWS_BUCKET
+        sync: false
+      - key: AWS_ENDPOINT
+        sync: false
+      - key: AWS_URL
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: FRONTEND_URLS
+        sync: false
+      - key: VAPID_SUBJECT
+        sync: false
+      - key: VAPID_PUBLIC_KEY
+        sync: false
+      - key: VAPID_PRIVATE_KEY
+        sync: false
+      - key: MAIL_FROM_ADDRESS
+        sync: false
+      - key: CRON_TOKEN
+        sync: false

@@ -1,0 +1,54 @@
+name: Réveil planifié
+
+# Un hébergement gratuit endort le conteneur après quelques minutes sans
+# trafic, et un conteneur endormi ne publie pas les avis programmés et
+# n'envoie pas le résumé hebdomadaire. Cette horloge le réveille et lui fait
+# rattraper son retard.
+#
+# GitHub retarde parfois les tâches planifiées de plusieurs minutes et les
+# suspend au bout de soixante jours sans activité sur le dépôt. Ce n'est donc
+# pas une horloge de précision. Pour quelque chose de plus régulier, un
+# service dédié comme cron-job.org appelle la même adresse.
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: reveil-planifie
+  cancel-in-progress: false
+
+jobs:
+  reveiller:
+    name: Réveiller l'API
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Appeler la route de réveil
+        env:
+          API_URL: ${{ secrets.API_URL }}
+          CRON_TOKEN: ${{ secrets.CRON_TOKEN }}
+        run: |
+          if [ -z "$API_URL" ] || [ -z "$CRON_TOKEN" ]; then
+            echo "API_URL ou CRON_TOKEN absent des secrets du dépôt. Rien à faire."
+            exit 0
+          fi
+
+          # Le premier appel réveille le conteneur, ce qui peut prendre une
+          # minute sur une offre gratuite. On lui laisse le temps plutôt que
+          # de compter un réveil comme un échec.
+          reponse=$(curl --silent --show-error --max-time 180 \
+            --write-out '\n%{http_code}' \
+            --request POST "${API_URL%/}/cron/${CRON_TOKEN}")
+
+          corps=$(echo "$reponse" | sed '$d')
+          code=$(echo "$reponse" | tail -n1)
+
+          echo "Code : $code"
+          echo "Réponse : $corps"
+
+          if [ "$code" != "200" ]; then
+            echo "::error::Le réveil a échoué avec le code $code"
+            exit 1
+          fi

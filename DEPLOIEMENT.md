@@ -10,10 +10,16 @@ code plutôt qu'avec l'hébergeur.
 | Rôle | Service | Ce qui est gratuit |
 |---|---|---|
 | Interface | Vercel | 100 Go de trafic par mois |
-| API | Koyeb | un service web, 512 Mo |
+| API | Render | 750 heures d'instance par mois |
 | Base de données | Neon (PostgreSQL) | 0,5 Go |
 | Médias | Cloudflare R2 | 10 Go, sortie gratuite |
 | Cache | Upstash (Redis) | 10 000 commandes par jour |
+
+Koyeb a d'abord été retenu pour l'API. Son rachat par Mistral en février 2026
+a fermé le palier gratuit aux nouveaux comptes et réorienté la plateforme vers
+les charges IA : la création d'un service web n'y est plus possible. Render est
+la seule offre restante qui accepte un Dockerfile, ne demande pas de carte
+bancaire et reste gratuite sans limite de durée.
 
 Les documents antérieurs décrivaient un déploiement Railway écrit avant la
 réécriture du Dockerfile. Ils faisaient échouer le build sur le répertoire de
@@ -21,9 +27,9 @@ travail et sur le port, et ont été retirés plutôt que corrigés.
 
 ## L'API
 
-L'image est construite depuis `yowl-project/backend/Dockerfile`. C'est le
-répertoire de travail à déclarer chez l'hébergeur, et le builder doit être
-Dockerfile, jamais Buildpack.
+L'image est construite depuis `yowl-project/backend/Dockerfile`. Le fichier
+`render.yaml` à la racine du dépôt décrit le service, ses chemins et celles de
+ses variables qui ne sont pas des secrets.
 
 Le conteneur fait tourner php-fpm derrière nginx, tenus par supervisord, avec
 trois programmes de plus : la file d'attente, le planificateur, et Reverb.
@@ -35,6 +41,35 @@ routes, puis applique les migrations. Rien à lancer à la main.
 
 Le port est lu dans la variable `PORT` et injecté dans la configuration nginx
 au démarrage. La sonde de santé est `/api/health`.
+
+## Le sommeil, et ce qu'il casse
+
+Le palier gratuit de Render endort le conteneur après quinze minutes sans
+trafic. Le réveil prend de trente à cinquante secondes, que le premier visiteur
+attend. C'est le prix de la gratuité, et aucune offre sans carte bancaire ne
+l'évite aujourd'hui.
+
+Ce sommeil a une conséquence moins visible que la lenteur : un conteneur
+endormi ne tient ni son planificateur ni sa file d'attente. Les avis programmés
+resteraient non publiés, le résumé hebdomadaire ne partirait jamais, et les
+aperçus de liens ne seraient jamais récupérés.
+
+D'où la route `POST /cron/<jeton>`, appelée depuis l'extérieur. Elle réveille le
+conteneur et lui fait rattraper son retard. Chaque tâche y est déclenchée par sa
+date de dernière exécution plutôt que par une expression cron, parce qu'une
+horloge extérieure dérive et raterait une fenêtre à la minute près.
+
+Deux horloges possibles :
+
+- Le workflow `.github/workflows/cron.yml`, qui ne demande aucun compte
+  supplémentaire. Renseigner les secrets `API_URL` et `CRON_TOKEN` du dépôt.
+  GitHub retarde parfois les tâches planifiées et les suspend au bout de
+  soixante jours sans activité sur le dépôt.
+- Un service dédié comme cron-job.org, plus régulier, qui appelle la même
+  adresse toutes les dix minutes.
+
+Sur un hébergement qui ne dort pas, laisser `CRON_TOKEN` vide : la route répond
+alors 404 et le planificateur du conteneur suffit.
 
 ## L'interface
 

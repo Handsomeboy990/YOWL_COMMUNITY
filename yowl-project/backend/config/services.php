@@ -4,6 +4,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Réveil planifié
+    |--------------------------------------------------------------------------
+    |
+    | Jeton attendu par la route qui déclenche les tâches planifiées depuis
+    | l'extérieur. Vide, la route répond 404 : sur un hébergement qui ne dort
+    | pas, elle n'a pas lieu d'exister.
+    |
+    */
+
+    'cron' => [
+        'token' => env('CRON_TOKEN'),
+    ],
+
+
+    /*
+    |--------------------------------------------------------------------------
     | Third Party Services
     |--------------------------------------------------------------------------
     |
