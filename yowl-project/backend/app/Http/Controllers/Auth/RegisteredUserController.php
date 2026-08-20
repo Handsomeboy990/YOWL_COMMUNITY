@@ -61,13 +61,28 @@ class RegisteredUserController extends Controller
         $user->email_verification_expires_at = now()->addMinutes(15);
         $user->save();
 
-        // Envoi de l'email de vérification
-        Mail::to($user->email)->send(new \App\Mail\EmailVerificationCode($code));
+        // Envoi de l'email de vérification. Le compte est déjà enregistré :
+        // un relais SMTP injoignable ne doit pas faire perdre l'inscription,
+        // seulement le code, qui se redemande.
+        $remis = \App\Support\MailDelivery::attempt(
+            fn () => Mail::to($user->email)->send(new \App\Mail\EmailVerificationCode($code)),
+            ['action' => 'verification a l inscription', 'user' => $user->id],
+        );
 
         event(new Registered($user));
 
+        if (! $remis) {
+            return response()->json([
+                'success' => true,
+                'delivered' => false,
+                'message' => "Ton compte est créé, mais le code de vérification n'a pas pu partir. "
+                    .'Demande un nouveau code dans quelques minutes.',
+            ], 202);
+        }
+
         return response()->json([
             'success' => true,
+            'delivered' => true,
             'message' => 'Code de vérification envoyé à votre email.'
         ]);
     }
