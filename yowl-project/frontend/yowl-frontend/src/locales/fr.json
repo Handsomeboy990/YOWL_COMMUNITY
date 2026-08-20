@@ -332,5 +332,16 @@
     "subjectOther": "Autre chose",
     "tooShort": "Au moins 5 caractères",
     "bePrecise": "Sois aussi précis que possible"
+  },
+  "kpi": {
+    "title": "La communauté en chiffres",
+    "members": "Membres actifs",
+    "reviews": "Avis publiés",
+    "comments": "Commentaires",
+    "perDay": "Avis par jour",
+    "topAge": "Tranche d'âge la plus active",
+    "none": "aucune donnée",
+    "joinPrompt": "Rejoins la communauté qui grandit !",
+    "impactPrompt": "Découvre ton impact dans la communauté"
   }
 }

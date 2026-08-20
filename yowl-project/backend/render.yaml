@@ -126,3 +126,14 @@ services:
         sync: false
       - key: CRON_TOKEN
         sync: false
+
+      # Premier administrateur, créé au démarrage du conteneur. Les offres
+      # gratuites ne donnent pas de shell : c'est le seul moment possible.
+      # L'opération ne se refait pas au redémarrage. À retirer une fois le
+      # compte créé, un mot de passe n'a pas vocation à rester ici.
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_USERNAME
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false

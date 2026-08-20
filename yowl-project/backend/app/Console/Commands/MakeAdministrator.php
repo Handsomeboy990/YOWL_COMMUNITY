@@ -19,7 +19,9 @@ class MakeAdministrator extends Command
      */
     protected $signature = 'yowl:make-admin
                             {--email= : Address of the account}
-                            {--username= : Public name of the account}';
+                            {--username= : Public name of the account}
+                            {--password= : Password, for a run without a terminal}
+                            {--if-none : Do nothing when an administrator already exists}';
 
     /**
      * @var string
@@ -32,9 +34,21 @@ class MakeAdministrator extends Command
      * This replaces seeding in any environment holding real data: the password
      * is typed by the operator and never stored in the repository, and an
      * existing account is promoted rather than duplicated.
+     *
+     * It also runs without a terminal, which several hosts require: the free
+     * plans of Render and others give no shell, so the only moment left to
+     * create the first account is container start. Passing every value as an
+     * option makes that possible, and --if-none keeps it idempotent across
+     * restarts.
      */
     public function handle(): int
     {
+        if ($this->option('if-none') && User::role('admin')->exists()) {
+            $this->info('Un administrateur existe déjà, rien à faire.');
+
+            return self::SUCCESS;
+        }
+
         $email = $this->option('email') ?: text(
             label: 'Email of the administrator',
             required: true,
@@ -50,8 +64,10 @@ class MakeAdministrator extends Command
             required: true,
         );
 
-        $secret = password(label: 'Password', required: true);
-        $confirmation = password(label: 'Confirm the password', required: true);
+        // Sans terminal, la confirmation n'a pas de sens : la valeur vient
+        // d'une variable d'environnement, pas d'une frappe qui peut déraper.
+        $secret = $this->option('password') ?: password(label: 'Password', required: true);
+        $confirmation = $this->option('password') ?: password(label: 'Confirm the password', required: true);
 
         $validator = Validator::make(
             [

@@ -17,9 +17,12 @@ export const useReviewStore = defineStore(
       total: 0,
     });
     const kpi = ref({});
+    // range vaut null tant qu'aucune tranche n'a de membre : c'est a la vue
+    // de decider quoi afficher. Une chaine "empty" posee ici finissait telle
+    // quelle sous les yeux des visiteurs.
     const maxRange = ref({
       count: 0,
-      range: 'empty',
+      range: null,
     });
     const actualPage = ref(1)
 
