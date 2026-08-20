@@ -101,6 +101,23 @@ copie :
   `null` : y écrire `smtp` désactivait la diffusion et, avant le garde-fou
   ajouté depuis, empêchait l'application entière de démarrer.
 
+## La base de données
+
+Six variables, obligatoires en production. Sans `DB_CONNECTION`, Laravel
+retombe sur SQLite : le conteneur écrit dans un fichier qui meurt avec lui, les
+migrations repartent de zéro à chaque redémarrage, et la base managée reste
+vide sans que rien ne le signale. L'application refuse désormais de démarrer
+dans ce cas plutôt que de perdre les données en silence.
+
+Neon, Supabase et la plupart des PostgreSQL managés proposent leurs
+identifiants sous la forme `PGHOST`, `PGDATABASE`, `PGUSER`, `PGPASSWORD`,
+`PGSSLMODE` : ce sont les variables de `libpq`, celles que lit `psql`, et
+Laravel n'en lit aucune. Elles sont acceptées en repli, les `DB_` gardant la
+priorité.
+
+`GET /diagnostic/<jeton>` dit lequel des deux est réellement en usage, et si le
+pilote survit à un redémarrage.
+
 ## Les emails
 
 `MAIL_MAILER=log` n'envoie rien et écrit le message dans les journaux. C'est ce
