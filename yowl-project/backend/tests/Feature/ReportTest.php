@@ -7,11 +7,23 @@ use App\Models\Report;
 use App\Models\Review;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class ReportTest extends TestCase
 {
     use RefreshDatabase;
+
+    /**
+     * Les rôles ne sont plus créés par la classe de base : un test qui en a
+     * besoin le déclare, pour que la précondition reste visible ici.
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+        Role::findOrCreate('client', 'web');
+        Role::findOrCreate('admin', 'web');
+    }
 
     private function admin(): User
     {

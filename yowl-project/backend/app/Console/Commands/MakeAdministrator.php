@@ -43,6 +43,12 @@ class MakeAdministrator extends Command
      */
     public function handle(): int
     {
+        // Avant toute chose : sur une base fraîchement migrée la table des
+        // rôles est vide, et le scope role() de Spatie lève une exception
+        // plutôt que de rendre une liste vide. Le contrôle ci-dessous plantait
+        // donc sur exactement la situation qu'il doit couvrir.
+        $this->ensureRoleExists();
+
         if ($this->option('if-none') && User::role('admin')->exists()) {
             $this->info('Un administrateur existe déjà, rien à faire.');
 
@@ -99,8 +105,14 @@ class MakeAdministrator extends Command
             'email' => $email,
             'password' => Hash::make($secret),
             'birthdate' => '1990-01-01',
-            'email_verified_at' => now(),
         ]);
+
+        // email_verified_at n'est pas assignable en masse : passé à create()
+        // il était ignoré sans un mot, et le compte se voyait ensuite refuser
+        // la connexion faute de vérification. Un compte créé par l'opérateur
+        // au déploiement n'a personne à qui prouver qu'il détient l'adresse.
+        $user->forceFill(['email_verified_at' => now()])->save();
+
         $user->assignRole('admin');
 
         $this->info('Administrator created: '.$email);

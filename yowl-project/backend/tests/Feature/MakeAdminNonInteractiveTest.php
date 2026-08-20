@@ -19,10 +19,26 @@ class MakeAdminNonInteractiveTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected function setUp(): void
+    /**
+     * Aucun rôle n'est créé ici, et c'est le point.
+     *
+     * Une première version de ces tests appelait Role::findOrCreate dans son
+     * setUp. Ils mettaient donc en place la condition même qui manquait sur
+     * une base de production fraîchement migrée, et le déploiement a échoué
+     * sur un cas que la suite déclarait couvert.
+     */
+    public function test_it_works_on_a_freshly_migrated_database(): void
     {
-        parent::setUp();
-        Role::findOrCreate('admin', 'web');
+        $this->assertSame(0, Role::count(), 'La base de test doit partir sans aucun rôle.');
+
+        $this->artisan('yowl:make-admin', [
+            '--if-none' => true,
+            '--email' => 'chef@yowl.fr',
+            '--username' => 'chef',
+            '--password' => 'Un-Mot-Solide-2026',
+        ])->assertExitCode(0);
+
+        $this->assertTrue(User::where('email', 'chef@yowl.fr')->first()->hasRole('admin'));
     }
 
     public function test_it_creates_an_administrator_with_no_prompt(): void
@@ -37,10 +53,37 @@ class MakeAdminNonInteractiveTest extends TestCase
         $this->assertNotNull($admin);
         $this->assertTrue($admin->hasRole('admin'));
         $this->assertTrue(Hash::check('Un-Mot-Solide-2026', $admin->password));
+
+        // email_verified_at n'est pas assignable en masse : sans forceFill il
+        // restait nul, et LoginRequest refuse une adresse non vérifiée. Le
+        // compte était créé mais inutilisable.
+        $this->assertNotNull($admin->email_verified_at, 'Le compte doit être vérifié.');
+    }
+
+    public function test_the_created_administrator_can_actually_sign_in(): void
+    {
+        $this->artisan('yowl:make-admin', [
+            '--email' => 'chef@yowl.fr',
+            '--username' => 'chef',
+            '--password' => 'Un-Mot-Solide-2026',
+        ])->assertExitCode(0);
+
+        // La seule vérification qui compte : le compte sert à quelque chose.
+        $this->postJson('/api/login', [
+            'email' => 'chef@yowl.fr',
+            'password' => 'Un-Mot-Solide-2026',
+        ])
+            ->assertStatus(200)
+            ->assertJsonStructure(['token'])
+            ->assertJsonPath('user.username', 'chef');
     }
 
     public function test_if_none_does_nothing_when_an_administrator_exists(): void
     {
+        // Ce test-ci a besoin d'un administrateur en place : il déclare donc
+        // le rôle, contrairement aux autres qui vérifient le départ à vide.
+        Role::findOrCreate('admin', 'web');
+
         $premier = User::factory()->create(['email' => 'premier@yowl.fr']);
         $premier->assignRole('admin');
 
