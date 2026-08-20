@@ -25,6 +25,9 @@ class Cached
     /** Administration dashboard counters. */
     public const ADMIN_STATS = 'admin.stats';
 
+    /** The five growth indicators, whose cohort pass walks every member. */
+    public const GROWTH = 'admin.growth';
+
     /**
      * Time to live, in seconds, per entry.
      *
@@ -35,6 +38,10 @@ class Cached
         self::KPI => 300,
         self::TAGS => 600,
         self::ADMIN_STATS => 60,
+        // Quinze minutes : le calcul parcourt chaque membre de chaque cohorte,
+        // et personne ne lit une courbe de croissance assez souvent pour
+        // justifier de la refaire a chaque ouverture.
+        self::GROWTH => 900,
     ];
 
     /**

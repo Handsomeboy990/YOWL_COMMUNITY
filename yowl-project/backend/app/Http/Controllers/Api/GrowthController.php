@@ -6,20 +6,20 @@ use App\Http\Controllers\Controller;
 use App\Models\ActivityPing;
 use App\Support\Growth;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
+use App\Support\Cached;
 
 class GrowthController extends Controller
 {
     /**
      * The five indicators, plus signups per week.
      *
-     * Cached for a quarter of an hour: the cohort pass walks each member of
-     * each cohort, and nobody reads a growth curve often enough to need it
-     * recomputed on every open.
+     * Durée de vie déclarée dans Cached, comme toutes les autres entrées :
+     * un contrôleur qui appelle le cache directement finit par avoir sa propre
+     * clé, sa propre durée et aucune invalidation.
      */
     public function index()
     {
-        $donnees = Cache::remember('yowl.growth', now()->addMinutes(15), fn () => [
+        $donnees = Cached::remember(Cached::GROWTH, fn () => [
             'mau' => Growth::monthlyActive(),
             'inscriptions' => Growth::signupsPerWeek(),
             'commentaires' => Growth::commentsPerMember(),

@@ -36,6 +36,13 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
         bcmath \
         opcache
 
+# Le client Redis. Sans lui, CACHE_STORE=redis echoue des la premiere lecture
+# du cache sur "Class Redis not found" : l'extension n'est dans aucune image
+# php officielle. phpredis est l'extension C attendue par REDIS_CLIENT=phpredis.
+RUN pecl install redis \
+    && docker-php-ext-enable redis \
+    && rm -rf /tmp/pear
+
 COPY docker/php.ini /usr/local/etc/php/conf.d/zz-yowl.ini
 COPY docker/nginx.conf /etc/nginx/templates/default.conf.template
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
