@@ -65,13 +65,28 @@ class LoginRequest extends FormRequest
             ]);
         }
 
-        if (!Auth::attempt($credentials)) {
+        // Auth::validate() et non Auth::attempt().
+        //
+        // attempt() ouvre une session : c'est le garde « web », qui écrit dans
+        // le magasin de sessions. Sur une API qui ne délivre que des jetons,
+        // cette session ne sert à rien et n'est jamais relue, mais elle rend
+        // la connexion dépendante d'un magasin que l'hébergement ne fournit
+        // pas toujours. Une table sessions absente faisait répondre 500 à
+        // toute connexion, avec pour seul indice le mot « Server Error ».
+        //
+        // validate() vérifie les mêmes identifiants par le même fournisseur,
+        // sans rien écrire nulle part.
+        if (! Auth::validate($credentials)) {
             RateLimiter::hit($this->throttleKey());
             throw ValidationException::withMessages([
                 'email' => __('auth.failed'),
             ]);
         }
         RateLimiter::clear($this->throttleKey());
+
+        // validate() ne pose pas d'utilisateur courant : le contrôleur en a
+        // besoin pour émettre le jeton, on le lui donne sans session.
+        Auth::setUser($user);
 
         // Vérifier si le user a vérifié son compte
         if ($user->email_verified_at == null) {
