@@ -2,27 +2,39 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useUserStore } from '@/stores/user';
 import LandingView from '@/views/LandingView.vue'
 import HomeView from '../views/HomeView.vue'
-import SignUp from '@/components/pages/Auth/SignUp.vue'
-import Login from '@/components/pages/Auth/Login.vue'
-import ForgotPassword from '@/components/pages/Auth/ForgotPassword.vue'
-import ResetPassword from '@/components/pages/Auth/ResetPassword.vue'
-import ReviewDetail from '@/components/pages/ReviewDetail.vue'
-import Summary from '@/components/pages/profil/Summary.vue'
-import Activity from '@/components/pages/profil/Activity.vue'
-import MyPost from '@/components/pages/profil/MyPost.vue'
-import Saved from '@/components/pages/profil/Saved.vue'
-import Appeals from '@/components/pages/profil/Appeals.vue'
-import Onboarding from '@/components/pages/Onboarding.vue'
-import MemberProfile from '@/views/MemberProfile.vue'
-import TagFeed from '@/views/TagFeed.vue'
-import TagDirectory from '@/views/TagDirectory.vue'
-import Suggestion from '@/components/pages/Suggestion.vue'
-import LegalPage from '@/components/pages/LegalPage.vue'
-import Unsubscribe from '@/components/pages/Unsubscribe.vue'
-import ExtensionConnect from '@/components/pages/ExtensionConnect.vue'
-import NotFound from '@/views/NotFound.vue'
-import ShareView from '@/views/ShareView.vue'
-import DashboardAdmin from '@/views/DashboardAdmin.vue';
+
+/**
+ * Vues chargées à la demande.
+ *
+ * Tout partait dans un seul fichier de 1,2 Mo : un visiteur qui ouvre le fil
+ * téléchargeait la console d'administration, l'éditeur de texte enrichi et les
+ * graphiques avant de voir un seul avis. Chaque vue devient un morceau à part,
+ * récupéré au moment où la route y mène.
+ *
+ * L'accueil et le fil restent chargés d'emblée : ce sont les deux portes
+ * d'entrée, et les différer ajouterait un aller-retour avant le premier rendu.
+ */
+const Activity = () => import('@/components/pages/profil/Activity.vue');
+const Appeals = () => import('@/components/pages/profil/Appeals.vue');
+const DashboardAdmin = () => import('@/views/DashboardAdmin.vue');
+const ExtensionConnect = () => import('@/components/pages/ExtensionConnect.vue');
+const ForgotPassword = () => import('@/components/pages/Auth/ForgotPassword.vue');
+const LegalPage = () => import('@/components/pages/LegalPage.vue');
+const Login = () => import('@/components/pages/Auth/Login.vue');
+const MemberProfile = () => import('@/views/MemberProfile.vue');
+const MyPost = () => import('@/components/pages/profil/MyPost.vue');
+const NotFound = () => import('@/views/NotFound.vue');
+const Onboarding = () => import('@/components/pages/Onboarding.vue');
+const ResetPassword = () => import('@/components/pages/Auth/ResetPassword.vue');
+const ReviewDetail = () => import('@/components/pages/ReviewDetail.vue');
+const Saved = () => import('@/components/pages/profil/Saved.vue');
+const ShareView = () => import('@/views/ShareView.vue');
+const SignUp = () => import('@/components/pages/Auth/SignUp.vue');
+const Suggestion = () => import('@/components/pages/Suggestion.vue');
+const Summary = () => import('@/components/pages/profil/Summary.vue');
+const TagDirectory = () => import('@/views/TagDirectory.vue');
+const TagFeed = () => import('@/views/TagFeed.vue');
+const Unsubscribe = () => import('@/components/pages/Unsubscribe.vue');
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),

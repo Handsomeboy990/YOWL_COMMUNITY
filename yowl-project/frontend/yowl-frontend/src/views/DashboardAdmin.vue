@@ -457,22 +457,26 @@ import AppShell from '@/components/layouts/AppShell.vue';
 import Pagination from '@/components/layouts/Pagination.vue';
 import EmptyState from '@/components/ui/EmptyState.vue';
 import TableSkeleton from '@/components/ui/TableSkeleton.vue';
-import { computed, onMounted, ref } from 'vue';
+import { computed, defineAsyncComponent, onMounted, ref } from 'vue';
 import { useNotify } from '@/composables/useNotify';
 import { useConfirm } from '@/composables/useConfirm';
 import api from '@/services/apiService';
-import AdminCampaigns from '@/components/admin/AdminCampaigns.vue';
-import AdminGrowth from '@/components/admin/AdminGrowth.vue';
-import AdminAppeals from '@/components/admin/AdminAppeals.vue';
-import AdminLegalPages from '@/components/admin/AdminLegalPages.vue';
-import AdminSettings from '@/components/admin/AdminSettings.vue';
-import AdminRoles from '@/components/admin/AdminRoles.vue';
-import AdminAuditLog from '@/components/admin/AdminAuditLog.vue';
-import CreateUserModal from '@/components/admin/CreateUserModal.vue';
-import UserDetailModal from '@/components/admin/UserDetailModal.vue';
 import { getStorageUrl } from '@/config';
 import BaseButton from '@/components/ui/BaseButton.vue';
 import { useAppealStore } from '@/stores/appeal';
+
+// Panneaux chargés à l'ouverture de leur onglet. L'éditeur de texte et
+// la bibliothèque de graphiques pèsent à eux deux la moitié de cette
+// console, et un modérateur qui traite des signalements n'en ouvre aucun.
+const AdminGrowth = defineAsyncComponent(() => import('@/components/admin/AdminGrowth.vue'));
+const AdminCampaigns = defineAsyncComponent(() => import('@/components/admin/AdminCampaigns.vue'));
+const AdminLegalPages = defineAsyncComponent(() => import('@/components/admin/AdminLegalPages.vue'));
+const AdminAppeals = defineAsyncComponent(() => import('@/components/admin/AdminAppeals.vue'));
+const AdminSettings = defineAsyncComponent(() => import('@/components/admin/AdminSettings.vue'));
+const AdminRoles = defineAsyncComponent(() => import('@/components/admin/AdminRoles.vue'));
+const AdminAuditLog = defineAsyncComponent(() => import('@/components/admin/AdminAuditLog.vue'));
+const UserDetailModal = defineAsyncComponent(() => import('@/components/admin/UserDetailModal.vue'));
+const CreateUserModal = defineAsyncComponent(() => import('@/components/admin/CreateUserModal.vue'));
 
 const activeTab = ref('overview');
 const isCreateUserOpen = ref(false);
