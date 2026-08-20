@@ -24,27 +24,37 @@
 
 <script setup>
 import { ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { useNotify } from '@/composables/useNotify';
+import { useDraft } from '@/composables/useDraft';
 import { useUserStore } from "@/stores/user";
-import router from "@/router";
 
 const props = defineProps({
   content: String,
-  id: Number
+  id: Number,
+  // Identifie le brouillon. Sans elle, deux avis ouverts dans deux onglets
+  // se partageraient le meme texte en attente.
+  draftKey: { type: String, default: '' },
 })
 
 const newComment = ref(props.content || "");
 const focused = ref(false);
 
+const route = useRoute();
+const router = useRouter();
 const userStore = useUserStore()
 const notify = useNotify();
 const emit = defineEmits(["submitComment", "editComment"]);
 
+// Une modification n'est pas un brouillon : elle part deja remplie.
+const brouillon = useDraft(props.draftKey || 'commentaire', newComment, !props.content);
+
 const submit = () => {
-  // Connexion obligatoire
+  // Connexion obligatoire. Le texte est mis de cote et l'adresse courante
+  // voyage avec la redirection, pour revenir exactement ici apres coup.
   if (!userStore.isAuthenticated) {
-    notify.info('Connexion requise', "Tu dois être connecté pour commenter.");
-    router.push('/login')
+    notify.info('Connexion requise', "Connecte-toi pour publier. Ton texte est gardé.");
+    router.push({ name: 'login', query: { redirect: route.fullPath } });
     return;
   }
 
@@ -59,5 +69,6 @@ const submit = () => {
     emit("editComment", { content: newComment.value.trim(), id: props.id });
   }
   newComment.value = "";
+  brouillon.oublier();
 };
 </script>

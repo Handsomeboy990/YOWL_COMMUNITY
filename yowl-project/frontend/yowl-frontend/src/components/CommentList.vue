@@ -1,7 +1,7 @@
 <template>
     <div>
         <!-- first comment form -->
-        <CommentForm @submitComment="addComment" />
+        <CommentForm :draft-key="'avis-' + props.reviewId" @submitComment="addComment" />
 
         <!-- comment list -->
         <div class="mt-6">

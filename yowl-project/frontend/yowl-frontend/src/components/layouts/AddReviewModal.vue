@@ -188,9 +188,10 @@
 import { getStorageUrl } from '@/config';
 import { computed, ref, useId, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useDraft } from '@/composables/useDraft';
 import { useNotify } from '@/composables/useNotify';
 import { useUserStore } from '@/stores/user';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import api from '@/services/apiService';
 import BaseModal from '@/components/ui/BaseModal.vue';
 import BaseInput from '@/components/ui/BaseInput.vue';
@@ -205,6 +206,7 @@ const props = defineProps({
 const emit = defineEmits(['close', 'publish', 'update']);
 
 const { t, locale } = useI18n();
+const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
 const notify = useNotify();
@@ -226,6 +228,14 @@ const form = ref(emptyForm());
 const suggestions = ref([]);
 const showSuggestions = ref(false);
 let suggestionsTimer = null;
+
+// Le texte d'un nouvel avis survit a un aller-retour vers la connexion.
+// Une modification, elle, part deja remplie et n'a rien a restaurer.
+const contenu = computed({
+    get: () => form.value.content,
+    set: (texte) => { form.value.content = texte; },
+});
+const brouillon = useDraft('avis-nouveau', contenu, !props.editedReview);
 
 const duplicates = ref([]);
 const scheduling = ref(false);
@@ -419,8 +429,8 @@ const onTagKeydown = (e) => {
 // Soumission
 const submitReview = async () => {
     if (!userStore.isAuthenticated) {
-        notify.info('Connexion requise', 'Tu dois être connecté pour publier un avis.');
-        router.push('/login');
+        notify.info('Connexion requise', 'Connecte-toi pour publier. Ton texte est gardé.');
+        router.push({ name: 'login', query: { redirect: route.fullPath } });
         return;
     }
 
@@ -452,6 +462,7 @@ const submitReview = async () => {
         } else {
             emit('publish', reviewData);
         }
+        brouillon.oublier();
         closeModal();
     } finally {
         submitting.value = false;

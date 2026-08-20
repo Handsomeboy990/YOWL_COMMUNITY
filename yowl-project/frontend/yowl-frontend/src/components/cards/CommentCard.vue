@@ -95,7 +95,8 @@
             </footer>
 
             <!-- Formulaire de réponse -->
-            <CommentForm v-if="isReplying" :content="''" @submitComment="addReply" />
+            <CommentForm v-if="isReplying" :content="''" :draft-key="'reponse-' + comment.id"
+                @submitComment="addReply" />
 
             <!-- Formulaire d'édition -->
             <CommentForm v-if="isEditing" :content="content" :id="comment.id" @editComment="editComment" />
