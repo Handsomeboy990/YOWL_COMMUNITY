@@ -1,0 +1,368 @@
+/* Palette alignée sur le site. L'orange porte du texte blanc : c'est la
+   variante qui passe le seuil de contraste, pas l'orange clair d'origine. */
+:root {
+  --orange: #cc4a15;
+  --orange-sombre: #a63b10;
+  --orange-pale: #fdf0ea;
+  --nuit: #16202e;
+  --gris: #56637a;
+  --gris-clair: #8794a8;
+  --trait: #e3e8ef;
+  --fond: #ffffff;
+  --surface: #f5f7fa;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --orange: #ff8552;
+    --orange-sombre: #ff9a70;
+    --orange-pale: #2a1a12;
+    --nuit: #e7edf5;
+    --gris: #a2afc2;
+    --gris-clair: #6f7e93;
+    --trait: #27313f;
+    --fond: #0f1621;
+    --surface: #17202d;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  width: 380px;
+  max-height: 580px;
+  overflow-y: auto;
+  background: var(--fond);
+  color: var(--nuit);
+  font: 14px/1.55 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.cachee { display: none !important; }
+
+/* ---------- En-tête ---------- */
+
+.tete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--trait);
+  position: sticky;
+  top: 0;
+  background: var(--fond);
+  z-index: 2;
+}
+
+.marque {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+}
+
+.lien-discret {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--gris-clair);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.lien-discret:hover { background: var(--surface); color: var(--nuit); }
+.lien-discret:focus-visible { outline: 2px solid var(--orange); outline-offset: 1px; }
+
+.vue { padding: 14px; }
+
+/* ---------- États pleins ---------- */
+
+.centre { text-align: center; padding: 22px 10px 26px; }
+
+.rond {
+  width: 46px;
+  height: 46px;
+  margin: 0 auto 14px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: var(--orange-pale);
+  color: var(--orange);
+}
+
+.rond.discret { background: var(--surface); color: var(--gris-clair); }
+.rond.succes { background: #e6f4f2; color: #0f766e; }
+
+@media (prefers-color-scheme: dark) {
+  .rond.succes { background: #10241f; color: #4dbfae; }
+}
+
+.centre h1 { margin: 0 0 6px; font-size: 16px; font-weight: 700; letter-spacing: -0.01em; }
+.centre p { margin: 0 0 14px; font-size: 13px; color: var(--gris); }
+.note { font-size: 11.5px !important; color: var(--gris-clair) !important; margin-top: 10px !important; }
+
+/* ---------- La page en cours ---------- */
+
+.page {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 11px 12px;
+  border: 1px solid var(--trait);
+  border-radius: 11px;
+  background: var(--surface);
+}
+
+.favicon {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  background: var(--fond);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.favicon img { width: 16px; height: 16px; }
+
+.page-texte { min-width: 0; flex: 1; }
+
+.page-titre {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.page-hote { margin: 2px 0 0; font-size: 11.5px; color: var(--gris-clair); }
+
+/* ---------- Ce que la communauté en dit ---------- */
+
+.bloc {
+  margin-top: 12px;
+  padding: 11px 12px;
+  border-radius: 11px;
+  background: var(--orange-pale);
+  border: 1px solid transparent;
+}
+
+.bloc.calme { background: var(--surface); border-color: var(--trait); }
+.bloc.calme p { margin: 0; font-size: 12.5px; color: var(--gris); }
+
+.bloc-titre {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--orange);
+  letter-spacing: 0.01em;
+}
+
+.liste { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+
+.liste a {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 8px 9px;
+  border-radius: 9px;
+  background: var(--fond);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.liste a:hover { transform: translateY(-1px); box-shadow: 0 3px 10px rgba(22, 32, 46, 0.08); }
+.liste a:focus-visible { outline: 2px solid var(--orange); outline-offset: 1px; }
+
+.liste img { width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0; object-fit: cover; }
+.liste .qui { font-size: 11.5px; font-weight: 600; }
+.liste .quoi {
+  margin: 1px 0 0;
+  font-size: 12px;
+  color: var(--gris);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.liste .combien { margin: 3px 0 0; font-size: 10.5px; color: var(--gris-clair); }
+
+/* ---------- Écrire ---------- */
+
+.ecrire { margin-top: 14px; }
+
+.etiquette {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--gris);
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+textarea,
+.tags-saisie {
+  width: 100%;
+  border: 1.5px solid var(--trait);
+  border-radius: 10px;
+  background: var(--fond);
+  color: var(--nuit);
+  font: inherit;
+  padding: 9px 11px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+textarea { resize: none; display: block; }
+
+textarea:focus,
+.tags-saisie:focus-within {
+  outline: none;
+  border-color: var(--orange);
+  box-shadow: 0 0 0 3px rgba(204, 74, 21, 0.15);
+}
+
+.compteur { margin: 4px 0 12px; font-size: 11px; color: var(--gris-clair); text-align: right; }
+.compteur.proche { color: var(--orange); }
+
+.tags-saisie { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; padding: 6px 8px; }
+
+.tags { list-style: none; display: contents; margin: 0; padding: 0; }
+
+.tags li {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 4px 2px 8px;
+  border-radius: 100px;
+  background: var(--orange-pale);
+  color: var(--orange);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.tags button {
+  width: 16px;
+  height: 16px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+}
+
+.tags button:hover { background: rgba(204, 74, 21, 0.15); }
+
+.tags-saisie input {
+  flex: 1;
+  min-width: 110px;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  padding: 2px 0;
+}
+
+.suggestions {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 4px;
+  border: 1px solid var(--trait);
+  border-radius: 10px;
+  background: var(--fond);
+  max-height: 132px;
+  overflow-y: auto;
+}
+
+.suggestions button {
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  padding: 6px 9px;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.suggestions button:hover { background: var(--surface); color: var(--orange); }
+
+/* ---------- Pied ---------- */
+
+.pied { display: flex; gap: 8px; margin-top: 14px; }
+
+.bouton {
+  flex: 1;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 10px;
+  font: inherit;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.12s ease;
+}
+
+.bouton:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+
+.principal { background: var(--orange); color: #fff; }
+.principal:hover:not(:disabled) { background: var(--orange-sombre); transform: translateY(-1px); }
+.principal:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.discret { background: var(--surface); color: var(--gris); flex: 0 0 auto; }
+.discret:hover { color: var(--nuit); }
+
+.centre .bouton { width: 100%; flex: none; margin-bottom: 8px; }
+
+.message {
+  margin: 10px 0 0;
+  padding: 9px 11px;
+  border-radius: 9px;
+  font-size: 12.5px;
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+@media (prefers-color-scheme: dark) {
+  .message { background: #3b1717; color: #fca5a5; }
+}
+
+/* ---------- Squelette ---------- */
+
+.squelette {
+  height: 13px;
+  border-radius: 6px;
+  margin-bottom: 9px;
+  background: linear-gradient(90deg, var(--surface) 25%, var(--trait) 50%, var(--surface) 75%);
+  background-size: 200% 100%;
+  animation: glisse 1.4s ease-in-out infinite;
+}
+
+.squelette.grand { height: 86px; }
+
+@keyframes glisse {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .principal:hover:not(:disabled), .liste a:hover { transform: none; }
+}

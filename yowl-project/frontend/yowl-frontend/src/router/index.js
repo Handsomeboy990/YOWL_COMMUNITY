@@ -19,6 +19,7 @@ import TagDirectory from '@/views/TagDirectory.vue'
 import Suggestion from '@/components/pages/Suggestion.vue'
 import LegalPage from '@/components/pages/LegalPage.vue'
 import Unsubscribe from '@/components/pages/Unsubscribe.vue'
+import ExtensionConnect from '@/components/pages/ExtensionConnect.vue'
 import NotFound from '@/views/NotFound.vue'
 import ShareView from '@/views/ShareView.vue'
 import DashboardAdmin from '@/views/DashboardAdmin.vue';
@@ -169,6 +170,12 @@ const router = createRouter({
             path: '/desinscription/:token',
             name: 'unsubscribe',
             component: Unsubscribe,
+        },
+        {
+            // Ouverte par l'extension pour recevoir le jeton.
+            path: '/extension',
+            name: 'extension',
+            component: ExtensionConnect,
         },
         {
             path: '/suggestion',

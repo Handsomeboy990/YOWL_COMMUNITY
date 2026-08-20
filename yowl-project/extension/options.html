@@ -1,77 +1,73 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
-
 <head>
-    <meta charset="UTF-8">
-    <title>Options - YOWL Partage rapide</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            width: 340px;
-            padding: 16px;
-            color: #1e2a38;
-        }
-
-        h1 {
-            font-size: 16px;
-            margin: 0 0 12px;
-        }
-
-        label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-
-        input {
-            width: 100%;
-            box-sizing: border-box;
-            padding: 9px 12px;
-            border: 2px solid #e5e7eb;
-            border-radius: 10px;
-            font-size: 13px;
-            outline: none;
-        }
-
-        input:focus {
-            border-color: #ff6b35;
-        }
-
-        button {
-            margin-top: 12px;
-            width: 100%;
-            padding: 10px;
-            background: #ff6b35;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #e75a27;
-        }
-
-        p.saved {
-            color: #12b886;
-            font-size: 12px;
-            text-align: center;
-            min-height: 16px;
-            margin: 8px 0 0;
-        }
-    </style>
+  <meta charset="utf-8">
+  <title>Réglages de l'extension YOWL</title>
+  <link rel="stylesheet" href="popup.css">
+  <style>
+    body { width: auto; max-width: 620px; max-height: none; margin: 0 auto; padding: 32px 24px 48px; }
+    h1 { font-size: 22px; margin: 0 0 6px; letter-spacing: -0.02em; }
+    .intro { color: var(--gris); margin: 0 0 28px; font-size: 14px; }
+    fieldset { border: 1px solid var(--trait); border-radius: 12px; padding: 18px; margin: 0 0 18px; }
+    legend { font-weight: 700; font-size: 13px; padding: 0 6px; }
+    .champ { margin-bottom: 16px; }
+    .champ:last-child { margin-bottom: 0; }
+    .champ input {
+      width: 100%; padding: 9px 11px; border: 1.5px solid var(--trait);
+      border-radius: 10px; background: var(--fond); color: var(--nuit); font: inherit;
+    }
+    .champ input:focus { outline: none; border-color: var(--orange); box-shadow: 0 0 0 3px rgba(204,74,21,.15); }
+    .aide { font-size: 12px; color: var(--gris-clair); margin: 5px 0 0; }
+    .etat { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+    .pastille { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .pastille.on { background: #0f766e; }
+    .pastille.off { background: var(--gris-clair); }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+    .actions .bouton { flex: 0 0 auto; padding: 9px 16px; }
+    #retour { margin-top: 14px; font-size: 13px; color: #0f766e; }
+  </style>
 </head>
-
 <body>
-    <h1>YOWL - Partage rapide</h1>
-    <label for="appUrl">Adresse de l'application YOWL</label>
-    <input type="url" id="appUrl" placeholder="https://yowl.exemple.com">
-    <button id="save">Enregistrer</button>
-    <p class="saved" id="status"></p>
-    <script src="options.js"></script>
-</body>
+  <h1>Réglages de l'extension</h1>
+  <p class="intro">
+    L'extension signale, sur chaque page que tu lis, ce que la communauté en dit
+    déjà. Elle a besoin de savoir où joindre YOWL, et d'être connectée à ton compte.
+  </p>
 
+  <fieldset>
+    <legend>Connexion</legend>
+    <div class="etat">
+      <span id="pastille" class="pastille off"></span>
+      <span id="etat-texte">Non connectée</span>
+    </div>
+    <div class="actions">
+      <button id="connecter" class="bouton principal" type="button">Connecter mon compte</button>
+      <button id="deconnecter" class="bouton discret" type="button">Déconnecter</button>
+    </div>
+    <p class="aide">
+      La connexion se fait sur le site : ton mot de passe ne passe jamais par
+      l'extension, qui ne reçoit qu'un jeton révocable.
+    </p>
+  </fieldset>
+
+  <fieldset>
+    <legend>Adresses</legend>
+    <div class="champ">
+      <label for="siteUrl"><strong>Adresse du site</strong></label>
+      <input id="siteUrl" type="url" placeholder="https://yowl.vercel.app">
+      <p class="aide">Là où s'ouvrent les avis et le fil.</p>
+    </div>
+    <div class="champ">
+      <label for="apiUrl"><strong>Adresse de l'API</strong></label>
+      <input id="apiUrl" type="url" placeholder="https://yowl-api.koyeb.app/api">
+      <p class="aide">Le suffixe /api est obligatoire.</p>
+    </div>
+    <div class="actions">
+      <button id="enregistrer" class="bouton principal" type="button">Enregistrer</button>
+    </div>
+    <p id="retour"></p>
+  </fieldset>
+
+  <script type="module" src="options.js"></script>
+</body>
 </html>

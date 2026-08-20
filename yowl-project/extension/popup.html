@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>YOWL</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div id="app">
+    <header class="tete">
+      <div class="marque">
+        <img src="icons/icon48.png" alt="" width="22" height="22">
+        <span>YOWL</span>
+      </div>
+      <button id="reglages" class="lien-discret" type="button" title="Réglages">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+          <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 9 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 4.6 9a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"
+            fill="none" stroke="currentColor" stroke-width="1.6"/>
+        </svg>
+      </button>
+    </header>
+
+    <!-- Chargement -->
+    <section id="vue-chargement" class="vue">
+      <div class="squelette" style="width:70%"></div>
+      <div class="squelette" style="width:45%"></div>
+      <div class="squelette grand"></div>
+    </section>
+
+    <!-- Pas connecté -->
+    <section id="vue-connexion" class="vue cachee">
+      <div class="centre">
+        <div class="rond">
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"
+              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h1>Connecte l'extension</h1>
+        <p>Un aller-retour sur YOWL, et tu vois ce que la communauté pense des pages que tu lis.</p>
+        <button id="connecter" class="bouton principal" type="button">Me connecter</button>
+        <p class="note">Ton mot de passe ne passe jamais par l'extension.</p>
+      </div>
+    </section>
+
+    <!-- Page hors sujet -->
+    <section id="vue-impossible" class="vue cachee">
+      <div class="centre">
+        <div class="rond discret">
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/>
+            <path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h1>Rien à partager ici</h1>
+        <p>Cette page n'a pas d'adresse publique. Ouvre un site pour donner ton avis dessus.</p>
+      </div>
+    </section>
+
+    <!-- Le cœur -->
+    <section id="vue-page" class="vue cachee">
+      <!-- La page en cours -->
+      <div class="page">
+        <div class="favicon"><img id="favicon" src="" alt=""></div>
+        <div class="page-texte">
+          <p id="page-titre" class="page-titre"></p>
+          <p id="page-hote" class="page-hote"></p>
+        </div>
+      </div>
+
+      <!-- Ce que la communauté en dit : la raison d'être de ce panneau -->
+      <div id="discussions" class="bloc cachee">
+        <p class="bloc-titre">
+          <span id="discussions-nombre"></span>
+        </p>
+        <ul id="discussions-liste" class="liste"></ul>
+      </div>
+
+      <div id="aucune" class="bloc calme cachee">
+        <p>Personne n'a encore donné son avis sur cette page.</p>
+        <p class="note">Tu peux ouvrir la discussion.</p>
+      </div>
+
+      <!-- Écrire -->
+      <div class="ecrire">
+        <label for="avis" class="etiquette">Ton avis</label>
+        <textarea id="avis" rows="4" maxlength="2000"
+          placeholder="Ce que tu en penses, et pourquoi."></textarea>
+        <p id="compteur" class="compteur"></p>
+
+        <label for="tags" class="etiquette">Sujets</label>
+        <div class="tags-saisie">
+          <ul id="tags-choisis" class="tags"></ul>
+          <input id="tags" type="text" placeholder="Ajoute un sujet puis Entrée" autocomplete="off">
+        </div>
+        <ul id="tags-suggestions" class="suggestions cachee"></ul>
+      </div>
+
+      <div class="pied">
+        <button id="publier" class="bouton principal" type="button" disabled>Publier mon avis</button>
+        <button id="ouvrir-site" class="bouton discret" type="button">Ouvrir YOWL</button>
+      </div>
+      <p id="message" class="message cachee"></p>
+    </section>
+
+    <!-- Publié -->
+    <section id="vue-publie" class="vue cachee">
+      <div class="centre">
+        <div class="rond succes">
+          <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+            <path d="M4 12.5 9.5 18 20 7" fill="none" stroke="currentColor"
+              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h1>Ton avis est en ligne</h1>
+        <p>La communauté peut y répondre.</p>
+        <button id="voir-avis" class="bouton principal" type="button">Le voir sur YOWL</button>
+        <button id="recommencer" class="bouton discret" type="button">Fermer</button>
+      </div>
+    </section>
+  </div>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
