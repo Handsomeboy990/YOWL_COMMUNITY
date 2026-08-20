@@ -1,126 +1,128 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <div class="min-h-screen w-full flex bg-white">
-    <!-- Panneau formulaire -->
-    <div class="w-full lg:w-1/2 flex flex-col justify-center px-6 sm:px-12 xl:px-24 py-10">
-      <router-link to="/" class="inline-flex items-center gap-2.5 mb-10 w-max">
-        <img src="@/assets/logo.png" alt="Logo YOWL" class="h-12" />
-        <span class="font-poppins font-extrabold text-2xl text-blue-night">YOWL</span>
-      </router-link>
+  <div>
+    <div class="min-h-screen w-full flex bg-white">
+      <!-- Panneau formulaire -->
+      <div class="w-full lg:w-1/2 flex flex-col justify-center px-6 sm:px-12 xl:px-24 py-10">
+        <router-link to="/" class="inline-flex items-center gap-2.5 mb-10 w-max">
+          <img src="@/assets/logo.png" alt="Logo YOWL" class="h-12" />
+          <span class="font-poppins font-extrabold text-2xl text-blue-night">YOWL</span>
+        </router-link>
 
-      <div class="max-w-md w-full mx-auto lg:mx-0 animate-fade-in-up">
-        <h1 class="font-poppins font-extrabold text-3xl md:text-4xl text-blue-night">
-          Bon retour parmi nous
-        </h1>
-        <p class="text-gray-500 mt-3 mb-8">
-          Pas encore de compte ?
-          <router-link to="/signup" class="text-orange-text font-semibold hover:underline">
-            Inscris-toi maintenant
-          </router-link>
-        </p>
-
-        <form class="space-y-5" @submit.prevent="submitForm">
-          <Transition name="shake">
-            <div
-              v-if="errorMessage"
-              class="flex items-start gap-3 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600"
-              role="alert"
-            >
-              <i class="fa-solid fa-circle-exclamation mt-0.5" aria-hidden="true"></i>
-              <span>{{ errorMessage }}</span>
-            </div>
-          </Transition>
-
-          <BaseInput
-            v-model="identifier"
-            label="Adresse email"
-            type="email"
-            placeholder="toi@exemple.com"
-            icon="fa-regular fa-envelope"
-            autocomplete="email"
-            required
-            @enter="submitForm"
-          />
-
-          <BaseInput
-            v-model="password"
-            label="Mot de passe"
-            type="password"
-            placeholder="Ton mot de passe"
-            icon="fa-solid fa-lock"
-            autocomplete="current-password"
-            required
-            @enter="submitForm"
-          />
-
-          <div class="flex items-center justify-between">
-            <BaseCheckbox v-model="rememberMe" :label="t('auth.remember')" />
-            <router-link to="/forgot-password" class="text-sm text-orange-text font-medium hover:underline">
-              Mot de passe oublié ?
+        <div class="max-w-md w-full mx-auto lg:mx-0 animate-fade-in-up">
+          <h1 class="font-poppins font-extrabold text-3xl md:text-4xl text-blue-night">
+            Bon retour parmi nous
+          </h1>
+          <p class="text-gray-500 mt-3 mb-8">
+            Pas encore de compte ?
+            <router-link to="/signup" class="text-orange-text font-semibold hover:underline">
+              Inscris-toi maintenant
             </router-link>
-          </div>
-
-          <BaseButton type="submit" variant="primary" size="lg" block :loading="loading">
-            Se connecter
-          </BaseButton>
-        </form>
-      </div>
-    </div>
-
-    <!-- Panneau marque -->
-    <div class="hidden lg:flex w-1/2 relative bg-blue-night items-center justify-center overflow-hidden">
-      <div class="auth-blob auth-blob-1" aria-hidden="true"></div>
-      <div class="auth-blob auth-blob-2" aria-hidden="true"></div>
-
-      <div class="relative z-10 max-w-md px-12 text-center">
-        <div
-          class="mx-auto w-20 h-20 rounded-3xl bg-gradient-to-br from-orange-primary to-[#ff8c5a] grid place-items-center text-white text-3xl shadow-2xl shadow-orange-primary/40 rotate-3 animate-fade-in-up"
-        >
-          <i class="fa-solid fa-comments"></i>
-        </div>
-        <h2 class="mt-8 font-poppins font-extrabold text-3xl text-white leading-snug animate-fade-in-up animation-delay-200">
-          Retrouve ta communauté
-        </h2>
-        <p class="mt-4 text-white/70 leading-relaxed animate-fade-in-up animation-delay-400">
-          Tes avis, ta voix. Reprends la conversation là où tu l'avais laissée et découvre
-          ce que la communauté a partagé pendant ton absence.
-        </p>
-
-        <blockquote class="mt-10 bg-white/5 border border-white/10 backdrop-blur-sm rounded-2xl p-6 text-left animate-fade-in-up animation-delay-400">
-          <div class="flex gap-1 text-orange-text mb-3 text-xs" aria-hidden="true">
-            <i v-for="s in 5" :key="s" class="fa-solid fa-star"></i>
-          </div>
-          <p class="text-white/80 text-sm italic leading-relaxed">
-            « La communauté YOWL est devenue mon réflexe avant chaque découverte sur le web. »
           </p>
-          <footer class="mt-4 flex items-center gap-3">
-            <span class="w-9 h-9 rounded-full bg-[#5B3FD4] grid place-items-center text-white text-xs font-poppins font-bold">SA</span>
-            <span class="text-white/75 text-xs">Sarah, membre depuis 6 mois</span>
-          </footer>
-        </blockquote>
+
+          <form class="space-y-5" @submit.prevent="submitForm">
+            <Transition name="shake">
+              <div
+                v-if="errorMessage"
+                class="flex items-start gap-3 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600"
+                role="alert"
+              >
+                <i class="fa-solid fa-circle-exclamation mt-0.5" aria-hidden="true"></i>
+                <span>{{ errorMessage }}</span>
+              </div>
+            </Transition>
+
+            <BaseInput
+              v-model="identifier"
+              label="Adresse email"
+              type="email"
+              placeholder="toi@exemple.com"
+              icon="fa-regular fa-envelope"
+              autocomplete="email"
+              required
+              @enter="submitForm"
+            />
+
+            <BaseInput
+              v-model="password"
+              label="Mot de passe"
+              type="password"
+              placeholder="Ton mot de passe"
+              icon="fa-solid fa-lock"
+              autocomplete="current-password"
+              required
+              @enter="submitForm"
+            />
+
+            <div class="flex items-center justify-between">
+              <BaseCheckbox v-model="rememberMe" :label="t('auth.remember')" />
+              <router-link to="/forgot-password" class="text-sm text-orange-text font-medium hover:underline">
+                Mot de passe oublié ?
+              </router-link>
+            </div>
+
+            <BaseButton type="submit" variant="primary" size="lg" block :loading="loading">
+              Se connecter
+            </BaseButton>
+          </form>
+        </div>
+      </div>
+
+      <!-- Panneau marque -->
+      <div class="hidden lg:flex w-1/2 relative bg-blue-night items-center justify-center overflow-hidden">
+        <div class="auth-blob auth-blob-1" aria-hidden="true"></div>
+        <div class="auth-blob auth-blob-2" aria-hidden="true"></div>
+
+        <div class="relative z-10 max-w-md px-12 text-center">
+          <div
+            class="mx-auto w-20 h-20 rounded-3xl bg-gradient-to-br from-orange-primary to-[#ff8c5a] grid place-items-center text-white text-3xl shadow-2xl shadow-orange-primary/40 rotate-3 animate-fade-in-up"
+          >
+            <i class="fa-solid fa-comments"></i>
+          </div>
+          <h2 class="mt-8 font-poppins font-extrabold text-3xl text-white leading-snug animate-fade-in-up animation-delay-200">
+            Retrouve ta communauté
+          </h2>
+          <p class="mt-4 text-white/70 leading-relaxed animate-fade-in-up animation-delay-400">
+            Tes avis, ta voix. Reprends la conversation là où tu l'avais laissée et découvre
+            ce que la communauté a partagé pendant ton absence.
+          </p>
+
+          <blockquote class="mt-10 bg-white/5 border border-white/10 backdrop-blur-sm rounded-2xl p-6 text-left animate-fade-in-up animation-delay-400">
+            <div class="flex gap-1 text-orange-text mb-3 text-xs" aria-hidden="true">
+              <i v-for="s in 5" :key="s" class="fa-solid fa-star"></i>
+            </div>
+            <p class="text-white/80 text-sm italic leading-relaxed">
+              « La communauté YOWL est devenue mon réflexe avant chaque découverte sur le web. »
+            </p>
+            <footer class="mt-4 flex items-center gap-3">
+              <span class="w-9 h-9 rounded-full bg-[#5B3FD4] grid place-items-center text-white text-xs font-poppins font-bold">SA</span>
+              <span class="text-white/75 text-xs">Sarah, membre depuis 6 mois</span>
+            </footer>
+          </blockquote>
+        </div>
       </div>
     </div>
+
+    <MailVerificationModal
+      :isOpen="isMailModalOpen"
+      :email="identifier"
+      :error="verificationError"
+      :loading="verifying"
+      @close="isMailModalOpen = false"
+      @resend="handleResendCode"
+      @verify="submitVerifyCode"
+    />
+
+    <Transition name="toast">
+      <div
+        v-if="verificationSuccess"
+        class="fixed top-8 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-emerald-500 text-white px-6 py-3 rounded-xl shadow-xl z-[110]"
+      >
+        <i class="fa-solid fa-circle-check"></i>
+        Email vérifié avec succès ! Vous pouvez maintenant vous connecter.
+      </div>
+    </Transition>
   </div>
-
-  <MailVerificationModal
-    :isOpen="isMailModalOpen"
-    :email="identifier"
-    :error="verificationError"
-    :loading="verifying"
-    @close="isMailModalOpen = false"
-    @resend="handleResendCode"
-    @verify="submitVerifyCode"
-  />
-
-  <Transition name="toast">
-    <div
-      v-if="verificationSuccess"
-      class="fixed top-8 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-emerald-500 text-white px-6 py-3 rounded-xl shadow-xl z-[110]"
-    >
-      <i class="fa-solid fa-circle-check"></i>
-      Email vérifié avec succès ! Vous pouvez maintenant vous connecter.
-    </div>
-  </Transition>
 </template>
 
 <script setup>
