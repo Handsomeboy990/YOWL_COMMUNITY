@@ -23,6 +23,43 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->guardBroadcastConnection();
+        $this->guardEphemeralDatabase();
+    }
+
+    /**
+     * Refuse to run production on a database that dies with the container.
+     *
+     * DB_CONNECTION defaults to sqlite. A deployment that forgets it, or that
+     * pastes the PGHOST style variables a managed provider hands out, writes
+     * to a local file instead of the managed database. Migrations run from
+     * scratch on every restart, every account vanishes, and the provider's
+     * console stays empty. Nothing says so: the application looks healthy
+     * right up to the next restart.
+     *
+     * Failing the boot turns silent data loss into an obvious, self-explaining
+     * crash. That is the better of the two.
+     */
+    private function guardEphemeralDatabase(): void
+    {
+        if (! $this->app->environment('production')) {
+            return;
+        }
+
+        $connexion = config('database.default');
+        if (config("database.connections.{$connexion}.driver") !== 'sqlite') {
+            return;
+        }
+
+        $message = 'DB_CONNECTION vaut sqlite en production. '
+            .'Un fichier SQLite vit dans le conteneur et disparaît avec lui : '
+            .'les migrations repartent de zéro à chaque redémarrage et la base '
+            .'managée reste vide. Renseigne DB_CONNECTION=pgsql, DB_HOST, '
+            .'DB_PORT, DB_DATABASE, DB_USERNAME et DB_PASSWORD. Les variables '
+            .'PGHOST, PGDATABASE, PGUSER et PGPASSWORD sont acceptées en repli.';
+
+        Log::critical($message);
+
+        throw new \RuntimeException($message);
     }
 
     /**

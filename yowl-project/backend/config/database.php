@@ -16,7 +16,25 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'sqlite'),
+    /*
+    |--------------------------------------------------------------------------
+    | Variables de libpq acceptées en repli
+    |--------------------------------------------------------------------------
+    |
+    | Neon, Supabase et la plupart des PostgreSQL managés proposent leurs
+    | identifiants sous la forme PGHOST, PGDATABASE, PGUSER, PGPASSWORD : ce
+    | sont les variables de libpq, celles que lit psql. Laravel n'en lit
+    | aucune. Les coller telles quelles laisse DB_CONNECTION absent, et la
+    | ligne ci-dessous retombe alors sur SQLite : le conteneur écrit dans un
+    | fichier local qui meurt avec lui, la base managée reste vide, et rien ne
+    | le signale.
+    |
+    | Elles sont donc acceptées, en repli seulement : une variable DB_ garde
+    | toujours la priorité.
+    |
+    */
+
+    'default' => env('DB_CONNECTION', env('PGHOST') ? 'pgsql' : 'sqlite'),
 
     /*
     |--------------------------------------------------------------------------
@@ -86,16 +104,16 @@ return [
         'pgsql' => [
             'driver' => 'pgsql',
             'url' => env('DB_URL'),
-            'host' => env('DB_HOST', '127.0.0.1'),
-            'port' => env('DB_PORT', '5432'),
-            'database' => env('DB_DATABASE', 'laravel'),
-            'username' => env('DB_USERNAME', 'root'),
-            'password' => env('DB_PASSWORD', ''),
+            'host' => env('DB_HOST', env('PGHOST', '127.0.0.1')),
+            'port' => env('DB_PORT', env('PGPORT', '5432')),
+            'database' => env('DB_DATABASE', env('PGDATABASE', 'laravel')),
+            'username' => env('DB_USERNAME', env('PGUSER', 'root')),
+            'password' => env('DB_PASSWORD', env('PGPASSWORD', '')),
             'charset' => env('DB_CHARSET', 'utf8'),
             'prefix' => '',
             'prefix_indexes' => true,
             'search_path' => 'public',
-            'sslmode' => 'prefer',
+            'sslmode' => env('DB_SSLMODE', env('PGSSLMODE', 'prefer')),
         ],
 
         'sqlsrv' => [
