@@ -1,11 +1,12 @@
 import axios from "axios";
 import { useUserStore } from "@/stores/user";
+import { normaliserBaseUrl } from "@/services/baseUrl";
 
 /**
  *  **Axios instance for using api endpoints**
  */
 
-const baseURL = import.meta.env.VITE_BASE_URL || "http://localhost:8000/api";
+const baseURL = normaliserBaseUrl(import.meta.env.VITE_BASE_URL);
 
 const api = axios.create({
     baseURL,

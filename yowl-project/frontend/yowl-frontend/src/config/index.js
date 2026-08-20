@@ -1,9 +1,11 @@
+import { normaliserBaseUrl } from '@/services/baseUrl';
+
 /**
  * Application configuration
  */
 
 export const config = {
-  apiBaseUrl: import.meta.env.VITE_BASE_URL || 'http://localhost:8000/api',
+  apiBaseUrl: normaliserBaseUrl(import.meta.env.VITE_BASE_URL),
   storageBaseUrl: import.meta.env.VITE_STORAGE_URL || 'http://localhost:8000/storage',
   appName: import.meta.env.VITE_APP_NAME || 'YOWL Community',
 };
