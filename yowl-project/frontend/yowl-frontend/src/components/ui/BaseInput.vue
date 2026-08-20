@@ -6,12 +6,12 @@
     </label>
 
     <div
-      class="group relative flex items-center rounded-xl border-2 bg-white transition-all duration-300"
+      class="group relative flex items-center rounded-xl border-2 bg-white transition-all duration-200"
       :class="[
         error
-          ? 'border-red-400 shadow-sm shadow-red-100'
+          ? 'border-red-400 ring-2 ring-red-100'
           : focused
-            ? 'border-orange-primary shadow-md shadow-orange-primary/10'
+            ? 'border-orange-primary ring-2 ring-orange-primary/20'
             : 'border-gray-200 hover:border-gray-300',
       ]"
     >
@@ -37,7 +37,7 @@
         :aria-describedby="describedBy"
         :min="min"
         :max="max"
-        class="peer w-full bg-transparent px-4 py-3 text-blue-night placeholder-gray-400 outline-none disabled:cursor-not-allowed disabled:text-gray-500 read-only:text-gray-500"
+        class="peer w-full bg-transparent px-4 py-3 text-blue-night placeholder-gray-400 outline-none focus-visible:outline-none disabled:cursor-not-allowed disabled:text-gray-500 read-only:text-gray-500"
         @input="$emit('update:modelValue', $event.target.value)"
         @focus="focused = true"
         @blur="focused = false"

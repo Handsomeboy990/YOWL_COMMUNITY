@@ -6,12 +6,12 @@
     </label>
 
     <div
-      class="relative rounded-xl border-2 bg-white transition-all duration-300"
+      class="relative rounded-xl border-2 bg-white transition-all duration-200"
       :class="[
         error
-          ? 'border-red-400 shadow-sm shadow-red-100'
+          ? 'border-red-400 ring-2 ring-red-100'
           : focused
-            ? 'border-orange-primary shadow-md shadow-orange-primary/10'
+            ? 'border-orange-primary ring-2 ring-orange-primary/20'
             : 'border-gray-200 hover:border-gray-300',
       ]"
     >
@@ -24,7 +24,7 @@
         :rows="rows"
         :maxlength="maxlength"
         :disabled="disabled"
-        class="w-full bg-transparent px-4 py-3 text-blue-night placeholder-gray-400 outline-none resize-none disabled:cursor-not-allowed"
+        class="w-full bg-transparent px-4 py-3 text-blue-night placeholder-gray-400 outline-none focus-visible:outline-none resize-none disabled:cursor-not-allowed"
         @input="$emit('update:modelValue', $event.target.value)"
         @focus="focused = true"
         @blur="focused = false"
