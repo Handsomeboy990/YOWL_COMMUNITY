@@ -12,6 +12,43 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
+# Attendre que la base reponde avant de migrer.
+#
+# Une base managee refuse parfois les premieres connexions : elle sort de
+# veille, negocie son TLS, ou l'hebergeur n'a pas fini de cabler le reseau.
+# Avec set -e, un seul refus tuait le conteneur, et l'hebergeur ne rapportait
+# qu'un echec de reveil sans dire ce qui n'avait pas repondu.
+attendre_la_base() {
+    essai=1
+    while [ "$essai" -le 10 ]; do
+        if php artisan db:show --json > /dev/null 2>&1; then
+            echo "Base joignable au bout de $essai tentative(s)."
+            return 0
+        fi
+        echo "Base injoignable, tentative $essai sur 10, nouvelle tentative dans 3 s..."
+        essai=$((essai + 1))
+        sleep 3
+    done
+
+    # Dire ce qu'on a essayé d'atteindre, sans jamais le mot de passe.
+    echo "-----------------------------------------------------------------"
+    echo "ECHEC : la base de donnees n'a pas repondu apres 10 tentatives."
+    echo "  pilote  : ${DB_CONNECTION:-absent, repli sur PGHOST ou sqlite}"
+    echo "  hote    : ${DB_HOST:-${PGHOST:-non renseigne}}"
+    echo "  port    : ${DB_PORT:-${PGPORT:-5432}}"
+    echo "  base    : ${DB_DATABASE:-${PGDATABASE:-non renseignee}}"
+    echo "  identifiant : ${DB_USERNAME:-${PGUSER:-non renseigne}}"
+    echo "  mot de passe : $([ -n "${DB_PASSWORD:-${PGPASSWORD:-}}" ] && echo renseigne || echo ABSENT)"
+    echo "  sslmode : ${DB_SSLMODE:-${PGSSLMODE:-prefer}}"
+    echo ""
+    echo "Neon exige sslmode=require. Verifie aussi que l'hote est bien celui"
+    echo "de la branche active dans la console Neon."
+    echo "-----------------------------------------------------------------"
+    return 1
+}
+
+attendre_la_base || exit 1
+
 php artisan migrate --force
 
 # Premier administrateur, cree au demarrage.
