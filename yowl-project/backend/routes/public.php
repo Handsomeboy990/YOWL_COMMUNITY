@@ -16,6 +16,19 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// La racine de l'API. On l'ouvre pour verifier que le service repond : autant
+// que la reponse le dise, et pointe vers le site pour qui s'est trompe
+// d'adresse. Hors du groupe web comme le reste : elle n'a besoin d'aucune
+// session, et c'est ce qui la faisait tomber.
+Route::get('/', function () {
+    return response()->json([
+        'service' => config('app.name').' API',
+        'status' => 'ok',
+        'site' => config('app.frontend_url'),
+        'documentation' => url('/api/health'),
+    ]);
+});
+
 Route::get('/robots.txt', [SeoController::class, 'robots']);
 Route::get('/sitemap.xml', [SeoController::class, 'sitemap']);
 
