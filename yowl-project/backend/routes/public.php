@@ -29,6 +29,11 @@ Route::get('/', function () {
     ]);
 });
 
+// Ce que l'application est reellement en train d'utiliser. Protege par le
+// meme jeton que le reveil : ces valeurs ne sont pas des secrets, mais elles
+// decrivent la pile et n'ont rien a faire en acces libre.
+Route::get('/diagnostic/{token}', \App\Http\Controllers\DiagnosticController::class);
+
 Route::get('/robots.txt', [SeoController::class, 'robots']);
 Route::get('/sitemap.xml', [SeoController::class, 'sitemap']);
 
