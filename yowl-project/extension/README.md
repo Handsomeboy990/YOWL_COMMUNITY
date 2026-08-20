@@ -24,39 +24,77 @@ ce qui s'y dit, et tu décides de rejoindre la conversation ou d'en ouvrir une.
 | Clic droit sur un lien | Même chose, sur le lien plutôt que sur la page |
 | Clic droit sur une sélection | Le passage devient une citation en tête de l'avis |
 
+## Navigateurs
+
+| Famille | État | Comment |
+|---|---|---|
+| Chrome, Edge, Brave, Opera, Vivaldi | pris en charge | paquet `chrome` |
+| Firefox 121 et suivants | pris en charge | paquet `firefox` |
+| Safari | conversion nécessaire | Xcode et un compte développeur Apple |
+
+Un seul jeu de sources. `browser.js` normalise les deux familles d'API :
+Chrome expose `chrome` avec des rappels, Firefox expose `browser` avec des
+promesses. Le seul écart qui reste est le manifeste, où Chrome exige
+`background.service_worker` et Firefox `background.scripts` : `build.sh`
+produit les deux.
+
 ## Installation en développement
 
-1. Ouvre `chrome://extensions`.
+**Chrome, Edge, Brave, Opera**
+
+1. Ouvre `chrome://extensions`, ou `edge://extensions`.
 2. Active le **mode développeur**.
 3. **Charger l'extension non empaquetée**, puis choisis ce dossier.
-4. Ouvre les réglages de l'extension et renseigne les deux adresses.
-5. Clique **Connecter mon compte** : le site remet un jeton à l'extension.
 
-## Réglages
+**Firefox**
 
-| Réglage | Développement | Production |
-|---|---|---|
-| Adresse du site | `http://localhost:5173` | l'adresse Vercel |
-| Adresse de l'API | `http://localhost:8000/api` | l'adresse Koyeb, suffixe `/api` compris |
+1. Ouvre `about:debugging#/runtime/this-firefox`.
+2. **Charger un module temporaire**, puis choisis le `manifest.json` de ce dossier.
+3. Le module disparaît à la fermeture de Firefox : c'est le propre d'un module
+   temporaire, pas un défaut.
+
+Ensuite, clique l'icône et connecte-toi. Aucune adresse à saisir.
 
 ## La connexion
 
-L'extension ne demande jamais de mot de passe et n'offre aucun champ où
-coller un jeton à la main. Elle ouvre la page `/extension` du site, qui, une
-fois la personne connectée, lui envoie le jeton que le navigateur détient
-déjà. C'est le navigateur qui garantit l'origine du message, par la liste
-`externally_connectable` du manifeste : aucun autre site ne peut se faire
-passer pour celui-ci.
+Elle se fait **dans le panneau**, avec l'adresse email et le mot de passe du
+compte YOWL.
 
-Le jeton est révocable des deux côtés : depuis les réglages de l'extension,
-ou en changeant de mot de passe sur le site, ce qui invalide tous les autres
-appareils.
+Une version précédente ouvrait une page du site qui renvoyait un jeton par
+`externally_connectable`. Ça imposait de quitter ce qu'on lisait, de retrouver
+l'onglet de l'extension et de cliquer un second bouton : la plupart des gens
+abandonnaient en route. Firefox ne prend d'ailleurs pas en charge
+`externally_connectable`, ce qui condamnait l'approche pour de bon.
 
-## Avant publication sur le Chrome Web Store
+Le mot de passe part directement à l'API officielle et n'est conservé nulle
+part. Seul le jeton rendu par l'API est gardé, dans le stockage local. Il se
+révoque des deux côtés : depuis les réglages de l'extension, ou en changeant de
+mot de passe sur le site, ce qui déconnecte tous les appareils.
 
-- Remplacer `https://*.vercel.app/*` dans `externally_connectable` par le
-  domaine réel : un joker sur tout `vercel.app` laisserait n'importe quel
-  déploiement de n'importe qui parler à l'extension.
-- Restreindre `host_permissions` au seul domaine de l'API. Le `https://*/*`
-  actuel sert à lire l'adresse de l'onglet en développement.
-- Fournir des icônes en 128 pixels, exigées par le magasin.
+## Réglages
+
+La page des réglages montre l'état de la connexion et ce que l'extension voit.
+Les adresses du site et de l'API sont repliées dans **Réglages avancés** :
+elles ne concernent que le développement ou une instance auto-hébergée. Un
+membre ordinaire n'a jamais à les ouvrir.
+
+Les valeurs par défaut vivent dans `config.js`, à ajuster avant de construire
+les paquets de production.
+
+## Construire les paquets
+
+```
+./build.sh          # construit les deux paquets
+./build.sh 3.2.0    # change aussi le numéro de version
+```
+
+Produit `dist/yowl-chrome-<version>.zip` et `dist/yowl-firefox-<version>.zip`.
+
+## Avant publication
+
+- Mettre `PAR_DEFAUT` dans `config.js` sur les adresses de production.
+- Restreindre `host_permissions` au seul domaine de l'API. Un joker demande une
+  autorisation très large, que les magasins font remarquer et que les
+  utilisateurs refusent.
+- Vérifier que `browser_specific_settings.gecko.id` porte un identifiant que tu
+  contrôles.

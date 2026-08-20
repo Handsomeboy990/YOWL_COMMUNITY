@@ -366,3 +366,113 @@ textarea:focus,
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .principal:hover:not(:disabled), .liste a:hover { transform: none; }
 }
+
+/* ---------- Connexion dans le panneau ---------- */
+
+.accroche {
+  margin: 4px 0 16px;
+  font-size: 13px;
+  color: var(--gris);
+  line-height: 1.5;
+}
+
+#formulaire-connexion input[type="email"],
+#formulaire-connexion input[type="password"],
+#formulaire-connexion input[type="text"] {
+  width: 100%;
+  border: 1.5px solid var(--trait);
+  border-radius: 10px;
+  background: var(--fond);
+  color: var(--nuit);
+  font: inherit;
+  padding: 9px 11px;
+  margin-bottom: 12px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+#formulaire-connexion input:focus {
+  outline: none;
+  border-color: var(--orange);
+  box-shadow: 0 0 0 3px rgba(204, 74, 21, 0.15);
+}
+
+#formulaire-connexion input.faux {
+  border-color: #dc2626;
+}
+
+.mot-de-passe { position: relative; }
+
+.mot-de-passe input { padding-right: 38px !important; }
+
+.oeil {
+  position: absolute;
+  right: 8px;
+  top: 9px;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--gris-clair);
+  cursor: pointer;
+}
+
+.oeil:hover { color: var(--nuit); background: var(--surface); }
+.oeil[aria-pressed="true"] { color: var(--orange); }
+.oeil:focus-visible { outline: 2px solid var(--orange); outline-offset: 1px; }
+
+.bouton.large { width: 100%; flex: none; }
+
+.liens {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.lien {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-size: 12.5px;
+  color: var(--gris);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.lien:hover { color: var(--orange); }
+.lien:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; border-radius: 3px; }
+
+/* ---------- Compte dans l'en-tête ---------- */
+
+.tete-droite { display: flex; align-items: center; gap: 4px; }
+
+.compte {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 128px;
+  padding: 4px 9px;
+  border: 1px solid var(--trait);
+  border-radius: 100px;
+  background: var(--surface);
+  color: var(--gris);
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.compte span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.compte:hover { color: var(--orange); border-color: var(--orange); }
+.compte:focus-visible { outline: 2px solid var(--orange); outline-offset: 1px; }

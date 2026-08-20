@@ -1,20 +1,30 @@
 {
   "manifest_version": 3,
   "name": "YOWL",
-  "version": "3.0",
-  "description": "Dis-toi ce que la communauté pense de la page que tu lis, et donne ton avis sans quitter le site.",
-  "permissions": ["storage", "tabs", "contextMenus", "scripting"],
-  "host_permissions": ["http://localhost:8000/*", "https://*/*"],
+  "version": "3.1.0",
+  "description": "Vois ce que la communauté pense de la page que tu lis, et donne ton avis sans quitter le site.",
+  "permissions": [
+    "storage",
+    "tabs",
+    "contextMenus"
+  ],
+  "host_permissions": [
+    "http://localhost:8000/*"
+  ],
   "background": {
     "service_worker": "background.js",
-    "type": "module"
+    "type": "module",
+    "scripts": [
+      "background.js"
+    ]
   },
   "action": {
     "default_title": "YOWL",
     "default_popup": "popup.html",
     "default_icon": {
       "16": "icons/icon16.png",
-      "48": "icons/icon48.png"
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
     }
   },
   "options_ui": {
@@ -23,9 +33,13 @@
   },
   "icons": {
     "16": "icons/icon16.png",
-    "48": "icons/icon48.png"
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
   },
-  "externally_connectable": {
-    "matches": ["http://localhost:5173/*", "https://*.vercel.app/*"]
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "yowl@long-corp.example",
+      "strict_min_version": "121.0"
+    }
   }
 }

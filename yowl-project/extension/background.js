@@ -1,4 +1,5 @@
-import { appel, adressePropre, reglages } from './config.js';
+import { nav } from './browser.js';
+import { appel, adressePropre } from './config.js';
 
 /**
  * Le badge dit combien de discussions existent sur la page ouverte.
@@ -39,13 +40,14 @@ async function rafraichirBadge(tabId, url) {
   const nombre = await compterDiscussions(url);
 
   if (!nombre) {
-    await chrome.action.setBadgeText({ tabId, text: '' });
+    nav.badge.texte({ tabId, text: '' });
+    nav.badge.infobulle({ tabId, title: 'YOWL' });
     return;
   }
 
-  await chrome.action.setBadgeText({ tabId, text: String(Math.min(nombre, 9)) });
-  await chrome.action.setBadgeBackgroundColor({ tabId, color: '#cc4a15' });
-  await chrome.action.setTitle({
+  nav.badge.texte({ tabId, text: String(Math.min(nombre, 9)) });
+  nav.badge.fond({ tabId, color: '#cc4a15' });
+  nav.badge.infobulle({
     tabId,
     title: nombre > 1
       ? nombre + ' discussions sur cette page'
@@ -53,7 +55,7 @@ async function rafraichirBadge(tabId, url) {
   });
 }
 
-chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
+nav.onglets.onUpdated.addListener((tabId, info, tab) => {
   // Sur "complete" seulement : l'adresse change plusieurs fois pendant un
   // chargement, et interroger l'API à chaque étape ne servirait à rien.
   if (info.status === 'complete' && tab.url) {
@@ -61,8 +63,8 @@ chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
   }
 });
 
-chrome.tabs.onActivated.addListener(async ({ tabId }) => {
-  const onglet = await chrome.tabs.get(tabId).catch(() => null);
+nav.onglets.onActivated.addListener(async ({ tabId }) => {
+  const onglet = await nav.lireOnglet(tabId);
   if (onglet?.url) rafraichirBadge(tabId, onglet.url);
 });
 
@@ -70,25 +72,25 @@ chrome.tabs.onActivated.addListener(async ({ tabId }) => {
 // Menus contextuels
 // ---------------------------------------------------------------------------
 
-chrome.runtime.onInstalled.addListener(() => {
-  chrome.contextMenus.create({
+nav.runtime.onInstalled.addListener(() => {
+  nav.menus.create({
     id: 'yowl-page',
     title: 'Donner mon avis sur cette page',
     contexts: ['page'],
   });
-  chrome.contextMenus.create({
+  nav.menus.create({
     id: 'yowl-lien',
     title: 'Donner mon avis sur ce lien',
     contexts: ['link'],
   });
-  chrome.contextMenus.create({
+  nav.menus.create({
     id: 'yowl-citation',
     title: 'Citer ce passage sur YOWL',
     contexts: ['selection'],
   });
 });
 
-chrome.contextMenus.onClicked.addListener(async (info, tab) => {
+nav.menus.onClicked.addListener(async (info, tab) => {
   const cible = info.menuItemId === 'yowl-lien' ? info.linkUrl : info.pageUrl || tab?.url;
 
   // Le passage sélectionné devient le début de l'avis : citer d'abord, réagir
@@ -97,47 +99,32 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     ? '« ' + info.selectionText.trim().slice(0, 500) + ' »\n\n'
     : '';
 
-  await chrome.storage.local.set({
+  await nav.local.ecrire({
     prefill: { url: cible, title: tab?.title || '', draft: brouillon },
   });
 
-  await chrome.action.openPopup().catch(async () => {
-    // openPopup n'est pas disponible partout : on retombe sur un onglet.
-    const { siteUrl } = await reglages();
-    const params = new URLSearchParams({ url: cible || '', title: tab?.title || '' });
-    chrome.tabs.create({ url: siteUrl + '/share?' + params.toString() });
-  });
+  // openPopup n'existe pas partout et Firefox exige un geste direct de
+  // l'utilisateur. Quand il refuse, le brouillon reste en attente : la
+  // personne clique l'icône et le retrouve.
+  const action = nav.runtime.getManifest().manifest_version === 3
+    ? (globalThis.browser?.action ?? globalThis.chrome?.action)
+    : null;
+
+  try {
+    await action?.openPopup?.();
+  } catch {
+    // Rien à faire : le brouillon est enregistré, l'icône suffit.
+  }
 });
 
 // ---------------------------------------------------------------------------
-// Connexion depuis le site
+// Messages internes
 // ---------------------------------------------------------------------------
 
-/**
- * Le site remet le jeton, l'extension ne le demande jamais.
- *
- * Un champ où coller un jeton à la main est une invitation à en fabriquer un
- * faux et un obstacle pour tout le monde. Ici la page /extension du site, une
- * fois la personne connectée, envoie le jeton que le navigateur détient déjà.
- */
-chrome.runtime.onMessageExternal.addListener((message, expediteur, repondre) => {
-  if (message?.type !== 'yowl-connect' || !message.token) {
-    repondre({ ok: false });
-    return true;
-  }
-
-  chrome.storage.local.set({ token: message.token, user: message.user ?? null }).then(() => {
+nav.runtime.onMessage.addListener((message) => {
+  // Une publication, une connexion ou une déconnexion périment ce qui est en
+  // mémoire : le compte de discussions comme le droit de le demander.
+  if (message?.type === 'yowl-invalider-cache' || message?.type === 'yowl-session-changee') {
     cache.clear();
-    repondre({ ok: true });
-  });
-
-  return true;
-});
-
-chrome.runtime.onMessage.addListener((message, expediteur, repondre) => {
-  if (message?.type === 'yowl-invalider-cache') {
-    cache.clear();
-    repondre({ ok: true });
   }
-  return true;
 });

@@ -1,4 +1,5 @@
-import { PAR_DEFAUT, reglages } from './config.js';
+import { nav } from './browser.js';
+import { PAR_DEFAUT, membre, oublierSession, reglages } from './config.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -7,42 +8,57 @@ async function peindre() {
   $('siteUrl').value = siteUrl;
   $('apiUrl').value = apiUrl;
 
-  const { token, user } = await chrome.storage.local.get(['token', 'user']);
-  const connectee = Boolean(token);
+  const qui = await membre();
+  const connectee = Boolean(qui);
 
-  $('pastille').className = 'pastille ' + (connectee ? 'on' : 'off');
+  $('pastille').className = 'pastille-etat ' + (connectee ? 'on' : 'off');
   $('etat-texte').textContent = connectee
-    ? 'Connectée' + (user?.username ? ' en tant que ' + user.username : '')
+    ? 'Connectée en tant que ' + (qui.username ?? 'membre')
     : 'Non connectée';
-  $('connecter').classList.toggle('cachee', connectee);
+
+  $('ouvrir-panneau').classList.toggle('cachee', connectee);
   $('deconnecter').classList.toggle('cachee', !connectee);
+
+  $('version').textContent = nav.runtime.getManifest().version;
+}
+
+function annoncer(texte) {
+  $('retour').textContent = texte;
+  setTimeout(() => ($('retour').textContent = ''), 2400);
 }
 
 $('enregistrer').addEventListener('click', async () => {
   const site = $('siteUrl').value.trim().replace(/\/$/, '') || PAR_DEFAUT.siteUrl;
   const api = $('apiUrl').value.trim().replace(/\/$/, '') || PAR_DEFAUT.apiUrl;
 
-  await chrome.storage.sync.set({ siteUrl: site, apiUrl: api });
-  $('retour').textContent = 'Enregistré.';
-  setTimeout(() => ($('retour').textContent = ''), 2200);
+  await nav.sync.ecrire({ siteUrl: site, apiUrl: api });
+  // Changer d'installation périme ce qui vient de l'ancienne.
+  nav.diffuser({ type: 'yowl-invalider-cache' });
+  annoncer('Enregistré.');
   peindre();
 });
 
-$('connecter').addEventListener('click', async () => {
-  const { siteUrl } = await reglages();
-  chrome.tabs.create({ url: siteUrl + '/extension?id=' + chrome.runtime.id });
+$('defaut').addEventListener('click', async () => {
+  await nav.sync.ecrire({ siteUrl: PAR_DEFAUT.siteUrl, apiUrl: PAR_DEFAUT.apiUrl });
+  nav.diffuser({ type: 'yowl-invalider-cache' });
+  annoncer('Valeurs par défaut rétablies.');
+  peindre();
+});
+
+$('ouvrir-panneau').addEventListener('click', () => {
+  // On ne peut pas ouvrir le panneau depuis une page : on explique où cliquer.
+  annoncer("Clique l'icône YOWL dans la barre d'outils du navigateur.");
 });
 
 $('deconnecter').addEventListener('click', async () => {
-  await chrome.storage.local.remove(['token', 'user']);
-  chrome.runtime.sendMessage({ type: 'yowl-invalider-cache' });
+  await oublierSession();
   peindre();
 });
 
-// La page reste ouverte pendant la connexion : elle doit se remettre à jour
-// quand le jeton arrive, sans que personne ait à la recharger.
-chrome.storage.onChanged.addListener((changements, zone) => {
-  if (zone === 'local' && changements.token) peindre();
+// La page reste ouverte pendant qu'on se connecte dans le panneau : elle doit
+// se mettre à jour sans que personne ait à la recharger.
+nav.runtime.onMessage.addListener((message) => {
+  if (message?.type === 'yowl-session-changee') peindre();
 });
 
 peindre();

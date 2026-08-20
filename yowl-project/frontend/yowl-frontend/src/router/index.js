@@ -17,7 +17,6 @@ import HomeView from '../views/HomeView.vue'
 const Activity = () => import('@/components/pages/profil/Activity.vue');
 const Appeals = () => import('@/components/pages/profil/Appeals.vue');
 const DashboardAdmin = () => import('@/views/DashboardAdmin.vue');
-const ExtensionConnect = () => import('@/components/pages/ExtensionConnect.vue');
 const ForgotPassword = () => import('@/components/pages/Auth/ForgotPassword.vue');
 const LegalPage = () => import('@/components/pages/LegalPage.vue');
 const Login = () => import('@/components/pages/Auth/Login.vue');
@@ -182,12 +181,6 @@ const router = createRouter({
             path: '/desinscription/:token',
             name: 'unsubscribe',
             component: Unsubscribe,
-        },
-        {
-            // Ouverte par l'extension pour recevoir le jeton.
-            path: '/extension',
-            name: 'extension',
-            component: ExtensionConnect,
         },
         {
             path: '/suggestion',

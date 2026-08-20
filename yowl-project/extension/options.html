@@ -5,68 +5,158 @@
   <title>Réglages de l'extension YOWL</title>
   <link rel="stylesheet" href="popup.css">
   <style>
-    body { width: auto; max-width: 620px; max-height: none; margin: 0 auto; padding: 32px 24px 48px; }
-    h1 { font-size: 22px; margin: 0 0 6px; letter-spacing: -0.02em; }
-    .intro { color: var(--gris); margin: 0 0 28px; font-size: 14px; }
-    fieldset { border: 1px solid var(--trait); border-radius: 12px; padding: 18px; margin: 0 0 18px; }
-    legend { font-weight: 700; font-size: 13px; padding: 0 6px; }
-    .champ { margin-bottom: 16px; }
-    .champ:last-child { margin-bottom: 0; }
+    body { width: auto; max-width: 620px; max-height: none; margin: 0 auto; padding: 34px 24px 56px; }
+    h1 { font-size: 23px; margin: 0 0 6px; letter-spacing: -0.02em; }
+    .intro { color: var(--gris); margin: 0 0 28px; font-size: 14px; line-height: 1.6; }
+
+    .bloc {
+      border: 1px solid var(--trait);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 0 0 16px;
+      background: var(--fond);
+    }
+
+    .bloc h2 { font-size: 15px; font-weight: 700; margin: 0 0 4px; }
+    .bloc .quoi { font-size: 13.5px; color: var(--gris); margin: 0 0 16px; line-height: 1.55; }
+
+    .etat { display: flex; align-items: center; gap: 11px; }
+    .pastille-etat { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .pastille-etat.on { background: #0f766e; }
+    .pastille-etat.off { background: var(--gris-clair); }
+    .etat-texte { font-size: 14.5px; font-weight: 600; }
+
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+    .actions .bouton { flex: 0 0 auto; padding: 9px 16px; }
+
+    .quoi-elle-fait { list-style: none; margin: 0; padding: 0; }
+    .quoi-elle-fait li {
+      display: grid;
+      grid-template-columns: 18px 1fr;
+      gap: 11px;
+      align-items: start;
+      padding: 8px 0;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .quoi-elle-fait li + li { border-top: 1px solid var(--trait); }
+    .quoi-elle-fait .oui { color: #0f766e; font-weight: 700; }
+    .quoi-elle-fait .non { color: var(--gris-clair); font-weight: 700; }
+
+    details.avance { border: 1px solid var(--trait); border-radius: 12px; padding: 0; }
+    details.avance > summary {
+      padding: 15px 20px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--gris);
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+    details.avance > summary::-webkit-details-marker { display: none; }
+    details.avance > summary::before { content: '▸'; font-size: 11px; }
+    details.avance[open] > summary::before { content: '▾'; }
+    details.avance > summary:hover { color: var(--nuit); }
+    details.avance > summary:focus-visible { outline: 2px solid var(--orange); outline-offset: -2px; border-radius: 12px; }
+    .avance-corps { padding: 4px 20px 20px; border-top: 1px solid var(--trait); }
+
+    .champ { margin-bottom: 15px; }
+    .champ label { display: block; font-size: 13.5px; font-weight: 600; margin-bottom: 5px; }
     .champ input {
       width: 100%; padding: 9px 11px; border: 1.5px solid var(--trait);
       border-radius: 10px; background: var(--fond); color: var(--nuit); font: inherit;
+      font-family: ui-monospace, Menlo, monospace; font-size: 13px;
     }
     .champ input:focus { outline: none; border-color: var(--orange); box-shadow: 0 0 0 3px rgba(204,74,21,.15); }
-    .aide { font-size: 12px; color: var(--gris-clair); margin: 5px 0 0; }
-    .etat { display: flex; align-items: center; gap: 10px; font-size: 14px; }
-    .pastille { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-    .pastille.on { background: #0f766e; }
-    .pastille.off { background: var(--gris-clair); }
-    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
-    .actions .bouton { flex: 0 0 auto; padding: 9px 16px; }
-    #retour { margin-top: 14px; font-size: 13px; color: #0f766e; }
+    .aide { font-size: 12.5px; color: var(--gris-clair); margin: 5px 0 0; line-height: 1.5; }
+    #retour { margin-top: 13px; font-size: 13px; color: #0f766e; min-height: 18px; }
+
+    .pied { font-size: 12.5px; color: var(--gris-clair); margin-top: 26px; line-height: 1.6; }
+    .pied a { color: var(--orange); }
   </style>
 </head>
 <body>
   <h1>Réglages de l'extension</h1>
   <p class="intro">
     L'extension signale, sur chaque page que tu lis, ce que la communauté en dit
-    déjà. Elle a besoin de savoir où joindre YOWL, et d'être connectée à ton compte.
+    déjà. Elle a seulement besoin d'être connectée à ton compte YOWL.
   </p>
 
-  <fieldset>
-    <legend>Connexion</legend>
-    <div class="etat">
-      <span id="pastille" class="pastille off"></span>
-      <span id="etat-texte">Non connectée</span>
-    </div>
-    <div class="actions">
-      <button id="connecter" class="bouton principal" type="button">Connecter mon compte</button>
-      <button id="deconnecter" class="bouton discret" type="button">Déconnecter</button>
-    </div>
-    <p class="aide">
-      La connexion se fait sur le site : ton mot de passe ne passe jamais par
-      l'extension, qui ne reçoit qu'un jeton révocable.
+  <!-- Le compte, seul réglage qui concerne vraiment un membre -->
+  <section class="bloc">
+    <h2>Ton compte</h2>
+    <p class="quoi">
+      La connexion se fait dans le panneau de l'extension, en cliquant son icône.
     </p>
-  </fieldset>
 
-  <fieldset>
-    <legend>Adresses</legend>
-    <div class="champ">
-      <label for="siteUrl"><strong>Adresse du site</strong></label>
-      <input id="siteUrl" type="url" placeholder="https://yowl.vercel.app">
-      <p class="aide">Là où s'ouvrent les avis et le fil.</p>
+    <div class="etat">
+      <span id="pastille" class="pastille-etat off"></span>
+      <span id="etat-texte" class="etat-texte">Non connectée</span>
     </div>
-    <div class="champ">
-      <label for="apiUrl"><strong>Adresse de l'API</strong></label>
-      <input id="apiUrl" type="url" placeholder="https://yowl-api.koyeb.app/api">
-      <p class="aide">Le suffixe /api est obligatoire.</p>
-    </div>
+
     <div class="actions">
-      <button id="enregistrer" class="bouton principal" type="button">Enregistrer</button>
+      <button id="ouvrir-panneau" class="bouton principal cachee" type="button">
+        Ouvrir le panneau
+      </button>
+      <button id="deconnecter" class="bouton discret cachee" type="button">
+        Me déconnecter
+      </button>
     </div>
-    <p id="retour"></p>
-  </fieldset>
+  </section>
+
+  <!-- Ce qu'elle voit, dit franchement -->
+  <section class="bloc">
+    <h2>Ce qu'elle fait, ce qu'elle ne fait pas</h2>
+    <p class="quoi">
+      Une extension a accès à ce que tu lis. Autant écrire précisément ce qu'elle
+      en fait.
+    </p>
+    <ul class="quoi-elle-fait">
+      <li><span class="oui">✓</span><span>Lit l'adresse et le titre de l'onglet actif</span></li>
+      <li><span class="oui">✓</span><span>Demande à YOWL si cette adresse est déjà discutée</span></li>
+      <li><span class="oui">✓</span><span>Envoie le texte que tu écris, quand tu cliques Publier</span></li>
+      <li><span class="non">✕</span><span>Ne lit pas le contenu des pages</span></li>
+      <li><span class="non">✕</span><span>N'envoie rien à personne d'autre que YOWL</span></li>
+      <li><span class="non">✕</span><span>Ne conserve aucun historique de navigation</span></li>
+      <li><span class="non">✕</span><span>Ne garde pas ton mot de passe</span></li>
+    </ul>
+  </section>
+
+  <!-- Replié : personne d'ordinaire n'a rien à faire ici -->
+  <details class="avance">
+    <summary>Réglages avancés</summary>
+    <div class="avance-corps">
+      <p class="aide" style="margin-bottom:16px;">
+        Ces adresses désignent l'installation de YOWL à laquelle l'extension
+        parle. Elles sont déjà correctes : ne les change que si tu fais tourner
+        ta propre instance.
+      </p>
+
+      <div class="champ">
+        <label for="siteUrl">Adresse du site</label>
+        <input id="siteUrl" type="url" spellcheck="false">
+      </div>
+
+      <div class="champ">
+        <label for="apiUrl">Adresse de l'API</label>
+        <input id="apiUrl" type="url" spellcheck="false">
+        <p class="aide">Le suffixe <code>/api</code> est obligatoire.</p>
+      </div>
+
+      <div class="actions">
+        <button id="enregistrer" class="bouton principal" type="button">Enregistrer</button>
+        <button id="defaut" class="bouton discret" type="button">Rétablir les valeurs par défaut</button>
+      </div>
+      <p id="retour"></p>
+    </div>
+  </details>
+
+  <p class="pied">
+    Version <span id="version"></span>.
+    Un souci, une idée ? Passe par le formulaire de suggestion du site.
+  </p>
 
   <script type="module" src="options.js"></script>
 </body>

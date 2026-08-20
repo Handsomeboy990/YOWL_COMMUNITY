@@ -1,4 +1,7 @@
-import { appel, adressePropre, jeton, reglages } from './config.js';
+import { nav } from './browser.js';
+import {
+  appel, adressePropre, connexion, jeton, membre, oublierSession, reglages,
+} from './config.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -30,7 +33,7 @@ function erreur(texte) {
 // ---------------------------------------------------------------------------
 
 async function demarrer() {
-  const [onglet] = await chrome.tabs.query({ active: true, currentWindow: true });
+  const onglet = await nav.ongletActif();
   const propre = adressePropre(onglet?.url || '');
 
   if (!propre) {
@@ -46,18 +49,21 @@ async function demarrer() {
 
   if (!(await jeton())) {
     montrer('connexion');
+    $('email').focus();
     return;
   }
+
+  await peindreCompte();
 
   $('page-titre').textContent = contexte.titre || contexte.hote;
   $('page-hote').textContent = contexte.hote;
   $('favicon').src = onglet.favIconUrl || 'icons/icon16.png';
 
   // Un brouillon préparé par un menu contextuel, le cas échéant.
-  const { prefill } = await chrome.storage.local.get('prefill');
+  const { prefill } = await nav.local.lire('prefill');
   if (prefill?.draft && prefill.url === contexte.url) {
     $('avis').value = prefill.draft;
-    await chrome.storage.local.remove('prefill');
+    await nav.local.effacer('prefill');
   }
 
   montrer('page');
@@ -100,6 +106,13 @@ async function chargerDiscussions() {
       lien.href = siteUrl + '/reviews/' + element.id;
       lien.target = '_blank';
       lien.rel = 'noopener';
+      // Le panneau se ferme dès qu'on clique ailleurs : on ouvre nous-mêmes
+      // l'onglet, sinon le clic est perdu sur certains navigateurs.
+      lien.addEventListener('click', (evenement) => {
+        evenement.preventDefault();
+        nav.ouvrirOnglet(lien.href);
+        window.close();
+      });
 
       const image = document.createElement('img');
       image.src = element.user?.picture
@@ -243,7 +256,7 @@ async function publier() {
 
     dernierAvisId = reponse.data?.id ?? null;
     // Le badge de cet onglet compte une discussion de plus.
-    chrome.runtime.sendMessage({ type: 'yowl-invalider-cache' });
+    nav.diffuser({ type: 'yowl-invalider-cache' });
     montrer('publie');
   } catch (exception) {
     erreur(exception.message);
@@ -275,24 +288,89 @@ $('tags').addEventListener('keydown', (evenement) => {
 
 $('publier').addEventListener('click', publier);
 
-$('connecter').addEventListener('click', async () => {
+// ---------------------------------------------------------------------------
+// Connexion, sans quitter le panneau
+// ---------------------------------------------------------------------------
+
+async function peindreCompte() {
+  const qui = await membre();
+  const bouton = $('compte');
+  if (!qui?.username) {
+    bouton.classList.add('cachee');
+    return;
+  }
+  $('compte-pseudo').textContent = qui.username;
+  bouton.classList.remove('cachee');
+}
+
+$('formulaire-connexion').addEventListener('submit', async (evenement) => {
+  evenement.preventDefault();
+
+  const email = $('email').value.trim();
+  const motDePasse = $('motdepasse').value;
+  const boite = $('erreur-connexion');
+  const bouton = $('entrer');
+
+  boite.classList.add('cachee');
+  $('email').classList.remove('faux');
+  $('motdepasse').classList.remove('faux');
+
+  if (!email || !motDePasse) {
+    boite.textContent = 'Renseigne ton adresse et ton mot de passe.';
+    boite.classList.remove('cachee');
+    return;
+  }
+
+  bouton.disabled = true;
+  bouton.textContent = 'Connexion...';
+
+  try {
+    await connexion(email, motDePasse);
+    $('motdepasse').value = '';
+    await peindreCompte();
+    await demarrer();
+  } catch (souci) {
+    boite.textContent = souci.message;
+    boite.classList.remove('cachee');
+    // Le champ fautif se signale, sinon on relit les deux au hasard.
+    if (souci.champs?.password) $('motdepasse').classList.add('faux');
+    else $('email').classList.add('faux');
+  } finally {
+    bouton.disabled = false;
+    bouton.textContent = 'Me connecter';
+  }
+});
+
+$('voir').addEventListener('click', () => {
+  const champ = $('motdepasse');
+  const montre = champ.type === 'text';
+  champ.type = montre ? 'password' : 'text';
+  $('voir').setAttribute('aria-pressed', String(!montre));
+  $('voir').setAttribute('aria-label', montre ? 'Afficher le mot de passe' : 'Masquer le mot de passe');
+  champ.focus();
+});
+
+$('compte').addEventListener('click', async () => {
+  await oublierSession();
+  $('compte').classList.add('cachee');
+  montrer('connexion');
+  $('email').focus();
+});
+
+$('mot-oublie').addEventListener('click', () => ouvrirSite('/forgot-password'));
+$('creer-compte').addEventListener('click', () => ouvrirSite('/signup'));
+
+async function ouvrirSite(chemin) {
   const { siteUrl } = await reglages();
-  chrome.tabs.create({ url: siteUrl + '/extension?id=' + chrome.runtime.id });
+  await nav.ouvrirOnglet(siteUrl + chemin);
   window.close();
-});
+}
 
-$('reglages').addEventListener('click', () => chrome.runtime.openOptionsPage());
+$('reglages').addEventListener('click', () => nav.ouvrirReglages());
+$('ouvrir-site').addEventListener('click', () => ouvrirSite('/feed'));
 
-$('ouvrir-site').addEventListener('click', async () => {
-  const { siteUrl } = await reglages();
-  chrome.tabs.create({ url: siteUrl + '/feed' });
-});
-
-$('voir-avis').addEventListener('click', async () => {
-  const { siteUrl } = await reglages();
-  chrome.tabs.create({ url: siteUrl + (dernierAvisId ? '/reviews/' + dernierAvisId : '/feed') });
-  window.close();
-});
+$('voir-avis').addEventListener('click', () =>
+  ouvrirSite(dernierAvisId ? '/reviews/' + dernierAvisId : '/feed'));
 
 $('recommencer').addEventListener('click', () => window.close());
 
