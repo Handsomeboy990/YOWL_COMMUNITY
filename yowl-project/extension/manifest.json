@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "YOWL",
-  "version": "3.1.0",
+  "version": "1.0.0",
   "description": "Vois ce que la communauté pense de la page que tu lis, et donne ton avis sans quitter le site.",
   "permissions": [
     "storage",
@@ -9,7 +9,7 @@
     "contextMenus"
   ],
   "host_permissions": [
-    "http://localhost:8000/*"
+    "https://my-yowl.onrender.com/*"
   ],
   "background": {
     "service_worker": "background.js",

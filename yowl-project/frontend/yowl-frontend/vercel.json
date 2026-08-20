@@ -8,11 +8,11 @@
   "rewrites": [
     {
       "source": "/robots.txt",
-      "destination": "https://API_HOST/robots.txt"
+      "destination": "https://my-yowl.onrender.com/robots.txt"
     },
     {
       "source": "/sitemap.xml",
-      "destination": "https://API_HOST/sitemap.xml"
+      "destination": "https://my-yowl.onrender.com/sitemap.xml"
     },
     {
       "source": "/(.*)",

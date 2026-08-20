@@ -8,8 +8,8 @@ import { nav } from './browser.js';
  * avancée des réglages, qui existe pour le développement.
  */
 export const PAR_DEFAUT = {
-  siteUrl: 'http://localhost:5173',
-  apiUrl: 'http://localhost:8000/api',
+  siteUrl: 'https://my-yowl.vercel.app',
+  apiUrl: 'https://my-yowl.onrender.com/api',
 };
 
 export async function reglages() {
