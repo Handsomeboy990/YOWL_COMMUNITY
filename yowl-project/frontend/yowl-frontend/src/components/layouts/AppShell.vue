@@ -9,7 +9,7 @@
             <div class="w-full px-3 md:px-6 h-16 flex items-center gap-3 md:gap-6">
                 <!-- Logo -->
                 <router-link to="/feed" class="flex items-center gap-2 shrink-0" @click="refreshFeed">
-                    <span class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-primary to-orange-primary-dark grid place-items-center shadow-md shadow-orange-primary/30">
+                    <span class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-primary to-orange-primary-dark grid place-items-center shadow-md shadow-orange-brand/40">
                         <img :src="siteStore.logoUrl || logoParDefaut" :alt="'Logo ' + siteStore.name"
                             class="w-7 h-7 object-contain">
                     </span>
@@ -184,7 +184,7 @@
                     Reviews
                 </router-link>
                 <button class="flex flex-col items-center justify-center cursor-pointer" aria-label="Publier un avis" @click="openPublish">
-                    <span class="w-12 h-12 -mt-5 rounded-2xl bg-gradient-to-br from-orange-primary to-orange-primary-dark grid place-items-center text-white text-xl shadow-lg shadow-orange-primary/40 border-4 border-white">
+                    <span class="w-12 h-12 -mt-5 rounded-2xl bg-gradient-to-br from-orange-primary to-orange-primary-dark grid place-items-center text-white text-xl shadow-lg shadow-orange-brand/50 border-4 border-white">
                         <i class="fa-solid fa-plus"></i>
                     </span>
                 </button>

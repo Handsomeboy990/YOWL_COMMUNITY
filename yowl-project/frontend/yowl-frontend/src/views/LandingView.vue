@@ -56,7 +56,7 @@
           <span
             class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-white/90 text-sm font-medium backdrop-blur-sm animate-fade-in-up"
           >
-            <span class="w-2 h-2 rounded-full bg-orange-primary animate-ping-slow"></span>
+            <span class="w-2 h-2 rounded-full bg-orange-brand animate-ping-slow"></span>
             La communauté des 13-35 ans
           </span>
 
@@ -68,7 +68,7 @@
             <span class="relative inline-block">
               <span class="gradient-text-hero">sans filtre</span>
               <svg class="absolute -bottom-2 left-0 w-full" height="10" viewBox="0 0 200 10" preserveAspectRatio="none" aria-hidden="true">
-                <path d="M0 8 Q 50 0 100 6 T 200 4" stroke="#cc4a15" stroke-width="4" fill="none" stroke-linecap="round" class="draw-line" />
+                <path d="M0 8 Q 50 0 100 6 T 200 4" stroke="#ff6b35" stroke-width="4" fill="none" stroke-linecap="round" class="draw-line" />
               </svg>
             </span>
           </h1>
@@ -193,7 +193,7 @@
         <article
           v-for="feature in features"
           :key="feature.title"
-          class="reveal group bg-white rounded-2xl border border-gray-100 p-8 shadow-sm hover:shadow-2xl hover:shadow-orange-primary/10 hover:-translate-y-2 transition-all duration-500"
+          class="reveal group bg-white rounded-2xl border border-gray-100 p-8 shadow-sm hover:shadow-2xl hover:shadow-orange-brand/20 hover:-translate-y-2 transition-all duration-500"
         >
           <div
             class="w-14 h-14 rounded-2xl grid place-items-center text-xl text-white mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500"
@@ -220,7 +220,7 @@
         <div v-for="(step, i) in steps" :key="step.title" class="reveal relative text-center px-4">
           <div class="relative inline-block">
             <span
-              class="w-20 h-20 rounded-3xl bg-gradient-to-br from-orange-primary to-orange-primary-dark text-white inline-grid place-items-center text-2xl shadow-xl shadow-orange-primary/30 rotate-3 hover:rotate-0 transition-transform duration-500"
+              class="w-20 h-20 rounded-3xl bg-gradient-to-br from-orange-primary to-orange-primary-dark text-white inline-grid place-items-center text-2xl shadow-xl shadow-orange-brand/40 rotate-3 hover:rotate-0 transition-transform duration-500"
             >
               <i :class="step.icon"></i>
             </span>
@@ -255,7 +255,7 @@
 
       <div class="mt-16 grid md:grid-cols-3 gap-6 max-w-7xl mx-auto">
         <!-- Application (PWA) -->
-        <article class="reveal bg-white rounded-2xl border border-gray-100 p-8 shadow-sm hover:shadow-2xl hover:shadow-orange-primary/10 hover:-translate-y-2 transition-all duration-500">
+        <article class="reveal bg-white rounded-2xl border border-gray-100 p-8 shadow-sm hover:shadow-2xl hover:shadow-orange-brand/20 hover:-translate-y-2 transition-all duration-500">
           <div class="flex items-center justify-between mb-6">
             <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-primary to-orange-primary-dark grid place-items-center text-white text-xl">
               <i class="fa-solid fa-mobile-screen-button"></i>
@@ -275,7 +275,7 @@
         </article>
 
         <!-- Bookmarklet -->
-        <article class="reveal bg-white rounded-2xl border border-gray-100 p-8 shadow-sm hover:shadow-2xl hover:shadow-orange-primary/10 hover:-translate-y-2 transition-all duration-500">
+        <article class="reveal bg-white rounded-2xl border border-gray-100 p-8 shadow-sm hover:shadow-2xl hover:shadow-orange-brand/20 hover:-translate-y-2 transition-all duration-500">
           <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#7C5CFC] to-[#9d85ff] grid place-items-center text-white text-xl mb-6">
             <i class="fa-solid fa-bookmark"></i>
           </div>
@@ -297,7 +297,7 @@
         </article>
 
         <!-- Extension -->
-        <article class="reveal bg-white rounded-2xl border border-gray-100 p-8 shadow-sm hover:shadow-2xl hover:shadow-orange-primary/10 hover:-translate-y-2 transition-all duration-500">
+        <article class="reveal bg-white rounded-2xl border border-gray-100 p-8 shadow-sm hover:shadow-2xl hover:shadow-orange-brand/20 hover:-translate-y-2 transition-all duration-500">
           <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-night to-blue-night-light grid place-items-center text-white text-xl mb-6">
             <i class="fa-solid fa-puzzle-piece"></i>
           </div>

@@ -54,7 +54,7 @@ const variantClasses = computed(
   () =>
     ({
       primary:
-        'bg-orange-primary hover:bg-orange-primary-dark text-white shadow-lg shadow-orange-primary/25 hover:shadow-xl hover:shadow-orange-primary/35 hover:-translate-y-0.5 focus-visible:ring-orange-primary',
+        'bg-orange-primary hover:bg-orange-primary-dark text-white shadow-lg shadow-orange-brand/35 hover:shadow-xl hover:shadow-orange-brand/45 hover:-translate-y-0.5 focus-visible:ring-orange-primary',
       night:
         'bg-gradient-to-r from-blue-night to-blue-night-light text-white shadow-lg shadow-blue-night/30 hover:shadow-xl hover:shadow-blue-night/40 hover:-translate-y-0.5 focus-visible:ring-blue-night',
       ghost:
