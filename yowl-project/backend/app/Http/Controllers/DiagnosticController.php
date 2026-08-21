@@ -77,6 +77,17 @@ class DiagnosticController extends Controller
             'expediteur' => config('mail.from.address') ?: 'NON RENSEIGNE',
         ];
 
+        if ($pilote === 'mailjet') {
+            // Rien à sonder : l'appel passe par le port 443, ouvert partout.
+            // Seules les clés peuvent manquer.
+            $etat['cle_api'] = config('mail.mailers.mailjet.key') ? 'renseignee' : 'ABSENTE';
+            $etat['cle_secrete'] = config('mail.mailers.mailjet.secret') ? 'renseignee' : 'ABSENTE';
+            $etat['lecture'] = 'Envoi par API HTTPS : aucun port SMTP en jeu. '
+                ."Si l'envoi echoue, la cause est presque toujours un expediteur non valide chez Mailjet.";
+
+            return $etat;
+        }
+
         if ($pilote !== 'smtp') {
             return $etat;
         }

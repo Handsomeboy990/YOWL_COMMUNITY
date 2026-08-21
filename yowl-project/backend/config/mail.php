@@ -37,6 +37,20 @@ return [
 
     'mailers' => [
 
+        /*
+         * Mailjet par son API HTTPS.
+         *
+         * Le port 443 n'est jamais filtre, contrairement aux ports SMTP que
+         * beaucoup d'offres gratuites ferment pour decourager le spam. Voir
+         * App\Mail\Transport\MailjetTransport.
+         */
+        'mailjet' => [
+            'transport' => 'mailjet',
+            'key' => env('MAILJET_API_KEY'),
+            'secret' => env('MAILJET_SECRET_KEY'),
+            'timeout' => (int) (env('MAIL_TIMEOUT') ?: 10),
+        ],
+
         'smtp' => [
             'transport' => 'smtp',
             'scheme' => env('MAIL_SCHEME'),

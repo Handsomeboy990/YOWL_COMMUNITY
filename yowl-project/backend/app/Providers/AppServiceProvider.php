@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Mail\Transport\MailjetTransport;
 use App\Models\Comment;
 use App\Models\Review;
 use App\Models\Tag;
@@ -11,6 +12,7 @@ use App\Observers\TagObserver;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
@@ -101,6 +103,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Transport Mailjet. Laravel n'en fournit pas : il connait Resend,
+        // Postmark, SES et Mailgun, pas celui-ci.
+        Mail::extend('mailjet', fn (array $config) => new MailjetTransport(
+            (string) ($config['key'] ?? ''),
+            (string) ($config['secret'] ?? ''),
+            (int) ($config['timeout'] ?? 10),
+        ));
+
         ResetPassword::createUrlUsing(function (object $notifiable, string $token) {
             return config('app.frontend_url')."/password-reset/$token?email={$notifiable->getEmailForPasswordReset()}";
         });
