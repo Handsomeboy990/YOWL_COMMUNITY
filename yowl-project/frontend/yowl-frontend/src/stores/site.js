@@ -53,8 +53,12 @@ export const useSiteStore = defineStore('site', () => {
   function applyHead() {
     // Ce qui appartient au site, quelle que soit la page ouverte.
     poserBalise('meta[property="og:site_name"]', 'content', name.value);
-    poserBalise('meta[property="og:type"]', 'content', 'website');
     poserBalise('meta[name="robots"]', 'content', seo.value.indexable ? 'index,follow' : 'noindex,nofollow');
+
+    // og:type n'est plus posé ici. Le routeur le remet à « website » à chaque
+    // navigation, et une vue qui décrit un article le repose au montage.
+    // Cette fonction, elle, s'exécute à la fin du chargement de l'identité du
+    // site, donc après la vue : elle ramenait tous les avis à « website ».
 
     if (identity.value.favicon) {
       poserBalise('link[rel="icon"]', 'href', getStorageUrl(identity.value.favicon));

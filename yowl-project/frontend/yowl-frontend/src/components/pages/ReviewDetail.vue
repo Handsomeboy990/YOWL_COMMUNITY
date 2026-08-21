@@ -174,10 +174,49 @@ const review = ref(null)
 usePageMeta(() => {
   if (!review.value) return {};
   const texte = (review.value.content ?? '').replace(/\s+/g, ' ').trim();
+  const image = review.value.medias?.[0] ? getStorageUrl(review.value.medias[0]) : '';
+  const titre = texte.slice(0, 60) || 'Un avis';
+
   return {
-    title: texte.slice(0, 60) || 'Un avis',
+    title: titre,
     description: texte.slice(0, 155),
-    image: review.value.medias?.[0] ? getStorageUrl(review.value.medias[0]) : '',
+    image,
+    // Un avis est un article, pas une page de site : le partage et le moteur
+    // le presentent autrement, avec son auteur et sa date.
+    type: 'article',
+    // La pagination des commentaires produit /reviews/12/2, /reviews/12/3 :
+    // autant d'adresses pour un seul contenu, qui se feraient concurrence
+    // dans l'index sans cette declaration.
+    canonical: `${window.location.origin}/reviews/${reviewId}`,
+    // Donnees structurees. DiscussionForumPosting plutot que Review : le
+    // vocabulaire Review de schema.org attend une note chiffree et un objet
+    // note, ce que YOWL ne demande jamais. Declarer un type qu'on ne remplit
+    // pas fait rejeter le bloc entier.
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@type': 'DiscussionForumPosting',
+      headline: titre,
+      articleBody: texte.slice(0, 500),
+      url: `${window.location.origin}/reviews/${reviewId}`,
+      datePublished: review.value.created_at,
+      dateModified: review.value.updated_at ?? review.value.created_at,
+      author: review.value.user?.username
+        ? { '@type': 'Person', name: review.value.user.username }
+        : undefined,
+      image: image || undefined,
+      interactionStatistic: [
+        {
+          '@type': 'InteractionCounter',
+          interactionType: 'https://schema.org/CommentAction',
+          userInteractionCount: review.value.comments?.length ?? 0,
+        },
+        {
+          '@type': 'InteractionCounter',
+          interactionType: 'https://schema.org/LikeAction',
+          userInteractionCount: review.value.nb_like ?? 0,
+        },
+      ],
+    },
   };
 });
 const loading = ref(true)

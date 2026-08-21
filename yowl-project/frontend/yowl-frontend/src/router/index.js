@@ -1,5 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useUserStore } from '@/stores/user';
+import { useUserStore } from '@/stores/user'
+import { signalerVisite } from '@/services/audience';
+import { appliquerMetaDeRoute } from '@/composables/usePageMeta';
+import { useSiteStore } from '@/stores/site';
 import LandingView from '@/views/LandingView.vue'
 import HomeView from '../views/HomeView.vue'
 
@@ -206,6 +209,84 @@ const router = createRouter({
     },
 })
 
+/**
+ * Métadonnées par défaut, une entrée par route.
+ *
+ * Elles vivent ici plutôt que dans chaque vue parce qu'elles sont fixes :
+ * une page de connexion dit la même chose à chaque ouverture. Les pages dont
+ * le titre dépend de données chargées, un avis, un sujet, un profil, appellent
+ * useSeo dans leur composant et écrasent ce qui suit.
+ *
+ * « noindex » n'est pas une punition : une page de connexion, un profil
+ * personnel ou une contestation n'ont rien à faire dans un index, et les y
+ * laisser dilue les pages qui, elles, doivent y être.
+ */
+const PRIVE = 'noindex, nofollow';
+
+const SEO_PAR_ROUTE = {
+    landing: {
+        titre: 'La communauté qui donne son avis sur le web',
+        description:
+            "YOWL réunit les 13-35 ans autour des contenus découverts sur internet : "
+            + 'articles, vidéos, jeux, musique. On partage un lien, on dit ce qu\'on en pense.',
+    },
+    home: {
+        titre: 'Le fil',
+        description:
+            'Les derniers avis partagés par la communauté YOWL, tous sujets confondus.',
+    },
+    'tag-directory': {
+        titre: 'Les sujets',
+        description:
+            'Tous les sujets dont parle la communauté YOWL, du cinéma au développement web.',
+    },
+    about: {
+        titre: 'À propos',
+        description: 'Ce qu\'est YOWL, à qui il s\'adresse et comment il fonctionne.',
+    },
+    faq: {
+        titre: 'Foire aux questions',
+        description: 'Les réponses aux questions les plus souvent posées sur YOWL.',
+    },
+    charte: {
+        titre: 'Charte de la communauté',
+        description: 'Les règles que chacun accepte en publiant sur YOWL.',
+    },
+    confidentialite: {
+        titre: 'Politique de confidentialité',
+        description: 'Quelles données YOWL collecte, pourquoi, et ce que vous pouvez en faire.',
+    },
+    conditions: {
+        titre: 'Conditions générales d\'utilisation',
+        description: 'Le cadre contractuel du service YOWL.',
+    },
+    'mentions-legales': {
+        titre: 'Mentions légales',
+        description: 'Éditeur, hébergeur et directeur de publication de YOWL.',
+    },
+    suggestion: {
+        titre: 'Proposer une amélioration',
+        description: 'Une idée, un défaut, une gêne : ce formulaire arrive directement à l\'équipe.',
+    },
+    signup: {
+        titre: 'Créer un compte',
+        description: 'Rejoindre YOWL et commencer à partager ses avis. Gratuit, en une minute.',
+    },
+    login: { titre: 'Se connecter', robots: PRIVE },
+    'forgot-password': { titre: 'Mot de passe oublié', robots: PRIVE },
+    'password-reset': { titre: 'Choisir un nouveau mot de passe', robots: PRIVE },
+    share: { titre: 'Publier un avis', robots: PRIVE },
+    summary: { titre: 'Mon profil', robots: PRIVE },
+    activity: { titre: 'Mon activité', robots: PRIVE },
+    saved: { titre: 'Mes enregistrements', robots: PRIVE },
+    appeals: { titre: 'Mes contestations', robots: PRIVE },
+    'my-reviews': { titre: 'Mes avis', robots: PRIVE },
+    onboarding: { titre: 'Bienvenue', robots: PRIVE },
+    unsubscribe: { titre: 'Désinscription', robots: PRIVE },
+    'admin-dashboard': { titre: 'Administration', robots: PRIVE },
+    'not-found': { titre: 'Page introuvable', robots: PRIVE },
+};
+
 router.beforeEach((to, from, next) => {
     const userStore = useUserStore();
 
@@ -230,6 +311,24 @@ router.beforeEach((to, from, next) => {
     }
 
     next();
+});
+
+/**
+ * Mesure d'audience, apres la navigation et non pendant.
+ *
+ * afterEach plutot que beforeEach : une redirection compterait sinon deux
+ * pages, celle demandee et celle atteinte, et une route refusee par un garde
+ * serait comptee alors qu'elle n'a jamais ete affichee. Ici seule la
+ * destination reellement atteinte est signalee.
+ */
+router.afterEach((to) => {
+    signalerVisite(to.path);
+
+    // Pose tout de suite, et non a la prochaine boucle : la vue qui arrive
+    // se monte ensuite et ecrase ce qui la concerne, ce qui est l'ordre
+    // voulu. Differer inverserait les deux et la route effacerait le titre
+    // qu'une vue vient de calculer a partir de ses donnees.
+    appliquerMetaDeRoute(SEO_PAR_ROUTE[to.name] ?? {}, useSiteStore());
 });
 
 export default router
