@@ -428,6 +428,8 @@
       <!-- ===== PAGES LEGALES ===== -->
       <AdminGrowth v-else-if="activeTab === 'growth'" />
 
+      <AdminAnalytics v-else-if="activeTab === 'audience'" />
+
       <AdminCampaigns v-else-if="activeTab === 'campaigns'" />
 
       <AdminAppeals v-else-if="activeTab === 'appeals'" />
@@ -470,6 +472,7 @@ import Icon from '@/components/ui/Icon.vue';
 // la bibliothèque de graphiques pèsent à eux deux la moitié de cette
 // console, et un modérateur qui traite des signalements n'en ouvre aucun.
 const AdminGrowth = defineAsyncComponent(() => import('@/components/admin/AdminGrowth.vue'));
+const AdminAnalytics = defineAsyncComponent(() => import('@/components/admin/AdminAnalytics.vue'));
 const AdminCampaigns = defineAsyncComponent(() => import('@/components/admin/AdminCampaigns.vue'));
 const AdminLegalPages = defineAsyncComponent(() => import('@/components/admin/AdminLegalPages.vue'));
 const AdminAppeals = defineAsyncComponent(() => import('@/components/admin/AdminAppeals.vue'));
@@ -526,6 +529,7 @@ const loaded = { users: false, reviews: false, comments: false, reports: false, 
 const tabs = computed(() => [
   { key: 'overview', label: "Vue d'ensemble", icon: 'chart-pie' },
   { key: 'growth', label: 'Croissance', icon: 'arrow-trend-up' },
+  { key: 'audience', label: 'Audience', icon: 'chart-line' },
   { key: 'reports', label: 'Modération', icon: 'flag', badge: pendingReports.value },
   { key: 'appeals', label: 'Contestations', icon: 'scale-balanced', badge: appealStore.pendingCount },
   { key: 'users', label: 'Membres', icon: 'users' },
