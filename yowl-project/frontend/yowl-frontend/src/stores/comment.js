@@ -11,6 +11,22 @@ export const useCommentStore = defineStore(
     const comments = ref([]);
         
 
+    /**
+     * Pose les commentaires d'un avis comme contenu du magasin.
+     *
+     * La page d'un avis reçoit déjà ses commentaires, réponses comprises,
+     * dans la réponse de l'API. Elle appelait pourtant getComments(), qui
+     * rapatrie les dix derniers commentaires du site entier : sur une base
+     * qui en compte des milliers, ceux de l'avis ouvert n'y étaient
+     * pratiquement jamais. La liste restait vide pendant que le compteur,
+     * lui, retombait sur la bonne source et affichait le bon nombre.
+     *
+     * @param {Array} liste les commentaires de l'avis, tels que l'API les rend
+     */
+    function setForReview(liste) {
+      comments.value = Array.isArray(liste) ? [...liste] : [];
+    }
+
     async function getComments() {
       try {
         const response = await api.get('/comments');
@@ -35,7 +51,15 @@ export const useCommentStore = defineStore(
       let commentToUpdate = JSON.stringify(comment);
       try {        
         const response = await api.patch(`/comments/${id}`, commentToUpdate);
-        await getComments()
+
+        // Anciennement suivi d'un getComments(), qui remplaçait les
+        // commentaires de l'avis ouvert par les dix derniers du site : la
+        // liste se vidait à la première modification.
+        const modifie = response?.data?.data;
+        if (modifie) {
+          const index = comments.value.findIndex((c) => c.id === modifie.id);
+          if (index !== -1) comments.value.splice(index, 1, modifie);
+        }
         
 
         if (!response.ok) {
@@ -99,6 +123,7 @@ export const useCommentStore = defineStore(
     }
 
     return {
+      setForReview,
       comments,
       getComments,   
       addComment,

@@ -241,12 +241,18 @@ const formatDate = (value) => {
 onBeforeMount(async () => {
   try {
     // Charger la review directement depuis l'API (accès par URL directe possible)
-    const [reviewRes] = await Promise.all([
-      api.get(`/reviews/${reviewId}`),
-      commentStore.getComments(),
-    ])
+    const reviewRes = await api.get(`/reviews/${reviewId}`)
     review.value = reviewRes.data.data
     dateFormatted.value = formatDate(review.value.created_at)
+
+    // Les commentaires arrivent avec l'avis, réponses comprises. On les pose
+    // dans le magasin, que la liste et les cartes lisent déjà.
+    //
+    // L'appel précédent, getComments(), rapatriait les dix derniers
+    // commentaires du site entier : sur une base qui en compte des milliers,
+    // ceux de l'avis ouvert n'y figuraient pratiquement jamais, et la liste
+    // restait vide sous un compteur pourtant juste.
+    commentStore.setForReview(review.value.comments)
   } catch {
     review.value = null
   } finally {
