@@ -63,6 +63,10 @@ class MassCommunitySeeder extends Seeder
 
         $this->command?->warn('Ce seed écrit beaucoup de données. Comptez plusieurs minutes.');
 
+        if (! $this->lesImagesIrontAuBonEndroit()) {
+            return;
+        }
+
         if (! $this->laBaseEstPrete()) {
             return;
         }
@@ -88,6 +92,64 @@ class MassCommunitySeeder extends Seeder
     // -------------------------------------------------------------------------
     // Préparation
     // -------------------------------------------------------------------------
+
+    /**
+     * Refuse d'écrire des lignes distantes et des images locales.
+     *
+     * Le piège est silencieux et coûteux. Lancé depuis une machine de
+     * développement contre la base de production, le seed écrit ses lignes
+     * chez l'hébergeur et ses deux cent dix images sur le disque de la
+     * machine, parce que MEDIA_DISK n'y est pas renseigné et retombe sur
+     * « public ». La base référence alors des chemins que le stockage de
+     * production ne contient pas : le site affiche des cadres vides, sans
+     * rien dans les journaux ni dans la console du navigateur.
+     *
+     * Le contrôle vient avant tout le reste, y compris avant le
+     * téléchargement du fonds : découvrir le problème après plusieurs minutes
+     * d'écriture, et devoir tout purger, est exactement ce qu'il évite.
+     */
+    private function lesImagesIrontAuBonEndroit(): bool
+    {
+        $disque = config('filesystems.media');
+        $ecritEnLocal = in_array($disque, ['local', 'public'], true);
+
+        $connexion = config('database.default');
+        $pilote = config('database.connections.'.$connexion.'.driver');
+        $hote = config('database.connections.'.$connexion.'.host');
+
+        // SQLite est un fichier, jamais un hôte : le couple est forcément
+        // cohérent, quel que soit ce que traîne la clé host.
+        $baseDistante = $pilote !== 'sqlite'
+            && $hote
+            && ! in_array($hote, ['127.0.0.1', 'localhost', '::1', ''], true);
+
+        if (! $ecritEnLocal || ! $baseDistante) {
+            return true;
+        }
+
+        $this->command?->newLine();
+        $this->command?->error('Les images n\'arriveraient pas au même endroit que les lignes.');
+        $this->command?->newLine();
+        $this->command?->line('  base de données : '.$hote.' (distante)');
+        $this->command?->line('  disque media    : '.$disque.' (cette machine)');
+        $this->command?->newLine();
+        $this->command?->line('  Les deux cent dix images seraient écrites ici, et la base');
+        $this->command?->line('  distante pointerait vers des fichiers que le stockage de');
+        $this->command?->line('  production ne contient pas. Le site afficherait des cadres');
+        $this->command?->line('  vides, sans erreur nulle part.');
+        $this->command?->newLine();
+        $this->command?->line('  Renseignez le stockage objet avant de relancer :');
+        $this->command?->line('    MEDIA_DISK=s3');
+        $this->command?->line('    AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_BUCKET,');
+        $this->command?->line('    AWS_ENDPOINT, AWS_URL, AWS_DEFAULT_REGION');
+        $this->command?->newLine();
+        $this->command?->line('  Si les images sont déjà sur cette machine, elles se poussent');
+        $this->command?->line('  sans rejouer le seed :');
+        $this->command?->line('    php artisan yowl:media-push --source=public --target=s3');
+        $this->command?->newLine();
+
+        return false;
+    }
 
     /**
      * Refuse d'écrire par-dessus un jeu de données déjà posé.
