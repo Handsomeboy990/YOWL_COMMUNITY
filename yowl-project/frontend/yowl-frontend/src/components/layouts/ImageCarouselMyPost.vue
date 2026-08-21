@@ -6,13 +6,13 @@
 
     <!-- left button -->
     <button aria-label="Image précédente" v-if="images.length > 1" @click="prev"
-      class="cursor-pointer absolute top-1/2 left-2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full hover:bg-orange-primary transition">
+      class="cursor-pointer absolute top-1/2 left-2 transform -translate-y-1/2 bg-gray-800 text-white w-11 h-11 grid place-items-center rounded-full hover:bg-orange-primary transition">
       <Icon name="chevron-left" />
     </button>
 
     <!-- right button -->
     <button aria-label="Image suivante" v-if="images.length > 1" @click="next"
-      class="cursor-pointer absolute top-1/2 right-2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full hover:bg-orange-primary transition">
+      class="cursor-pointer absolute top-1/2 right-2 transform -translate-y-1/2 bg-gray-800 text-white w-11 h-11 grid place-items-center rounded-full hover:bg-orange-primary transition">
       <Icon name="chevron-right" />
     </button>
 
@@ -35,11 +35,11 @@
 
         <!-- buttons -->
         <button aria-label="Image précédente" v-if="images.length > 1" @click="prev"
-          class="absolute top-1/2 left-2 transform -translate-y-1/2 bg-black/40 text-white p-3 rounded-full">
+          class="absolute top-1/2 left-2 transform -translate-y-1/2 bg-black/40 text-white w-11 h-11 grid place-items-center rounded-full">
           ‹
         </button>
         <button aria-label="Image suivante" v-if="images.length > 1" @click="next"
-          class="absolute top-1/2 right-2 transform -translate-y-1/2 bg-black/40 text-white p-3 rounded-full">
+          class="absolute top-1/2 right-2 transform -translate-y-1/2 bg-black/40 text-white w-11 h-11 grid place-items-center rounded-full">
           ›
         </button>
       </div>

@@ -1,6 +1,6 @@
 <template>
   <button type="button"
-    class="shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors cursor-pointer"
+    class="shrink-0 inline-flex items-center justify-center min-h-11 px-4 py-1.5 rounded-full text-xs font-medium border transition-colors cursor-pointer"
     :class="following
       ? 'border-gray-200 text-gray-500 hover:border-red-200 hover:text-red-600 hover:bg-red-50'
       : 'border-orange-primary text-orange-text hover:bg-orange-50'"

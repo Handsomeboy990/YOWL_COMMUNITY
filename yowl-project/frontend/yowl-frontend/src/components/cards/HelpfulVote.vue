@@ -2,7 +2,7 @@
   <div v-if="visible" class="flex items-center gap-2 text-sm">
     <span class="text-gray-500">{{ t('review.helpfulQuestion') }}</span>
     <button type="button"
-      class="px-2.5 py-1 rounded-full border text-xs transition-colors cursor-pointer"
+      class="inline-flex items-center min-h-11 px-4 py-1 rounded-full border text-xs transition-colors cursor-pointer"
       :class="vote === true
         ? 'border-emerald-400 bg-emerald-50 text-emerald-700'
         : 'border-gray-200 text-gray-500 hover:border-emerald-300'"
@@ -10,7 +10,7 @@
       <Icon name="thumbs-up" class="mr-1" />Oui<span v-if="counts.helpful"> {{ counts.helpful }}</span>
     </button>
     <button type="button"
-      class="px-2.5 py-1 rounded-full border text-xs transition-colors cursor-pointer"
+      class="inline-flex items-center min-h-11 px-4 py-1 rounded-full border text-xs transition-colors cursor-pointer"
       :class="vote === false
         ? 'border-gray-400 bg-gray-100 text-gray-700'
         : 'border-gray-200 text-gray-500 hover:border-gray-300'"

@@ -30,7 +30,7 @@
           v-model="tagInput"
           type="text"
           :placeholder="t('filters.tagsPlaceholder')"
-          class="w-full px-3.5 py-2.5 bg-white/95 rounded-xl text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-orange-primary transition-shadow"
+          class="w-full px-3.5 py-2.5 min-h-11 bg-white/95 rounded-xl text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-orange-primary transition-shadow"
         >
       </div>
 

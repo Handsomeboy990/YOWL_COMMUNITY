@@ -15,7 +15,7 @@
       </span>
 
       <span class="min-w-0 flex-1">
-        <span class="block text-[11px] uppercase tracking-wide text-gray-500">{{ site }}</span>
+        <span class="block text-xs uppercase tracking-wide text-gray-500">{{ site }}</span>
         <span v-if="preview?.title" class="block font-medium text-blue-night leading-snug line-clamp-2 mt-0.5">
           {{ preview.title }}
         </span>

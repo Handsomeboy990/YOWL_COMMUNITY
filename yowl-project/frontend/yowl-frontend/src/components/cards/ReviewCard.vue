@@ -29,7 +29,7 @@
         <!-- Menu contextuel -->
         <div v-if="canReport" ref="menuRef" class="relative">
           <button type="button"
-            class="w-8 h-8 rounded-full grid place-items-center text-gray-500 hover:text-blue-night hover:bg-gray-100 transition-colors cursor-pointer"
+            class="w-11 h-11 rounded-full grid place-items-center text-gray-500 hover:text-blue-night hover:bg-gray-100 transition-colors cursor-pointer"
             aria-label="Options de l'avis" :aria-expanded="isMenuOpen" @click="isMenuOpen = !isMenuOpen">
             <Icon name="ellipsis" />
           </button>
@@ -63,11 +63,11 @@
          sont la porte d'entrée vers le sujet. -->
     <div v-if="review.tags?.length" class="flex flex-wrap gap-1.5 mb-3">
       <router-link v-for="tag in review.tags" :key="tag.id" :to="`/sujets/${tag.name}`"
-        class="px-2.5 py-1 rounded-full bg-orange-primary/10 text-orange-text text-xs font-medium hover:bg-orange-primary/20 transition-colors"
+        class="inline-flex items-center min-h-8 px-3 py-1 rounded-full bg-orange-primary/10 text-orange-text text-xs font-medium hover:bg-orange-primary/20 transition-colors"
         @click.stop>#{{ tag.name }}</router-link>
     </div>
     <router-link :to="{ name: 'review-detail', params: { id: review.id } }"
-      class="text-orange-text hover:text-orange-primary-dark font-medium text-sm transition-colors duration-200 inline-flex items-center gap-1">
+      class="text-orange-text hover:text-orange-primary-dark font-medium text-sm transition-colors duration-200 inline-flex items-center min-h-11 gap-1">
       Voir plus
       <Icon name="arrow-right" :size="14" class="text-xs" />
     </router-link>
@@ -92,12 +92,12 @@
       <div class="flex items-center space-x-3 md:space-x-4">
         <!-- J'aime -->
         <button :class="[
-          'group flex items-center gap-2 transition-all duration-300 hover:scale-110 cursor-pointer',
+          'group flex items-center gap-2 min-h-11 transition-all duration-300 hover:scale-110 cursor-pointer',
           review.user_reaction === 'like'
             ? 'text-orange-text'
             : 'text-gray-600 hover:text-orange-text'
         ]" @click="toggleReaction('like')">
-          <div class="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-orange-primary to-orange-primary-dark rounded-full grid place-items-center shadow-sm group-hover:shadow-md transition-all duration-300 group-active:scale-95">
+          <div class="w-10 h-10 bg-gradient-to-br from-orange-primary to-orange-primary-dark rounded-full grid place-items-center shadow-sm group-hover:shadow-md transition-all duration-300 group-active:scale-95">
             <Icon name="thumbs-up" :filled="review.user_reaction === 'like'" class="text-white" :size="16" />
           </div>
           <span class="font-medium text-sm md:text-base">{{ review.nb_like }}</span>
@@ -105,12 +105,12 @@
 
         <!-- Je n'aime pas -->
         <button :class="[
-          'group flex items-center gap-2 transition-all duration-300 hover:scale-110 cursor-pointer',
+          'group flex items-center gap-2 min-h-11 transition-all duration-300 hover:scale-110 cursor-pointer',
           review.user_reaction === 'dislike'
             ? 'text-blue-600'
             : 'text-gray-600 hover:text-blue-600'
         ]" @click="toggleReaction('dislike')">
-          <div class="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-blue-night to-blue-night-light rounded-full grid place-items-center shadow-sm group-hover:shadow-md transition-all duration-300 group-active:scale-95">
+          <div class="w-10 h-10 bg-gradient-to-br from-blue-night to-blue-night-light rounded-full grid place-items-center shadow-sm group-hover:shadow-md transition-all duration-300 group-active:scale-95">
             <Icon name="thumbs-down" :filled="review.user_reaction === 'dislike'" class="text-white" :size="16" />
           </div>
           <span class="font-medium text-sm md:text-base">{{ review.nb_dislike }}</span>
@@ -118,8 +118,8 @@
 
         <!-- Répondre -->
         <router-link :to="{ name: 'review-detail', params: { id: review.id } }"
-          class="group flex items-center gap-2 text-gray-600 hover:text-orange-text transition-all duration-300">
-          <div class="w-8 h-8 md:w-10 md:h-10 bg-gray-100 group-hover:bg-orange-50 rounded-full grid place-items-center transition-all duration-300">
+          class="group flex items-center justify-center gap-2 min-h-11 min-w-11 text-gray-600 hover:text-orange-text transition-all duration-300">
+          <div class="w-10 h-10 bg-gray-100 group-hover:bg-orange-50 rounded-full grid place-items-center transition-all duration-300">
             <Icon name="reply" :size="16" class="text-sm" />
           </div>
           <span class="font-medium text-sm md:text-base hidden sm:inline">Répondre</span>
@@ -128,7 +128,7 @@
 
       <div class="flex items-center gap-3">
         <button v-if="userStore.isAuthenticated" type="button"
-          class="w-9 h-9 rounded-full grid place-items-center transition-colors cursor-pointer"
+          class="w-11 h-11 rounded-full grid place-items-center transition-colors cursor-pointer"
           :class="saved ? 'text-orange-text bg-orange-50' : 'text-gray-500 hover:text-orange-text hover:bg-orange-50'"
           :aria-pressed="saved" :aria-label="saved ? 'Retirer des enregistrements' : 'Enregistrer cet avis'"
           @click="toggleBookmark">
@@ -136,7 +136,7 @@
         </button>
 
         <router-link :to="{ name: 'review-detail', params: { id: review.id } }"
-          class="flex items-center gap-2 text-gray-600 hover:text-orange-text transition-colors duration-200 text-sm md:text-base">
+          class="flex items-center justify-center gap-2 min-h-11 min-w-11 px-1 text-gray-600 hover:text-orange-text transition-colors duration-200 text-sm md:text-base">
           <Icon name="comment" />
           <span class="font-medium">{{ review.comments?.length || 0 }}</span>
         </router-link>

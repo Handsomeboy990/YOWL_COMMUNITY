@@ -55,7 +55,7 @@
                                     {{ existing.user?.fullname || existing.user?.username }}
                                 </span>
                                 <span class="block text-xs text-gray-600 line-clamp-2">{{ existing.content }}</span>
-                                <span class="mt-1 block text-[11px] text-gray-500">
+                                <span class="mt-1 block text-xs text-gray-500">
                                     {{ t('compose.replyCount', existing.comments_count, { count: existing.comments_count }) }}
                                 </span>
                             </span>

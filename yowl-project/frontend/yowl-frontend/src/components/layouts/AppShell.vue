@@ -8,7 +8,7 @@
         <header class="fixed top-0 left-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
             <div class="w-full px-3 md:px-6 h-16 flex items-center gap-3 md:gap-6">
                 <!-- Logo -->
-                <router-link to="/feed" class="flex items-center gap-2 shrink-0" @click="refreshFeed">
+                <router-link to="/feed" class="flex items-center gap-2 shrink-0 min-w-11 min-h-11" @click="refreshFeed">
                     <span class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-primary to-orange-primary-dark grid place-items-center shadow-md shadow-orange-brand/40">
                         <img :src="siteStore.logoUrl || logoParDefaut" :alt="'Logo ' + siteStore.name"
                             class="w-7 h-7 object-contain">
@@ -25,21 +25,23 @@
                             <Icon name="search" :size="16" class="text-sm" />
                         </span>
                         <input v-model="searchQuery" type="text" :placeholder="t('common.search')"
-                            class="pl-10 pr-4 py-2.5 w-full bg-gray-100 hover:bg-gray-200/70 focus:bg-white border border-transparent focus:border-orange-primary rounded-full text-gray-900 text-sm focus:outline-none transition-all duration-200"
+                            class="pl-10 pr-4 py-2.5 min-h-11 w-full bg-gray-100 hover:bg-gray-200/70 focus:bg-white border border-transparent focus:border-orange-primary rounded-full text-gray-900 text-sm focus:outline-none transition-all duration-200"
                             @input="handleSearch" @keyup.enter="handleSearch" />
                     </div>
                 </div>
 
                 <!-- Actions -->
                 <div class="flex items-center gap-2 md:gap-3 shrink-0">
-                    <BaseButton class="hidden md:inline-flex" variant="primary" size="sm" icon="plus" @click="openPublish">
-                        {{ t('common.publish') }}
-                    </BaseButton>
+                    <span class="hidden md:inline-flex">
+                        <BaseButton variant="primary" size="sm" icon="plus" @click="openPublish">
+                            {{ t('common.publish') }}
+                        </BaseButton>
+                    </span>
 
                     <!-- Centre de notifications -->
                     <div v-if="userStore.isAuthenticated" ref="notificationsRef" class="relative">
                         <button
-                            class="relative w-10 h-10 rounded-full grid place-items-center cursor-pointer transition-colors"
+                            class="relative w-11 h-11 rounded-full grid place-items-center cursor-pointer transition-colors"
                             :class="isNotificationsOpen ? 'bg-orange-primary/10 text-orange-text' : 'text-gray-500 hover:bg-gray-100 hover:text-blue-night'"
                             aria-label="Notifications" :aria-expanded="isNotificationsOpen"
                             @click="toggleNotifications">
@@ -60,7 +62,7 @@
 
                     <!-- Profil ou connexion -->
                     <div v-if="userStore.isAuthenticated" ref="dropdownRef" class="relative">
-                        <button class="flex items-center gap-1.5 cursor-pointer" :aria-expanded="isDropdownOpen" aria-label="Menu du profil" @click="isDropdownOpen = !isDropdownOpen">
+                        <button class="flex items-center justify-center gap-1.5 min-w-11 min-h-11 cursor-pointer" :aria-expanded="isDropdownOpen" aria-label="Menu du profil" @click="isDropdownOpen = !isDropdownOpen">
                             <img v-if="userStore.user?.picture"
                                 class="w-10 h-10 rounded-full object-cover ring-2 ring-orange-primary/40"
                                 :src="getStorageUrl(userStore.user.picture)" alt="Photo de profil">
@@ -146,7 +148,7 @@
                 <div class="pt-2">
                     <LanguageSwitcher />
                 </div>
-                <p class="px-4 pt-3 text-[11px] text-gray-500">
+                <p class="px-4 pt-3 text-xs text-gray-500">
                     {{ siteStore.identity.footer }}
                 </p>
             </div>
@@ -173,31 +175,31 @@
         <nav class="lg:hidden fixed bottom-0 left-0 w-full z-50 bg-white/95 backdrop-blur-md border-t border-gray-200 pb-[env(safe-area-inset-bottom)]"
             aria-label="Navigation mobile">
             <div class="grid grid-cols-5 h-16">
-                <router-link to="/feed" class="flex flex-col items-center justify-center gap-1 text-[11px]"
+                <router-link to="/feed" class="flex flex-col items-center justify-center gap-1 text-xs"
                     :class="route.name === 'home' ? 'text-orange-text font-semibold' : 'text-gray-500'">
                     <Icon name="house" :size="20" class="text-lg" />
-                    Fil
+                    {{ t('nav.feed') }}
                 </router-link>
-                <router-link to="/user/my-reviews" class="flex flex-col items-center justify-center gap-1 text-[11px]"
+                <router-link to="/user/my-reviews" class="flex flex-col items-center justify-center gap-1 text-xs"
                     :class="route.name === 'my-reviews' ? 'text-orange-text font-semibold' : 'text-gray-500'">
                     <Icon name="newspaper" :size="20" class="text-lg" />
-                    Reviews
+                    {{ t('nav.myReviews') }}
                 </router-link>
                 <button class="flex flex-col items-center justify-center cursor-pointer" aria-label="Publier un avis" @click="openPublish">
                     <span class="w-12 h-12 -mt-5 rounded-2xl bg-gradient-to-br from-orange-primary to-orange-primary-dark grid place-items-center text-white text-xl shadow-lg shadow-orange-brand/50 border-4 border-white">
                         <Icon name="plus" />
                     </span>
                 </button>
-                <router-link to="/user/activity" class="flex flex-col items-center justify-center gap-1 text-[11px]"
+                <router-link to="/user/activity" class="flex flex-col items-center justify-center gap-1 text-xs"
                     :class="route.name === 'activity' ? 'text-orange-text font-semibold' : 'text-gray-500'">
                     <Icon name="clock-rotate-left" :size="20" class="text-lg" />
-                    Activité
+                    {{ t('nav.activity') }}
                 </router-link>
                 <router-link :to="userStore.isAuthenticated ? '/user/summary' : '/login'"
-                    class="flex flex-col items-center justify-center gap-1 text-[11px]"
+                    class="flex flex-col items-center justify-center gap-1 text-xs"
                     :class="route.name === 'summary' || route.name === 'login' ? 'text-orange-text font-semibold' : 'text-gray-500'">
                     <Icon name="user" :size="20" class="text-lg" />
-                    Profil
+                    {{ t('nav.profile') }}
                 </router-link>
             </div>
         </nav>

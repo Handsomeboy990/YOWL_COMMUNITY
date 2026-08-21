@@ -44,10 +44,13 @@ const props = defineProps({
 const sizeClasses = computed(
   () =>
     ({
-      sm: 'px-4 py-2 text-sm',
-      md: 'px-6 py-2.5 text-sm md:text-base',
-      lg: 'px-8 py-3 text-base',
-      xl: 'px-10 py-4 text-lg',
+      // La hauteur minimale n'est pas decorative : sous 44 pixels, un bouton
+      // se rate au pouce. La mesure sur telephone donnait 36 pixels pour la
+      // taille sm, qui sert partout dans les barres et les cartes.
+      sm: 'px-4 py-2 text-sm min-h-11',
+      md: 'px-6 py-2.5 text-sm md:text-base min-h-11',
+      lg: 'px-8 py-3 text-base min-h-12',
+      xl: 'px-10 py-4 text-lg min-h-14',
     })[props.size]
 );
 

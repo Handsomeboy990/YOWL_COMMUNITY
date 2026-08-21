@@ -80,7 +80,7 @@
                 <span class="block text-sm text-blue-night leading-snug">
                   {{ notification.data?.body }}
                 </span>
-                <span class="block mt-0.5 text-[11px] text-gray-500">
+                <span class="block mt-0.5 text-xs text-gray-500">
                   {{ relativeDate(notification.created_at) }}
                 </span>
               </span>

@@ -5,7 +5,7 @@
 
       <!-- Retour au fil -->
       <router-link to="/feed"
-        class="inline-flex items-center gap-2 text-gray-600 hover:text-orange-text mb-6 transition-colors font-medium">
+        class="inline-flex items-center gap-2 min-h-11 text-gray-600 hover:text-orange-text mb-6 transition-colors font-medium">
         <Icon name="arrow-left" />
         <span>Retour au fil</span>
       </router-link>
@@ -75,7 +75,7 @@
               <!-- Tags -->
               <div v-if="review.tags?.length" class="mt-5 flex flex-wrap gap-2">
                 <router-link v-for="tag in review.tags" :key="tag.id"
-                  :to="`/sujets/${tag.name}`" class="text-xs font-medium bg-orange-primary/10 text-orange-text rounded-full px-3 py-1 hover:bg-orange-primary/20 transition-colors">#{{ tag.name }}</router-link>
+                  :to="`/sujets/${tag.name}`" class="inline-flex items-center min-h-8 text-xs font-medium bg-orange-primary/10 text-orange-text rounded-full px-3 py-1 hover:bg-orange-primary/20 transition-colors">#{{ tag.name }}</router-link>
               </div>
             </div>
           </div>

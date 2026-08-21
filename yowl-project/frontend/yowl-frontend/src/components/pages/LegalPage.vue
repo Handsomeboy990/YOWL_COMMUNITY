@@ -5,7 +5,7 @@
         <!-- Fil d'Ariane : on arrive souvent ici par un lien de pied de page,
              sans savoir où l'on est dans l'ensemble. -->
         <nav class="text-sm text-gray-500 mb-6" aria-label="Fil d'Ariane">
-          <router-link to="/feed" class="hover:text-blue-night transition-colors">{{ t('nav.feed') }}</router-link>
+          <router-link to="/feed" class="inline-flex items-center min-h-11 pr-2 hover:text-blue-night transition-colors">{{ t('nav.feed') }}</router-link>
           <span class="mx-2" aria-hidden="true">/</span>
           <span class="text-blue-night">{{ page.title || '…' }}</span>
         </nav>
@@ -63,7 +63,7 @@
           <!-- ===== Rail de gauche : les quatre documents ===== -->
           <aside class="order-1 lg:order-2 xl:order-1 lg:sticky lg:top-24 lg:self-start space-y-6">
             <nav v-for="(groupe, g) in groupes" :key="groupe.titre" aria-label="Pages du site">
-              <p class="text-[11px] uppercase tracking-wider text-gray-500 font-medium mb-3">
+              <p class="text-xs uppercase tracking-wider text-gray-500 font-medium mb-3">
                 {{ groupe.titre }}
               </p>
               <ul class="space-y-1">
@@ -84,7 +84,7 @@
 
             <!-- Ce que la page couvre, en un chiffre -->
             <div v-if="sections.length" class="rounded-xl bg-gray-50 border border-gray-200 p-4">
-              <p class="text-[11px] uppercase tracking-wider text-gray-500 font-medium">
+              <p class="text-xs uppercase tracking-wider text-gray-500 font-medium">
                 {{ t('legal.thisDocument') }}
               </p>
               <dl class="mt-2.5 space-y-1.5 text-sm">
@@ -107,7 +107,7 @@
           <!-- ===== Rail de droite : le sommaire du document ===== -->
           <aside v-if="sections.length"
             class="order-3 hidden lg:block lg:sticky lg:top-24 lg:self-start">
-            <p class="text-[11px] uppercase tracking-wider text-gray-500 font-medium mb-3">
+            <p class="text-xs uppercase tracking-wider text-gray-500 font-medium mb-3">
               {{ t('legal.onThisPage') }}
             </p>
 

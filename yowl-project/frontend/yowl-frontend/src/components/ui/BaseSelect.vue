@@ -38,7 +38,7 @@
         <li
           v-for="(option, index) in options"
           :key="option.value"
-          class="mx-1.5 flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm cursor-pointer transition-colors duration-150"
+          class="mx-1.5 flex items-center gap-2.5 min-h-11 rounded-lg px-3 py-2.5 text-sm cursor-pointer transition-colors duration-150"
           :class="[
             option.value === modelValue
               ? 'bg-orange-primary/10 text-orange-text font-semibold'

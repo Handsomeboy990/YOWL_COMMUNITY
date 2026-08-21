@@ -6,7 +6,7 @@
         <p class="mt-3 text-gray-600 max-w-2xl leading-relaxed">{{ t('tag.directoryHint') }}</p>
 
         <input v-model="filtre" type="search" :placeholder="t('tag.searchPlaceholder')"
-          class="mt-6 w-full sm:w-80 px-4 py-2.5 rounded-xl border border-gray-200 focus:border-orange-primary focus:outline-none text-sm" />
+          class="mt-6 w-full sm:w-80 px-4 py-2.5 min-h-11 rounded-xl border border-gray-200 focus:border-orange-primary focus:outline-none text-sm" />
 
         <div v-if="loading" class="mt-6 flex flex-wrap gap-2">
           <span v-for="n in 20" :key="n" class="h-10 w-32 rounded-xl skeleton"></span>
