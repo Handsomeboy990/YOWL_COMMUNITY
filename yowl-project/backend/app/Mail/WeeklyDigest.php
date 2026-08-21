@@ -30,6 +30,7 @@ class WeeklyDigest extends Mailable
 
         return $this->subject($subject)
             ->view('emails.weekly-digest')
+            ->text('emails.weekly-digest-texte')
             // Un client mail sérieux propose le désabonnement d'un clic,
             // sans ouvrir le message.
             ->withSymfonyMessage(function ($message) {

@@ -307,10 +307,18 @@ const submitVerifyCode = async (code) => {
 };
 
 const handleResendCode = async () => {
+  verificationError.value = '';
   try {
-    await userStore.resendVerificationCode(registeredEmail.value);
-  } catch {
-    // Erreur silencieuse : la modale affiche déjà un feedback générique
+    const reponse = await userStore.resendVerificationCode(registeredEmail.value);
+
+    // Le serveur repond 202 avec delivered a faux quand le relais n'a pas
+    // pris le message : le dire, plutot que de laisser attendre un code qui
+    // ne viendra pas.
+    if (reponse?.delivered === false) {
+      verificationError.value = reponse.message;
+    }
+  } catch (err) {
+    verificationError.value = err.message || "Le code n'a pas pu être renvoyé.";
   }
 };
 </script>

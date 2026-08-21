@@ -78,8 +78,16 @@ function ouvrir() {
 async function renvoyer() {
   erreur.value = '';
   try {
-    await userStore.resendVerificationCode(userStore.user.email);
-    notify.success('Un nouveau code vient de partir.');
+    const reponse = await userStore.resendVerificationCode(userStore.user.email);
+
+    // Le serveur repond 202 avec delivered a faux quand le relais n'a pas
+    // pris le message. Annoncer un envoi dans ce cas laisse quelqu'un
+    // attendre un code qui ne viendra jamais.
+    if (reponse?.delivered === false) {
+      erreur.value = reponse.message;
+    } else {
+      notify.success('Un nouveau code vient de partir.');
+    }
   } catch (err) {
     erreur.value = apiErrorMessage(err, "Le code n'a pas pu être renvoyé.");
   }

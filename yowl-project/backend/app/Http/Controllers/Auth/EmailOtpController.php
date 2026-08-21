@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Mail\EmailVerificationCode;
 use App\Models\User;
+use App\Support\MailDelivery;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
@@ -28,8 +30,32 @@ class EmailOtpController extends Controller
         $user->email_verification_code = $code;
         $user->email_verification_expires_at = now()->addMinutes(15);
         $user->save();
-        Mail::to($user->email)->send(new \App\Mail\EmailVerificationCode($code));
-        return response()->json(['success' => true, 'message' => 'Code envoyé']);
+
+        // L'envoi passe par le filet, comme à l'inscription.
+        //
+        // Sans lui, un relais qui refuse le message faisait sortir la requête
+        // en 500, et la réponse annonçait « Code envoyé » dans tous les autres
+        // cas, y compris quand rien n'était parti. Le code enregistré juste
+        // au-dessus donnait en plus l'impression que tout s'était bien passé.
+        $remis = MailDelivery::attempt(
+            fn () => Mail::to($user->email)->send(new EmailVerificationCode($code)),
+            ['action' => 'renvoi du code de verification', 'user' => $user->id],
+        );
+
+        if (! $remis) {
+            return response()->json([
+                'success' => true,
+                'delivered' => false,
+                'message' => "Le code n'a pas pu être envoyé. Réessayez dans quelques minutes, "
+                    ."ou vérifiez vos indésirables si un code précédent vous est parvenu.",
+            ], 202);
+        }
+
+        return response()->json([
+            'success' => true,
+            'delivered' => true,
+            'message' => 'Code envoyé.',
+        ]);
     }
     public function verify(Request $request)
     {

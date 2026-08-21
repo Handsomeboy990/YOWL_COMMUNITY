@@ -23,6 +23,7 @@ class CampaignMessage extends Mailable
     {
         return $this->subject($this->subjectLine)
             ->view('emails.campaign')
+            ->text('emails.campaign-texte')
             // Le desabonnement d'un clic, sans ouvrir le message. Sans cet
             // en-tete, les clients serieux classent l'envoi en indesirable.
             ->withSymfonyMessage(function ($message) {
