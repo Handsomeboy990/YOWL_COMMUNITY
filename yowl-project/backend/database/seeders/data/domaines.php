@@ -19,6 +19,7 @@ return [
     'domaines' => [
         'jeuxvideo' => [
             'label' => 'Jeux vidéo',
+            'image' => 'videogame',
             'tags' => [
                 'jeuxvideo',
                 'gaming',
@@ -59,6 +60,7 @@ return [
         ],
         'assassinscreed' => [
             'label' => 'Assassin\'s Creed',
+            'image' => 'rooftop',
             'tags' => [
                 'assassinscreed',
                 'ubisoft',
@@ -91,6 +93,7 @@ return [
         ],
         'films' => [
             'label' => 'Films',
+            'image' => 'movie',
             'tags' => [
                 'film',
                 'cinema',
@@ -126,6 +129,7 @@ return [
         ],
         'cinema' => [
             'label' => 'Cinéma',
+            'image' => 'theater',
             'tags' => [
                 'cinema',
                 'salleobscure',
@@ -155,6 +159,7 @@ return [
         ],
         'anime' => [
             'label' => 'Animé',
+            'image' => 'anime',
             'tags' => [
                 'anime',
                 'japanime',
@@ -190,6 +195,7 @@ return [
         ],
         'mangas' => [
             'label' => 'Mangas',
+            'image' => 'manga',
             'tags' => [
                 'manga',
                 'lecture',
@@ -224,6 +230,7 @@ return [
         ],
         'comics' => [
             'label' => 'Comics',
+            'image' => 'comics',
             'tags' => [
                 'comics',
                 'bd',
@@ -255,6 +262,7 @@ return [
         ],
         'dc' => [
             'label' => 'DC',
+            'image' => 'superhero',
             'tags' => [
                 'dc',
                 'superheros',
@@ -283,6 +291,7 @@ return [
         ],
         'batman' => [
             'label' => 'Batman',
+            'image' => 'batman',
             'tags' => [
                 'batman',
                 'gotham',
@@ -311,6 +320,7 @@ return [
         ],
         'joker' => [
             'label' => 'Joker',
+            'image' => 'clown',
             'tags' => [
                 'joker',
                 'gotham',
@@ -337,6 +347,7 @@ return [
         ],
         'superman' => [
             'label' => 'Superman',
+            'image' => 'superhero',
             'tags' => [
                 'superman',
                 'krypton',
@@ -363,6 +374,7 @@ return [
         ],
         'harleyquinn' => [
             'label' => 'Harley Quinn',
+            'image' => 'cosplay',
             'tags' => [
                 'harleyquinn',
                 'dc',
@@ -389,6 +401,7 @@ return [
         ],
         'punisher' => [
             'label' => 'Punisher',
+            'image' => 'skull',
             'tags' => [
                 'punisher',
                 'marvel',
@@ -414,6 +427,7 @@ return [
         ],
         'daredevil' => [
             'label' => 'Daredevil',
+            'image' => 'superhero',
             'tags' => [
                 'daredevil',
                 'marvel',
@@ -440,6 +454,7 @@ return [
         ],
         'comicon' => [
             'label' => 'Conventions',
+            'image' => 'cosplay',
             'tags' => [
                 'comicon',
                 'convention',
@@ -467,6 +482,7 @@ return [
         ],
         'acteurs' => [
             'label' => 'Acteurs',
+            'image' => 'actor',
             'tags' => [
                 'acteur',
                 'jeu',
@@ -496,6 +512,7 @@ return [
         ],
         'musique' => [
             'label' => 'Musique',
+            'image' => 'music',
             'tags' => [
                 'musique',
                 'album',
@@ -527,6 +544,7 @@ return [
         ],
         'celinedion' => [
             'label' => 'Céline Dion',
+            'image' => 'concert',
             'tags' => [
                 'celinedion',
                 'chanson',
@@ -554,6 +572,7 @@ return [
         ],
         'cuisine' => [
             'label' => 'Cuisine',
+            'image' => 'cooking',
             'tags' => [
                 'cuisine',
                 'recette',
@@ -586,6 +605,7 @@ return [
         ],
         'nature' => [
             'label' => 'Nature',
+            'image' => 'nature',
             'tags' => [
                 'nature',
                 'faune',
@@ -617,6 +637,7 @@ return [
         ],
         'randonnee' => [
             'label' => 'Randonnée',
+            'image' => 'hiking',
             'tags' => [
                 'randonnee',
                 'montagne',
@@ -648,6 +669,7 @@ return [
         ],
         'sport' => [
             'label' => 'Sport',
+            'image' => 'football',
             'tags' => [
                 'sport',
                 'entrainement',
@@ -678,6 +700,7 @@ return [
         ],
         'devweb' => [
             'label' => 'Développement web',
+            'image' => 'programming',
             'tags' => [
                 'devweb',
                 'code',
@@ -713,6 +736,7 @@ return [
         ],
         'lecture' => [
             'label' => 'Lecture',
+            'image' => 'books',
             'tags' => [
                 'lecture',
                 'roman',
@@ -745,6 +769,7 @@ return [
         ],
         'poesie' => [
             'label' => 'Poésie',
+            'image' => 'poetry',
             'tags' => [
                 'poesie',
                 'vers',
@@ -774,6 +799,7 @@ return [
         ],
         'scalde' => [
             'label' => 'Scaldes et poésie nordique',
+            'image' => 'viking',
             'tags' => [
                 'scalde',
                 'norrois',
@@ -802,6 +828,7 @@ return [
         ],
         'joute' => [
             'label' => 'Joutes verbales',
+            'image' => 'debate',
             'tags' => [
                 'joute',
                 'rhetorique',
@@ -829,6 +856,7 @@ return [
         ],
         'romance' => [
             'label' => 'Romance',
+            'image' => 'romance',
             'tags' => [
                 'romance',
                 'sentiments',
@@ -857,6 +885,7 @@ return [
         ],
         'motsdamour' => [
             'label' => 'Mots d\'amour',
+            'image' => 'love',
             'tags' => [
                 'motsdamour',
                 'lettres',
@@ -884,6 +913,7 @@ return [
         ],
         'destin' => [
             'label' => 'Destin et hasard',
+            'image' => 'sunset',
             'tags' => [
                 'destin',
                 'hasard',
@@ -911,6 +941,7 @@ return [
         ],
         'culture' => [
             'label' => 'Culture',
+            'image' => 'museum',
             'tags' => [
                 'culture',
                 'expo',
@@ -941,6 +972,7 @@ return [
         ],
         'intello' => [
             'label' => 'Idées',
+            'image' => 'library',
             'tags' => [
                 'idees',
                 'essai',
@@ -969,6 +1001,7 @@ return [
         ],
         'travail' => [
             'label' => 'Travail',
+            'image' => 'office',
             'tags' => [
                 'travail',
                 'metier',
@@ -997,6 +1030,7 @@ return [
         ],
         'series' => [
             'label' => 'Séries',
+            'image' => 'television',
             'tags' => [
                 'serie',
                 'saison',
@@ -1027,6 +1061,7 @@ return [
         ],
         'photo' => [
             'label' => 'Photographie',
+            'image' => 'photography',
             'tags' => [
                 'photo',
                 'lumiere',
@@ -1055,6 +1090,7 @@ return [
         ],
         'voyage' => [
             'label' => 'Voyage',
+            'image' => 'travel',
             'tags' => [
                 'voyage',
                 'ailleurs',
@@ -1082,6 +1118,7 @@ return [
         ],
         'science' => [
             'label' => 'Sciences',
+            'image' => 'science',
             'tags' => [
                 'science',
                 'recherche',
@@ -1111,6 +1148,7 @@ return [
         ],
         'techno' => [
             'label' => 'Technologie',
+            'image' => 'technology',
             'tags' => [
                 'tech',
                 'materiel',
@@ -1139,6 +1177,7 @@ return [
         ],
         'humour' => [
             'label' => 'Humour',
+            'image' => 'comedy',
             'tags' => [
                 'humour',
                 'rire',
@@ -1166,6 +1205,7 @@ return [
         ],
         'ecologie' => [
             'label' => 'Écologie',
+            'image' => 'forest',
             'tags' => [
                 'ecologie',
                 'climat',

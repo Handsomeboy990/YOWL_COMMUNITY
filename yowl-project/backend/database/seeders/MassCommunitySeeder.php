@@ -50,7 +50,15 @@ class MassCommunitySeeder extends Seeder
      * et une limitation de débit bien avant la fin. Un fonds partagé donne le
      * même résultat visuel pour un coût fixe.
      */
-    private const FONDS_ILLUSTRATIONS = 90;
+    /**
+     * Illustrations téléchargées par domaine, et non pour tout le site.
+     *
+     * Un fonds commun tiré au hasard donnait des photos sans rapport avec ce
+     * qu'elles illustraient : un avis sur un match sous une image de plage.
+     * Chaque domaine porte désormais son mot-clé, et ses avis puisent dans
+     * son propre fonds.
+     */
+    private const FONDS_PAR_DOMAINE = 5;
     private const FONDS_AVATARS = 120;
 
     private array $catalogue;
@@ -252,15 +260,19 @@ class MassCommunitySeeder extends Seeder
     {
         $this->command?->info('Téléchargement du fonds d\'images...');
         $barre = $this->command?->getOutput()->createProgressBar(
-            self::FONDS_ILLUSTRATIONS + self::FONDS_AVATARS
+            count($this->catalogue['domaines']) * self::FONDS_PAR_DOMAINE + self::FONDS_AVATARS
         );
 
-        for ($i = 0; $i < self::FONDS_ILLUSTRATIONS; $i++) {
-            $chemin = SeedImage::illustration('yowl-illu-'.$i);
-            if ($chemin) {
-                $this->illustrations[] = $chemin;
+        foreach ($this->catalogue['domaines'] as $cle => $domaine) {
+            $motCle = $domaine['image'] ?? null;
+
+            for ($i = 0; $i < self::FONDS_PAR_DOMAINE; $i++) {
+                $chemin = SeedImage::illustration('yowl-illu-'.$cle.'-'.$i, $motCle);
+                if ($chemin) {
+                    $this->illustrations[$cle][] = $chemin;
+                }
+                $barre?->advance();
             }
-            $barre?->advance();
         }
 
         for ($i = 0; $i < self::FONDS_AVATARS; $i++) {
@@ -274,7 +286,8 @@ class MassCommunitySeeder extends Seeder
         $barre?->finish();
         $this->command?->newLine(2);
         $this->command?->line(
-            '  '.count($this->illustrations).' illustrations, '
+            '  '.array_sum(array_map('count', $this->illustrations)).' illustrations sur '
+            .count($this->illustrations).' domaines, '
             .count($this->avatars).' avatars'
         );
     }
@@ -471,11 +484,15 @@ class MassCommunitySeeder extends Seeder
                 $publieLe = now()->subDays($age)->subMinutes(mt_rand(0, 1439));
 
                 $vues = (int) round(mt_rand(3, 900) * (1 + $age / 120));
+                // Les images viennent du fonds de ce domaine, jamais d'un
+                // fonds commun : c'est ce qui fait qu'elles parlent du sujet.
                 $medias = [];
-                if ($this->illustrations && mt_rand(1, 100) <= 45) {
-                    $combien = mt_rand(1, 3);
-                    for ($m = 0; $m < $combien; $m++) {
-                        $medias[] = $this->illustrations[array_rand($this->illustrations)];
+                $fonds = $this->illustrations[$cle] ?? [];
+                if ($fonds && mt_rand(1, 100) <= 45) {
+                    $combien = min(mt_rand(1, 3), count($fonds));
+                    $choisies = (array) array_rand($fonds, $combien);
+                    foreach ($choisies as $index) {
+                        $medias[] = $fonds[$index];
                     }
                 }
 

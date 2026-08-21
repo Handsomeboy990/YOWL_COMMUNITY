@@ -23,6 +23,20 @@ class SeedImage
 {
     private const SOURCE = 'https://picsum.photos/seed/%s/1200/800';
 
+    /**
+     * Source acceptant un mot-clé, pour que la photo parle du sujet.
+     *
+     * picsum.photos ne sert que des images tirées au hasard : par
+     * construction, aucune ne peut correspondre à un avis. Un avis sur un
+     * match de football illustré par une plage se lit comme une erreur, et
+     * c'était le cas de tout le fil.
+     *
+     * Ce service-ci répond parfois 500 sur un mot-clé qu'il ne sait pas
+     * satisfaire, d'où la reprise puis le repli sur une image quelconque :
+     * mieux vaut une photo hors sujet que pas de photo du tout.
+     */
+    private const SOURCE_THEMATIQUE = 'https://loremflickr.com/1200/800/%s';
+
     private const AVATAR_SOURCE = 'https://i.pravatar.cc/400?u=%s';
 
     private const TIMEOUT = 20;
@@ -33,9 +47,25 @@ class SeedImage
      * Returns null when the image cannot be obtained, so the caller publishes
      * without one rather than storing a path pointing at nothing.
      */
-    public static function illustration(string $seed): ?string
+    /**
+     * @param  string|null  $motCle  sujet de la photo, en anglais
+     */
+    public static function illustration(string $seed, ?string $motCle = null): ?string
     {
-        return self::fetch('seed/'.$seed.'.jpg', sprintf(self::SOURCE, 'yowl-'.$seed));
+        $chemin = 'seed/'.$seed.'.jpg';
+
+        if ($motCle) {
+            // Deux tentatives sur le service thématique : il refuse
+            // épisodiquement un mot-clé qu'il sert pourtant le coup d'après.
+            foreach ([1, 2] as $ignore) {
+                $obtenue = self::fetch($chemin, sprintf(self::SOURCE_THEMATIQUE, rawurlencode($motCle)));
+                if ($obtenue !== null) {
+                    return $obtenue;
+                }
+            }
+        }
+
+        return self::fetch($chemin, sprintf(self::SOURCE, 'yowl-'.$seed));
     }
 
     public static function avatar(string $seed): ?string
