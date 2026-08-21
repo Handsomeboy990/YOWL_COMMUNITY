@@ -206,11 +206,28 @@ export const useUserStore = defineStore('user', {
       localStorage.removeItem(REMEMBER_KEY);
     },
 
-    async leaveCommunity() {
+    /**
+     * Supprimer son compte.
+     *
+     * Le serveur exige le mot de passe et la phrase de confirmation : une
+     * garantie qui ne tiendrait qu'à l'interface n'en serait pas une, la
+     * route s'appelle directement.
+     *
+     * @param {{password: string, confirmation: string}} preuves
+     */
+    async leaveCommunity(preuves) {
       try {
-        await api.delete(`/users/${this.user.id}`);
+        await api.delete(`/users/${this.user.id}`, { data: preuves });
       } catch (err) {
-        throw new Error('Failed to delete account');
+        const donnees = err.response?.data;
+        const erreur = new Error(
+          donnees?.message
+            ?? (err.response
+              ? "La suppression n'a pas abouti."
+              : 'Le service ne répond pas. Vérifiez votre connexion, puis réessayez.')
+        );
+        erreur.code = donnees?.code ?? null;
+        throw erreur;
       }
       this.user = null;
       this.token = null;

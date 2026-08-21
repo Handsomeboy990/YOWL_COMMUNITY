@@ -10,6 +10,7 @@ use Illuminate\Validation\Rules;
 use App\Mail\EmailVerificationCode;
 use App\Models\Comment;
 use App\Models\User;
+use App\Support\Settings;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Exception;
@@ -124,6 +125,48 @@ class UserController extends Controller
                 'success' => false,
                 'message' => 'Action non autorisée',
             ], 403);
+        }
+
+        // Deux preuves d'intention avant d'effacer, et pas une seule.
+        //
+        // Un dialogue à deux boutons se clique par réflexe. Le mot de passe
+        // prouve que la personne devant l'écran est bien la titulaire du
+        // compte, et non quelqu'un passé devant une session restée ouverte.
+        // La phrase à recopier, elle, ne se clique pas : elle oblige à lire
+        // ce qu'on est en train de faire.
+        //
+        // Le contrôle vit ici et pas seulement dans le navigateur : une
+        // confirmation qui ne tient qu'à l'interface n'en est pas une, la
+        // route s'appelle directement.
+        $donnees = $request->validate([
+            'password' => ['required', 'string'],
+            'confirmation' => ['required', 'string'],
+        ]);
+
+        $phrase = 'Oui, je veux quitter la communauté '.Settings::get('community.name', 'YOWL');
+
+        if (mb_strtolower(trim($donnees['confirmation'])) !== mb_strtolower($phrase)) {
+            return response()->json([
+                'success' => false,
+                'code' => 'phrase_incorrecte',
+                'message' => 'La phrase saisie ne correspond pas. Recopiez-la exactement : « '.$phrase.' ».',
+            ], 422);
+        }
+
+        try {
+            $motDePasseValide = Hash::check($donnees['password'], $user->password);
+        } catch (\RuntimeException) {
+            // Hachage illisible, comme pour un compte créé hors de Laravel :
+            // on refuse plutôt que de laisser l'exception sortir en 500.
+            $motDePasseValide = false;
+        }
+
+        if (! $motDePasseValide) {
+            return response()->json([
+                'success' => false,
+                'code' => 'mot_de_passe_incorrect',
+                'message' => 'Ce mot de passe ne correspond pas à votre compte.',
+            ], 422);
         }
 
         // La suppression se faisait par un simple is_active a false : l'adresse,

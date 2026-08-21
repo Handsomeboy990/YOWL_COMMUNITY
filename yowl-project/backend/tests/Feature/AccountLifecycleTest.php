@@ -10,6 +10,10 @@ use Tests\TestCase;
 
 class AccountLifecycleTest extends TestCase
 {
+    // La suppression exige desormais deux preuves d'intention : le mot de
+    // passe courant, et une phrase recopiee. Voir AccountDeletionTest, qui
+    // couvre le refus quand l'une des deux manque.
+
     use RefreshDatabase;
 
     public function test_changing_the_email_drops_the_verification(): void
@@ -57,7 +61,10 @@ class AccountLifecycleTest extends TestCase
         $review = Review::factory()->create(['user_id' => $user->id]);
 
         $this->actingAs($user, 'sanctum')
-            ->deleteJson('/api/users/'.$user->id)
+            ->deleteJson('/api/users/'.$user->id, [
+                'password' => 'password',
+                'confirmation' => 'Oui, je veux quitter la communauté '.\App\Support\Settings::get('community.name', 'YOWL'),
+            ])
             ->assertStatus(200);
 
         $user->refresh();
@@ -77,7 +84,12 @@ class AccountLifecycleTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $this->actingAs($user, 'sanctum')->deleteJson('/api/users/'.$user->id)->assertStatus(200);
+        $this->actingAs($user, 'sanctum')
+            ->deleteJson('/api/users/'.$user->id, [
+                'password' => 'password',
+                'confirmation' => 'Oui, je veux quitter la communauté '.\App\Support\Settings::get('community.name', 'YOWL'),
+            ])
+            ->assertStatus(200);
 
         // actingAs laisse le garde authentifie pour la suite du test, et la
         // route de connexion est reservee aux visiteurs.
@@ -96,7 +108,12 @@ class AccountLifecycleTest extends TestCase
 
         $before = $this->getJson('/api/kpi')->json('data.nbUsers');
 
-        $this->actingAs($leaving, 'sanctum')->deleteJson('/api/users/'.$leaving->id)->assertStatus(200);
+        $this->actingAs($leaving, 'sanctum')
+            ->deleteJson('/api/users/'.$leaving->id, [
+                'password' => 'password',
+                'confirmation' => 'Oui, je veux quitter la communauté '.\App\Support\Settings::get('community.name', 'YOWL'),
+            ])
+            ->assertStatus(200);
         $this->flushCache();
 
         $after = $this->getJson('/api/kpi')->json('data.nbUsers');
