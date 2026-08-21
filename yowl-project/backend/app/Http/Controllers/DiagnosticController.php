@@ -41,13 +41,7 @@ class DiagnosticController extends Controller
                 'base_de_donnees' => $this->baseDeDonnees(),
                 'cache' => $this->cache(),
                 'sessions' => $this->sessions(),
-                'email' => [
-                    'pilote' => config('mail.default'),
-                    'hote' => config('mail.default') === 'smtp'
-                        ? (config('mail.mailers.smtp.host') ?: 'NON RENSEIGNE')
-                        : null,
-                    'expediteur' => config('mail.from.address'),
-                ],
+                'email' => $this->email(),
                 'diffusion' => config('broadcasting.default'),
                 'medias' => [
                     'disque' => config('filesystems.media'),
@@ -62,6 +56,70 @@ class DiagnosticController extends Controller
     /**
      * The single most useful line: which engine, and does it hold anything.
      */
+    /**
+     * L'état de l'envoi d'email, jusqu'à la joignabilité du relais.
+     *
+     * Le test de connexion est ce qui distingue deux pannes qui se
+     * ressemblent : des identifiants refusés, et un port sortant filtré par
+     * l'hébergeur. Dans le second cas, aucun fournisseur SMTP ne marchera
+     * jamais, quel qu'il soit, et il faut passer par une API en HTTPS. Sans
+     * cette mesure, on change de fournisseur en boucle sans rien résoudre.
+     *
+     * Aucun identifiant n'est renvoyé, seulement ce qui est nécessaire pour
+     * décider quoi faire.
+     */
+    private function email(): array
+    {
+        $pilote = config('mail.default');
+
+        $etat = [
+            'pilote' => $pilote,
+            'expediteur' => config('mail.from.address') ?: 'NON RENSEIGNE',
+        ];
+
+        if ($pilote !== 'smtp') {
+            return $etat;
+        }
+
+        $hote = (string) config('mail.mailers.smtp.host');
+        $port = (int) config('mail.mailers.smtp.port');
+
+        $etat['hote'] = $hote ?: 'NON RENSEIGNE';
+        $etat['port'] = $port ?: null;
+        $etat['identifiant'] = config('mail.mailers.smtp.username') ? 'renseigne' : 'ABSENT';
+        $etat['mot_de_passe'] = config('mail.mailers.smtp.password') ? 'renseigne' : 'ABSENT';
+        $etat['delai'] = config('mail.mailers.smtp.timeout');
+
+        if (! $hote || ! $port) {
+            return $etat;
+        }
+
+        // Cinq secondes : on cherche à savoir si la porte s'ouvre, pas à
+        // dialoguer. Un port filtré ne répond ni oui ni non, il absorbe, et
+        // c'est le délai qui tranche.
+        $debut = microtime(true);
+        $flux = @fsockopen($hote, $port, $numero, $texte, 5);
+        $duree = round((microtime(true) - $debut) * 1000);
+
+        if ($flux) {
+            fclose($flux);
+            $etat['relais_joignable'] = true;
+            $etat['relais_delai_ms'] = $duree;
+
+            return $etat;
+        }
+
+        $etat['relais_joignable'] = false;
+        $etat['relais_delai_ms'] = $duree;
+        $etat['relais_erreur'] = $texte ?: 'aucune reponse';
+        $etat['lecture'] = $duree >= 4500
+            ? "Le port ne repond pas du tout : il est probablement filtre par l'hebergeur. "
+                .'Aucun fournisseur SMTP ne fonctionnera, il faut une API en HTTPS.'
+            : "La connexion est refusee : hote ou port errone, ou service indisponible.";
+
+        return $etat;
+    }
+
     private function baseDeDonnees(): array
     {
         $connexion = config('database.default');
