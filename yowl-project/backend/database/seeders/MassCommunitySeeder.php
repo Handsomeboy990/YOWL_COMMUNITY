@@ -27,6 +27,15 @@ class MassCommunitySeeder extends Seeder
     /** Mot de passe commun à tous les comptes de démonstration. */
     private const MOT_DE_PASSE = 'Password@990';
 
+    /**
+     * Domaine des adresses posees par ce seed.
+     *
+     * Il sert a deux choses qui doivent designer le meme ensemble, sous peine
+     * d'effacer autre chose que ce qui a ete pose : reconnaitre qu'un jeu de
+     * donnees est deja en base, et le retirer.
+     */
+    private const DOMAINE_SEED = 'yowl.test';
+
     /** Nombre de membres à créer. */
     private const MEMBRES = 1500;
 
@@ -54,6 +63,10 @@ class MassCommunitySeeder extends Seeder
 
         $this->command?->warn('Ce seed écrit beaucoup de données. Comptez plusieurs minutes.');
 
+        if (! $this->laBaseEstPrete()) {
+            return;
+        }
+
         $this->preparerRoles();
         $this->telechargerLeFonds();
 
@@ -75,6 +88,94 @@ class MassCommunitySeeder extends Seeder
     // -------------------------------------------------------------------------
     // Préparation
     // -------------------------------------------------------------------------
+
+    /**
+     * Refuse d'écrire par-dessus un jeu de données déjà posé.
+     *
+     * Les pseudos sont dérivés du rang de chaque membre, donc une seconde
+     * exécution régénère exactement les mêmes adresses et bute sur la
+     * contrainte d'unicité, à mi-parcours, après avoir déjà téléchargé le
+     * fonds d'images. C'est ce qui arrive quand une première exécution a été
+     * interrompue : la base garde ses membres, et rien ne le signale avant
+     * l'erreur SQL.
+     *
+     * Le refus est le comportement par défaut plutôt que la purge : effacer
+     * quinze cents comptes et leurs contenus ne se décide pas à la place de
+     * la personne qui lance la commande.
+     */
+    private function laBaseEstPrete(): bool
+    {
+        $dejaPose = User::where('email', 'like', '%@'.self::DOMAINE_SEED)->count();
+
+        if ($dejaPose === 0) {
+            return true;
+        }
+
+        if (! self::purgeDemandee()) {
+            $this->command?->newLine();
+            $this->command?->error('La base contient déjà '.$dejaPose.' comptes de démonstration.');
+            $this->command?->newLine();
+            $this->command?->line('  Rejouer ce seed écrirait les mêmes adresses et échouerait sur');
+            $this->command?->line('  la contrainte d\'unicité, à mi-parcours.');
+            $this->command?->newLine();
+            $this->command?->line('  Pour repartir d\'un jeu propre, retirer le précédent puis rejouer :');
+            $this->command?->line('    YOWL_SEED_FRESH=1 php artisan db:seed --class=MassCommunitySeeder --force');
+            $this->command?->newLine();
+            $this->command?->line('  Seuls les comptes en @'.self::DOMAINE_SEED.' et leurs contenus sont');
+            $this->command?->line('  retirés. Les comptes réels, les réglages et les pages du site');
+            $this->command?->line('  ne sont pas touchés.');
+            $this->command?->newLine();
+            $this->command?->line('  Si une exécution s\'est arrêtée pendant le calcul des scores, il');
+            $this->command?->line('  n\'y a rien à reprendre : php artisan yowl:refresh-scores suffit.');
+            $this->command?->newLine();
+
+            return false;
+        }
+
+        $this->purgerLeSeedPrecedent($dejaPose);
+
+        return true;
+    }
+
+    /**
+     * La purge se demande par variable d'environnement.
+     *
+     * db:seed ne transmet pas d'option libre au seeder, et une constante à
+     * éditer dans le fichier se retrouve tôt ou tard commitée à vrai.
+     */
+    private static function purgeDemandee(): bool
+    {
+        return filter_var(env('YOWL_SEED_FRESH', false), FILTER_VALIDATE_BOOLEAN);
+    }
+
+    /**
+     * Retire le jeu de données précédent, et lui seul.
+     *
+     * Les avis, commentaires, réactions, abonnements, enregistrements et
+     * signalements partent en cascade avec leur auteur. Les suggestions, elles,
+     * sont rattachées par une clé nullable : sans suppression explicite elles
+     * survivraient à leur auteur, orphelines et impossibles à distinguer
+     * ensuite d'une vraie suggestion.
+     *
+     * Les tags restent : ils sont partagés avec le reste du site.
+     */
+    private function purgerLeSeedPrecedent(int $total): void
+    {
+        $this->command?->info('Retrait du jeu de données précédent ('.$total.' comptes)...');
+        $barre = $this->command?->getOutput()->createProgressBar($total);
+
+        User::where('email', 'like', '%@'.self::DOMAINE_SEED)
+            ->select('id')
+            ->chunkById(200, function ($lot) use ($barre) {
+                $ids = $lot->pluck('id');
+                DB::table('suggestions')->whereIn('user_id', $ids)->delete();
+                User::whereIn('id', $ids)->delete();
+                $barre?->advance($ids->count());
+            });
+
+        $barre?->finish();
+        $this->command?->newLine(2);
+    }
 
     private function preparerRoles(): void
     {
@@ -170,7 +271,11 @@ class MassCommunitySeeder extends Seeder
         $cles = array_keys($this->catalogue['domaines']);
         $hachage = Hash::make(self::MOT_DE_PASSE);
         $membres = [];
-        $pris = [];
+
+        // Les pseudos deja en base entrent dans l'ensemble : un membre reel
+        // peut avoir pris l'un de ceux que ce seed genere, et la collision ne
+        // se verrait qu'a l'insertion.
+        $pris = User::pluck('username')->flip()->all();
 
         for ($i = 0; $i < self::MEMBRES; $i++) {
             $domaine = $cles[$i % count($cles)];
@@ -240,7 +345,11 @@ class MassCommunitySeeder extends Seeder
 
     private function pseudoUnique(string $fragment, string $prenom, array $pris): string
     {
-        $base = Str::slug($fragment.'-'.$prenom, '_');
+        // La coupe vient avant la boucle, pas apres : appliquee au retour, elle
+        // ramene deux pseudos distincts a la meme valeur et defait le travail
+        // de la boucle sans que rien ne le signale. La base est raccourcie
+        // assez pour qu'un suffixe a quatre chiffres tienne encore.
+        $base = Str::limit(Str::slug($fragment.'-'.$prenom, '_'), 24, '');
         $pseudo = $base;
         $suffixe = 2;
 
@@ -249,7 +358,7 @@ class MassCommunitySeeder extends Seeder
             $suffixe++;
         }
 
-        return Str::limit($pseudo, 28, '');
+        return $pseudo;
     }
     // -------------------------------------------------------------------------
     // Les avis
