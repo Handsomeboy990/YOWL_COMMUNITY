@@ -29,15 +29,30 @@ class DatabaseConfigTest extends TestCase
         $methode->invoke($provider);
     }
 
-    public function test_production_refuses_to_boot_on_sqlite(): void
+    public function test_production_on_sqlite_is_reported_as_critical(): void
     {
+        \Illuminate\Support\Facades\Log::spy();
         app()->detectEnvironment(fn () => 'production');
         config(['database.default' => 'sqlite']);
 
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessageMatches('/DB_CONNECTION/');
+        $this->rejouerLaGarde();
+
+        \Illuminate\Support\Facades\Log::shouldHaveReceived('critical')->once();
+    }
+
+    public function test_the_guard_never_throws(): void
+    {
+        // Une première version levait une exception, ce qui tuait
+        // composer install : package:discover lance artisan sur un dépôt
+        // fraîchement cloné, où APP_ENV vaut production par défaut et
+        // DB_CONNECTION vaut sqlite. Le refus vit désormais dans
+        // l'entrypoint, qui ne tourne qu'au démarrage d'un conteneur.
+        \Illuminate\Support\Facades\Log::spy();
+        app()->detectEnvironment(fn () => 'production');
+        config(['database.default' => 'sqlite']);
 
         $this->rejouerLaGarde();
+        $this->assertTrue(true, 'Aucune exception ne doit sortir de la garde.');
     }
 
     public function test_production_is_happy_with_a_real_engine(): void
@@ -63,15 +78,19 @@ class DatabaseConfigTest extends TestCase
         app()->detectEnvironment(fn () => 'production');
         config(['database.default' => 'sqlite']);
 
-        try {
-            $this->rejouerLaGarde();
-            $this->fail('Une exception était attendue.');
-        } catch (\RuntimeException $exception) {
-            // Un message qui ne dit pas quoi faire ne vaut pas mieux que
-            // « Server Error ».
-            foreach (['DB_CONNECTION=pgsql', 'DB_HOST', 'PGHOST'] as $indice) {
-                $this->assertStringContainsString($indice, $exception->getMessage());
-            }
+        $capture = null;
+        \Illuminate\Support\Facades\Log::shouldReceive('critical')
+            ->once()
+            ->andReturnUsing(function ($message) use (&$capture) {
+                $capture = $message;
+            });
+
+        $this->rejouerLaGarde();
+
+        // Un message qui ne dit pas quoi faire ne vaut pas mieux que
+        // « Server Error ».
+        foreach (['DB_CONNECTION=pgsql', 'DB_HOST', 'PGHOST'] as $indice) {
+            $this->assertStringContainsString($indice, $capture);
         }
     }
 }

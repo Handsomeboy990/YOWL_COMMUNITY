@@ -1,3 +1,8 @@
 .claude/
 CLAUDE.md
 .playwright/
+# Scripts jetables de diagnostic, ecrits dans le dossier du frontend pour
+# atteindre ses dependances. L'un d'eux est deja parti dans un commit.
+yowl-project/frontend/yowl-frontend/*-temp.mjs
+yowl-project/frontend/yowl-frontend/ex.mjs
+yowl-project/frontend/yowl-frontend/diag.mjs

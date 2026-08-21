@@ -36,8 +36,14 @@ class AppServiceProvider extends ServiceProvider
      * console stays empty. Nothing says so: the application looks healthy
      * right up to the next restart.
      *
-     * Failing the boot turns silent data loss into an obvious, self-explaining
-     * crash. That is the better of the two.
+     * This one only writes to the log. A first version threw, which killed
+     * composer install: package:discover runs artisan on a fresh checkout,
+     * where no .env exists, APP_ENV defaults to production and DB_CONNECTION
+     * defaults to sqlite. Every clone and every CI run broke on a guard meant
+     * for deployments.
+     *
+     * The refusal belongs where the intent is unambiguous, at container start,
+     * and lives in docker/entrypoint.sh.
      */
     private function guardEphemeralDatabase(): void
     {
@@ -50,16 +56,14 @@ class AppServiceProvider extends ServiceProvider
             return;
         }
 
-        $message = 'DB_CONNECTION vaut sqlite en production. '
+        Log::critical(
+            'DB_CONNECTION vaut sqlite en production. '
             .'Un fichier SQLite vit dans le conteneur et disparaît avec lui : '
             .'les migrations repartent de zéro à chaque redémarrage et la base '
             .'managée reste vide. Renseigne DB_CONNECTION=pgsql, DB_HOST, '
             .'DB_PORT, DB_DATABASE, DB_USERNAME et DB_PASSWORD. Les variables '
-            .'PGHOST, PGDATABASE, PGUSER et PGPASSWORD sont acceptées en repli.';
-
-        Log::critical($message);
-
-        throw new \RuntimeException($message);
+            .'PGHOST, PGDATABASE, PGUSER et PGPASSWORD sont acceptées en repli.'
+        );
     }
 
     /**

@@ -30,6 +30,29 @@ else
     CONNEXION_MIGRATION="${DB_CONNECTION:-sqlite}"
 fi
 
+# Une base ephemere en production est un piege silencieux : le conteneur ecrit
+# dans un fichier qui meurt avec lui, les migrations repartent de zero a chaque
+# redemarrage, et la base managee reste vide sans que rien ne le signale.
+#
+# Le refus vit ici plutot que dans le code applicatif : ce script ne tourne
+# qu'au demarrage d'un conteneur, la ou l'intention ne fait aucun doute. Place
+# dans un fournisseur de services, il tuait aussi composer install, car
+# package:discover lance artisan sur un depot fraichement clone.
+if [ "${APP_ENV:-}" = "production" ] && [ "$CONNEXION_MIGRATION" = "sqlite" ]; then
+    echo "-----------------------------------------------------------------"
+    echo "ARRET : la base de donnees est SQLite en production."
+    echo ""
+    echo "Un fichier SQLite vit dans ce conteneur et disparait avec lui : les"
+    echo "migrations repartiraient de zero a chaque redemarrage et la base"
+    echo "managee resterait vide, sans que rien ne le signale."
+    echo ""
+    echo "Renseigne DB_CONNECTION=pgsql, DB_HOST, DB_PORT, DB_DATABASE,"
+    echo "DB_USERNAME et DB_PASSWORD. Les variables PGHOST, PGDATABASE,"
+    echo "PGUSER et PGPASSWORD sont acceptees en repli."
+    echo "-----------------------------------------------------------------"
+    exit 1
+fi
+
 attendre_la_base() {
     essai=1
     while [ "$essai" -le 10 ]; do
