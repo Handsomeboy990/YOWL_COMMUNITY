@@ -107,11 +107,24 @@ export const useUserStore = defineStore('user', {
 
         return result.data;
       } catch (err) {
-        throw new Error(
-          err.response && err.response.data && err.response.data.message
-            ? err.response.data.message
-            : 'Login failed'
+        // Le code accompagne le message. Il dit lequel des refus s'est
+        // produit, ce que la vue doit savoir pour ouvrir la fenêtre de
+        // vérification plutôt que d'afficher une simple erreur. Elle le
+        // déduisait jusqu'ici en comparant le texte anglais du message.
+        const donnees = err.response?.data;
+
+        const erreur = new Error(
+          donnees?.message
+            // Sans réponse du tout, c'est le réseau ou le serveur qui manque,
+            // pas les identifiants : le dire évite de chercher une faute de
+            // frappe dans un mot de passe correct.
+            ?? (err.response
+              ? 'La connexion a échoué. Réessayez dans un instant.'
+              : 'Le service ne répond pas. Vérifiez votre connexion, puis réessayez.')
         );
+        erreur.code = donnees?.code ?? (err.response ? 'erreur_serveur' : 'reseau_indisponible');
+
+        throw erreur;
       }
     },
 

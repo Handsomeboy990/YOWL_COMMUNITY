@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
 use RuntimeException;
 
 class LoginRequest extends FormRequest
@@ -48,7 +47,7 @@ class LoginRequest extends FormRequest
     /**
      * Attempt to authenticate the request's credentials.
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws \Illuminate\Http\Exceptions\HttpResponseException
      */
     public function authenticate(): void
     {
@@ -62,9 +61,7 @@ class LoginRequest extends FormRequest
         // borne s'applique a l'inscription, elle n'expulse pas un membre
         // legitime le jour de son anniversaire.
         if ($user && $user->is_active == false) {
-            throw ValidationException::withMessages([
-                'email' => 'This account has been banned.'
-            ]);
+            $this->refuser('compte_desactive', __('auth.banned'));
         }
 
         // Auth::validate() et non Auth::attempt().
@@ -104,9 +101,7 @@ class LoginRequest extends FormRequest
 
         if (! $identifiantsValides) {
             RateLimiter::hit($this->throttleKey());
-            throw ValidationException::withMessages([
-                'email' => __('auth.failed'),
-            ]);
+            $this->refuser('identifiants_invalides', __('auth.failed'));
         }
         RateLimiter::clear($this->throttleKey());
 
@@ -116,16 +111,35 @@ class LoginRequest extends FormRequest
 
         // Vérifier si le user a vérifié son compte
         if ($user->email_verified_at == null) {
-            throw ValidationException::withMessages([
-                'email' => 'This account has not been verified yet.'
-            ]);
+            $this->refuser('email_non_verifie', __('auth.unverified'));
         }
+    }
+
+    /**
+     * Refuse la connexion en nommant la cause.
+     *
+     * Le code compte autant que la phrase. Le navigateur doit distinguer un
+     * compte non vérifié, qui ouvre la fenêtre de saisie du code, d'un simple
+     * mauvais mot de passe : il le faisait jusqu'ici en comparant le texte
+     * anglais du message, si bien que traduire ce message suffisait à casser
+     * la vérification, sans erreur nulle part.
+     *
+     * La forme de la réponse reste celle d'une erreur de validation, errors
+     * compris, pour que rien de ce qui lit déjà ce format n'ait à changer.
+     */
+    private function refuser(string $code, string $message): never
+    {
+        throw new HttpResponseException(response()->json([
+            'message' => $message,
+            'errors' => ['email' => [$message]],
+            'code' => $code,
+        ], 422));
     }
 
     /**
      * Ensure the login request is not rate limited.
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws \Illuminate\Http\Exceptions\HttpResponseException
      */
     public function ensureIsNotRateLimited(): void
     {
@@ -137,12 +151,10 @@ class LoginRequest extends FormRequest
 
         $seconds = RateLimiter::availableIn($this->throttleKey());
 
-        throw ValidationException::withMessages([
-            'email' => trans('auth.throttle', [
-                'seconds' => $seconds,
-                'minutes' => ceil($seconds / 60),
-            ]),
-        ]);
+        $this->refuser('trop_de_tentatives', trans('auth.throttle', [
+            'seconds' => $seconds,
+            'minutes' => ceil($seconds / 60),
+        ]));
     }
 
     /**

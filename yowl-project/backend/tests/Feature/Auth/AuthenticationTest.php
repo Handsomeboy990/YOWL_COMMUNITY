@@ -119,4 +119,72 @@ class AuthenticationTest extends TestCase
             $reponse->assertJsonValidationErrors('email');
         }
     }
+
+    /**
+     * Chaque refus porte un code, et le navigateur s'en sert.
+     *
+     * Il distinguait jusqu'ici le compte non vérifié en comparant le texte
+     * anglais du message : traduire ce message suffisait à casser l'ouverture
+     * de la fenêtre de saisie du code, sans erreur nulle part.
+     */
+    public function test_every_refusal_carries_a_stable_code(): void
+    {
+        $verifie = User::factory()->create();
+
+        $this->postJson('/api/login', ['email' => $verifie->email, 'password' => 'faux'])
+            ->assertStatus(422)
+            ->assertJsonPath('code', 'identifiants_invalides');
+
+        $desactive = User::factory()->create(['is_active' => false]);
+        $this->postJson('/api/login', ['email' => $desactive->email, 'password' => 'password'])
+            ->assertStatus(422)
+            ->assertJsonPath('code', 'compte_desactive');
+
+        $nonVerifie = User::factory()->create(['email_verified_at' => null]);
+        $this->postJson('/api/login', ['email' => $nonVerifie->email, 'password' => 'password'])
+            ->assertStatus(422)
+            ->assertJsonPath('code', 'email_non_verifie');
+    }
+
+    /**
+     * Un refus doit dire quoi faire ensuite, sinon la personne réessaie à
+     * l'identique. Et il ne doit pas dire si l'adresse existe, sans quoi le
+     * formulaire devient un annuaire.
+     */
+    public function test_a_refusal_says_what_to_do_next_without_revealing_the_account(): void
+    {
+        $existant = User::factory()->create();
+
+        $connu = $this->postJson('/api/login', ['email' => $existant->email, 'password' => 'faux']);
+        $inconnu = $this->postJson('/api/login', ['email' => 'personne@nulle-part.fr', 'password' => 'faux']);
+
+        // Le même mot pour un compte connu et pour une adresse inventée : la
+        // différence transformerait le formulaire en annuaire.
+        $this->assertSame($connu->json('message'), $inconnu->json('message'));
+
+        $nonVerifie = User::factory()->create(['email_verified_at' => null]);
+
+        // Les deux catalogues sont vérifiés : c'est celui qui n'est pas la
+        // langue des tests qui se dégrade sans que personne le voie.
+        $attendus = [
+            'fr' => ['Mot de passe oublié', 'six chiffres'],
+            'en' => ['Forgot password', 'six digit code'],
+        ];
+
+        foreach ($attendus as $langue => [$indiceRefus, $indiceVerification]) {
+            $this->app->setLocale($langue);
+
+            $this->assertStringContainsString(
+                $indiceRefus,
+                $this->postJson('/api/login', ['email' => $existant->email, 'password' => 'faux'])->json('message'),
+                'refus en '.$langue
+            );
+
+            $this->assertStringContainsString(
+                $indiceVerification,
+                $this->postJson('/api/login', ['email' => $nonVerifie->email, 'password' => 'password'])->json('message'),
+                'compte non vérifié en '.$langue
+            );
+        }
+    }
 }

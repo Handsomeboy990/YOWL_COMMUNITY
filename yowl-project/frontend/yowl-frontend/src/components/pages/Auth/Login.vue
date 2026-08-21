@@ -174,9 +174,15 @@ const submitForm = async () => {
       router.push(route.query.redirect || '/feed');
     }
   } catch (err) {
-    errorMessage.value = err.message || 'Connexion impossible. Réessaie.';
-    if (err.message === 'This account has not been verified yet.') {
-      errorMessage.value = "Ton compte n'est pas encore vérifié. Saisis le code reçu par email.";
+    // Le message vient du serveur, qui sait ce qui s'est passé et le dit dans
+    // la langue du membre. Le code, lui, sert à décider quoi ouvrir.
+    //
+    // Cette branche testait auparavant le texte anglais du message : traduire
+    // ce message suffisait à ce que la fenêtre de saisie du code cesse de
+    // s'ouvrir, sans erreur nulle part.
+    errorMessage.value = err.message || 'La connexion a échoué. Réessayez dans un instant.';
+
+    if (err.code === 'email_non_verifie') {
       isMailModalOpen.value = true;
     }
   } finally {
