@@ -4,6 +4,7 @@ namespace Tests\Feature\Auth;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class AuthenticationTest extends TestCase
@@ -84,5 +85,38 @@ class AuthenticationTest extends TestCase
 
         $this->postJson('/api/register', ['email' => 'flood-last@example.com'])
             ->assertStatus(429);
+    }
+
+    /**
+     * Un compte créé hors de Laravel, typiquement depuis la console SQL de
+     * l'hébergeur avec pgcrypto, porte un hachage préfixé $2a$ au lieu de
+     * $2y$. Le vérificateur de Laravel lève alors une exception au lieu de
+     * répondre faux, et la connexion sortait en 500 sans rien expliquer,
+     * y compris quand le mot de passe était mauvais.
+     */
+    public function test_an_unreadable_password_hash_is_refused_not_a_server_error(): void
+    {
+        $user = User::factory()->create();
+
+        // Le même hachage bcrypt, avec l'ancien marqueur d'algorithme.
+        //
+        // L'écriture passe par le constructeur de requêtes, jamais par le
+        // modèle : le cast « hashed » appelle Hash::isHashed(), ne reconnaît
+        // pas $2a$, et re-hacherait silencieusement la valeur en $2y$. Le
+        // script SQL qui crée un compte depuis la console de l'hébergeur
+        // écrit lui aussi directement dans la table, sans ce garde-fou.
+        DB::table('users')->where('id', $user->id)->update([
+            'password' => str_replace('$2y$', '$2a$', bcrypt('Password@990')),
+        ]);
+
+        foreach (['Password@990', 'mauvais-mot-de-passe'] as $tentative) {
+            $reponse = $this->postJson('/api/login', [
+                'email' => $user->email,
+                'password' => $tentative,
+            ]);
+
+            $reponse->assertStatus(422);
+            $reponse->assertJsonValidationErrors('email');
+        }
     }
 }

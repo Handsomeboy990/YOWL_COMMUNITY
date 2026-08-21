@@ -7,9 +7,11 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use RuntimeException;
 
 class LoginRequest extends FormRequest
 {
@@ -76,7 +78,31 @@ class LoginRequest extends FormRequest
         //
         // validate() vérifie les mêmes identifiants par le même fournisseur,
         // sans rien écrire nulle part.
-        if (! Auth::validate($credentials)) {
+        //
+        // validate() lève une RuntimeException, et non un simple faux, quand le
+        // hachage stocké n'est pas dans un format que PHP reconnaît. Un compte
+        // créé hors de Laravel en est la cause habituelle : pgcrypto préfixe
+        // ses hachages bcrypt par $2a$, que password_get_info rapporte comme
+        // « unknown », alors que Laravel n'accepte que $2y$. C'est le même
+        // algorithme, seul le marqueur diffère.
+        //
+        // Sans ce filet, toute connexion sur un tel compte répondait 500, y
+        // compris avec un mauvais mot de passe, puisque l'exception précède la
+        // comparaison. Le refus se comporte désormais comme n'importe quel
+        // autre échec d'identifiants, et la vraie cause part au journal : elle
+        // n'est devinable depuis aucune réponse HTTP.
+        try {
+            $identifiantsValides = Auth::validate($credentials);
+        } catch (RuntimeException $e) {
+            Log::error('Hachage de mot de passe illisible, connexion refusée.', [
+                'user_id' => $user?->id,
+                'prefixe' => $user ? substr($user->password, 0, 4) : null,
+                'raison' => $e->getMessage(),
+            ]);
+            $identifiantsValides = false;
+        }
+
+        if (! $identifiantsValides) {
             RateLimiter::hit($this->throttleKey());
             throw ValidationException::withMessages([
                 'email' => __('auth.failed'),
