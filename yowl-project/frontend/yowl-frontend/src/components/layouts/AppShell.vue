@@ -160,6 +160,10 @@
              qui supprime la gouttiere vide entre le fil et les options. -->
         <div class="pt-16 w-full lg:pl-60 xl:pl-64 2xl:pl-68"
             :class="$slots.rail ? 'xl:pr-80 2xl:pr-96' : ''">
+            <!-- Rappel de verification, dans le flux et non flottant : il
+                 pousse le contenu vers le bas au lieu de le recouvrir. -->
+            <EmailVerificationBanner />
+
             <main id="contenu-principal" tabindex="-1" class="w-full min-h-[calc(100vh-4rem)] pb-24 lg:pb-8">
                 <slot />
             </main>
@@ -230,6 +234,7 @@ import { useNotificationStore } from '@/stores/notification';
 import NotificationPanel from '@/components/layouts/NotificationPanel.vue';
 
 import Icon from '@/components/ui/Icon.vue';
+import EmailVerificationBanner from '@/components/layouts/EmailVerificationBanner.vue';
 const route = useRoute();
 const router = useRouter();
 const { t } = useI18n();

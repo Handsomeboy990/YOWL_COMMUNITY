@@ -107,7 +107,10 @@
       :email="identifier"
       :error="verificationError"
       :loading="verifying"
-      @close="isMailModalOpen = false"
+      :reportable="verificationReportable"
+      :restant="verificationRestant"
+      @close="verificationReportable ? reporterVerification() : (isMailModalOpen = false)"
+      @later="reporterVerification"
       @resend="handleResendCode"
       @verify="submitVerifyCode"
     />
@@ -161,18 +164,25 @@ const submitForm = async () => {
   loading.value = true;
   errorMessage.value = '';
   try {
-    await userStore.loginUser({
+    const reponse = await userStore.loginUser({
       identifier: identifier.value,
       password: password.value,
       rememberMe: rememberMe.value,
     });
-    // Un membre qui ne suit encore rien a un fil personnalisé vide : on
-    // l'emmène choisir ses sujets plutôt que de le laisser devant du vide.
-    if (!route.query.redirect && (await followStore.isEmpty())) {
-      router.push('/bienvenue');
-    } else {
-      router.push(route.query.redirect || '/feed');
+
+    // Adresse pas encore vérifiée, mais le compte a le droit d'entrer : on
+    // demande le code, avec la possibilité de le remettre à plus tard. La
+    // navigation attend la réponse, sinon la fenêtre s'ouvrirait par-dessus
+    // le fil et ressemblerait à une interruption plutôt qu'à une étape.
+    const etat = reponse?.verification;
+    if (etat && !etat.verifie) {
+      verificationReportable.value = true;
+      verificationRestant.value = etat.restant ?? 0;
+      isMailModalOpen.value = true;
+      return;
     }
+
+    await entrer();
   } catch (err) {
     // Le message vient du serveur, qui sait ce qui s'est passé et le dit dans
     // la langue du membre. Le code, lui, sert à décider quoi ouvrir.
@@ -183,6 +193,9 @@ const submitForm = async () => {
     errorMessage.value = err.message || 'La connexion a échoué. Réessayez dans un instant.';
 
     if (err.code === 'email_non_verifie') {
+      // Refus ferme : le seuil est dépassé, il n'y a plus rien à reporter.
+      verificationReportable.value = false;
+      verificationRestant.value = 0;
       isMailModalOpen.value = true;
     }
   } finally {
@@ -195,6 +208,28 @@ const verifying = ref(false);
 const verificationError = ref('');
 const verificationSuccess = ref(false);
 const isMailModalOpen = ref(false);
+const verificationReportable = ref(false);
+const verificationRestant = ref(0);
+
+/**
+ * Entrer dans le site une fois la connexion acquise.
+ *
+ * Un membre qui ne suit encore rien a un fil personnalisé vide : on l'emmène
+ * choisir ses sujets plutôt que de le laisser devant du vide.
+ */
+async function entrer() {
+  if (!route.query.redirect && (await followStore.isEmpty())) {
+    router.push('/bienvenue');
+  } else {
+    router.push(route.query.redirect || '/feed');
+  }
+}
+
+/** Reporter la vérification : le compte entre, le rappel reste en haut. */
+function reporterVerification() {
+  isMailModalOpen.value = false;
+  entrer();
+}
 
 const submitVerifyCode = async (code) => {
   verificationError.value = '';

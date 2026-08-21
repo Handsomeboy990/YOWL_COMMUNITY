@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Support\Settings;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
@@ -110,8 +111,21 @@ class LoginRequest extends FormRequest
         Auth::setUser($user);
 
         // Vérifier si le user a vérifié son compte
-        if ($user->email_verified_at == null) {
-            $this->refuser('email_non_verifie', __('auth.unverified'));
+        // Vérification d'adresse : rappelée, puis exigée.
+        //
+        // L'exiger dès la première connexion transforme une panne de relais en
+        // porte close pour tout le monde, y compris pour ceux dont le code
+        // n'est jamais parti. Le compte entre donc, avec un rappel visible,
+        // pendant les premières connexions ; passé ce nombre, il faut vérifier.
+        //
+        // Le seuil vit dans les réglages : le jour où le mail ne part plus,
+        // l'ouvrir depuis la console est plus rapide qu'un déploiement.
+        if ($user->email_verified_at === null) {
+            $tolerance = (int) (Settings::get('registration.verification_grace') ?? 0);
+
+            if ($user->login_count >= $tolerance) {
+                $this->refuser('email_non_verifie', __('auth.unverified'));
+            }
         }
     }
 

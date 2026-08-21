@@ -43,6 +43,13 @@ class Settings
             'label' => 'Âge maximum à l\'inscription, vide pour aucune limite',
             'group' => 'Inscription',
         ],
+        'registration.verification_grace' => [
+            'type' => 'int',
+            'default' => 10,
+            'rules' => 'nullable|integer|min:0|max:100',
+            'label' => "Connexions autorisées avant d'exiger la vérification de l'adresse",
+            'group' => 'Inscription',
+        ],
         'suggestions.open' => [
             'type' => 'bool',
             'default' => true,

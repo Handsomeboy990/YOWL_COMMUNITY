@@ -140,6 +140,10 @@ class AuthenticationTest extends TestCase
             ->assertStatus(422)
             ->assertJsonPath('code', 'compte_desactive');
 
+        // Tolerance a zero : la verification est exigee des la premiere
+        // connexion, ce qui est le cas que ce test veut observer.
+        \App\Support\Settings::set('registration.verification_grace', 0);
+
         $nonVerifie = User::factory()->create(['email_verified_at' => null]);
         $this->postJson('/api/login', ['email' => $nonVerifie->email, 'password' => 'password'])
             ->assertStatus(422)
@@ -162,6 +166,7 @@ class AuthenticationTest extends TestCase
         // différence transformerait le formulaire en annuaire.
         $this->assertSame($connu->json('message'), $inconnu->json('message'));
 
+        \App\Support\Settings::set('registration.verification_grace', 0);
         $nonVerifie = User::factory()->create(['email_verified_at' => null]);
 
         // Les deux catalogues sont vérifiés : c'est celui qui n'est pas la
@@ -186,5 +191,75 @@ class AuthenticationTest extends TestCase
                 'compte non vérifié en '.$langue
             );
         }
+    }
+
+    /**
+     * La vérification d'adresse est rappelée, puis exigée.
+     *
+     * L'exiger dès la première connexion transforme une panne de relais en
+     * porte close pour tout le monde, y compris pour ceux dont le code n'est
+     * jamais parti.
+     */
+    public function test_an_unverified_account_may_sign_in_until_the_grace_runs_out(): void
+    {
+        \App\Support\Settings::set('registration.verification_grace', 3);
+
+        $membre = User::factory()->create(['email_verified_at' => null]);
+
+        for ($tentative = 1; $tentative <= 3; $tentative++) {
+            $reponse = $this->postJson('/api/login', [
+                'email' => $membre->email,
+                'password' => 'password',
+            ])->assertOk();
+
+            $this->assertFalse($reponse->json('verification.verifie'));
+            // Le décompte doit être lisible : sans lui, le blocage arrive
+            // sans prévenir.
+            $this->assertSame(3 - $tentative, $reponse->json('verification.restant'));
+        }
+
+        // La quatrième bute sur le seuil.
+        $this->postJson('/api/login', ['email' => $membre->email, 'password' => 'password'])
+            ->assertStatus(422)
+            ->assertJsonPath('code', 'email_non_verifie');
+    }
+
+    public function test_a_verified_account_is_never_counted_down(): void
+    {
+        \App\Support\Settings::set('registration.verification_grace', 1);
+
+        $membre = User::factory()->create();
+
+        foreach (range(1, 3) as $ignore) {
+            $this->postJson('/api/login', ['email' => $membre->email, 'password' => 'password'])
+                ->assertOk()
+                ->assertJsonPath('verification.verifie', true)
+                ->assertJsonPath('verification.restant', 0);
+        }
+    }
+
+    /**
+     * Le compteur avance sur les connexions réussies, pas sur les refus.
+     *
+     * Compté avant la vérification des identifiants, une salve de mauvais
+     * mots de passe épuiserait le délai de grâce sans que personne ne soit
+     * jamais entré.
+     */
+    public function test_failed_attempts_do_not_eat_into_the_grace(): void
+    {
+        \App\Support\Settings::set('registration.verification_grace', 5);
+
+        $membre = User::factory()->create(['email_verified_at' => null]);
+
+        foreach (range(1, 3) as $ignore) {
+            $this->postJson('/api/login', ['email' => $membre->email, 'password' => 'faux'])
+                ->assertStatus(422);
+        }
+
+        $this->assertSame(0, $membre->fresh()->login_count);
+
+        $this->postJson('/api/login', ['email' => $membre->email, 'password' => 'password'])
+            ->assertOk()
+            ->assertJsonPath('verification.restant', 4);
     }
 }

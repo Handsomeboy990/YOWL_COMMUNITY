@@ -35,9 +35,13 @@ class AuthenticatedSessionController extends Controller
         $token = $request->user()->createToken('yowl-access-token', ['*'], $expiresAt);
 
         $user = $request->user();
-        $user['roles'] = $user->getRoleNames();
 
-        // $request->session()->regenerate();
+        // Le compteur avance ici, une fois la connexion acquise : compté avant,
+        // une salve de mauvais mots de passe épuiserait le délai de grâce sans
+        // que personne ne soit jamais entré.
+        $user->increment('login_count');
+
+        $user['roles'] = $user->getRoleNames();
 
         return response()->json([
             'success' => true,
@@ -45,6 +49,10 @@ class AuthenticatedSessionController extends Controller
             'remember' => $remember,
             'expires_at' => $expiresAt,
             'user' => $user,
+            // De quoi afficher le rappel, et dire combien de fois il reste
+            // possible de le remettre à plus tard. Sans ce compte à rebours,
+            // le blocage arrive sans prévenir.
+            'verification' => $user->etatDeVerification(),
         ]);
     }
 

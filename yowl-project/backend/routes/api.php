@@ -45,6 +45,9 @@ Route::get('/health', function () {
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     $user = $request->user();
     $user['roles'] = $user->getRoleNames();
+    // Le rappel de verification doit survivre au rechargement de la page :
+    // sans cela il ne s'affiche qu'a l'instant de la connexion.
+    $user['verification'] = $user->etatDeVerification();
 
     return $user;
 });

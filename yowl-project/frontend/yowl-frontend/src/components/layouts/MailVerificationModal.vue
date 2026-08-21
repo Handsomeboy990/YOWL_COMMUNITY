@@ -43,7 +43,20 @@
         <BaseButton variant="primary" block :disabled="resendCooldown > 0" :shine="false" @click="resendCode">
           {{ resendCooldown > 0 ? `Renvoyer le code (${resendCooldown}s)` : 'Renvoyer le code' }}
         </BaseButton>
+
+        <!-- Reporter n'est propose que tant que le compte a le droit d'entrer
+             sans avoir verifie. Passe le seuil, ce bouton disparait : offrir
+             une sortie qui ne mene nulle part est pire que ne rien offrir. -->
+        <BaseButton v-if="reportable" variant="ghost" block :shine="false" @click="emit('later')">
+          Vérifier plus tard
+        </BaseButton>
       </div>
+
+      <p v-if="reportable && restant > 0" class="mt-3 text-xs text-gray-600 text-center">
+        Vous pouvez encore vous connecter
+        <strong>{{ restant }} fois</strong>
+        sans vérifier. Après quoi le code sera demandé.
+      </p>
 
       <p class="mt-4 text-xs text-gray-500">
         {{ t('auth.verifyHint') }}
@@ -67,9 +80,13 @@ const props = defineProps({
   email: String,
   error: { type: String, default: '' },
   loading: { type: Boolean, default: false },
+  // Vrai tant que le compte peut entrer sans avoir verifie son adresse.
+  reportable: { type: Boolean, default: false },
+  // Connexions restantes avant que la verification devienne obligatoire.
+  restant: { type: Number, default: 0 },
 });
 
-const emit = defineEmits(['close', 'resend', 'verify']);
+const emit = defineEmits(['close', 'resend', 'verify', 'later']);
 
 const codeInputs = ref(['', '', '', '', '', '']);
 const otpInputs = ref([]);

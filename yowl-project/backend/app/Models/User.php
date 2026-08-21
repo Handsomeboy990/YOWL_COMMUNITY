@@ -147,4 +147,25 @@ class User extends Authenticatable
             })
             ->values();
     }
+
+    /**
+     * Où en est ce compte vis-à-vis de la vérification d'adresse.
+     *
+     * Calculé ici, et non dans chaque contrôleur : la connexion et la lecture
+     * du compte courant doivent renvoyer le même décompte, sinon le rappel
+     * affiché change de chiffre au rechargement de la page.
+     *
+     * @return array{verifie: bool, restant: int, seuil: int}
+     */
+    public function etatDeVerification(): array
+    {
+        $seuil = (int) (\App\Support\Settings::get('registration.verification_grace') ?? 0);
+        $verifie = $this->email_verified_at !== null;
+
+        return [
+            'verifie' => $verifie,
+            'restant' => $verifie ? 0 : max(0, $seuil - (int) $this->login_count),
+            'seuil' => $seuil,
+        ];
+    }
 }
