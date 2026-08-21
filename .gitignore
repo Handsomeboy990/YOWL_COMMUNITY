@@ -6,3 +6,7 @@ CLAUDE.md
 yowl-project/frontend/yowl-frontend/*-temp.mjs
 yowl-project/frontend/yowl-frontend/ex.mjs
 yowl-project/frontend/yowl-frontend/diag.mjs
+
+# Scripts et notes propres a une installation : ils contiennent des mots de
+# passe en clair le temps d'etre joues. Jamais versionnes.
+/local/
