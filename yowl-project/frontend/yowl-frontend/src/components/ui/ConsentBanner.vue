@@ -36,14 +36,16 @@
                 politique de confidentialité</router-link>.
             </p>
 
-            <!-- Les deux boutons ont le meme poids visuel et la meme taille.
-                 Un refus plus discret que l'acceptation n'est pas un choix
+            <!-- Meme taille, meme position, et deux aplats plutot qu'un
+                 aplat face a un contour : un bouton borde sur fond blanc se
+                 lit comme l'option secondaire, meme a dimensions egales. Un
+                 refus plus discret que l'acceptation n'est pas un choix
                  libre, et la CNIL le refuse explicitement. -->
             <div class="mt-4 flex flex-col sm:flex-row gap-2.5">
               <BaseButton variant="primary" size="sm" class="sm:w-44" @click="onAccepter">
                 Accepter
               </BaseButton>
-              <BaseButton variant="outline" size="sm" class="sm:w-44" @click="onRefuser">
+              <BaseButton variant="night" size="sm" class="sm:w-44" @click="onRefuser">
                 Refuser
               </BaseButton>
             </div>
