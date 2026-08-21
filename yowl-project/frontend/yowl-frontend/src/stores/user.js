@@ -60,11 +60,19 @@ export const useUserStore = defineStore('user', {
         
         return result.data;
       } catch (err) {
-        let message = 'Registration failed';
-        if (err.response && err.response.data) {
-          message = err.response.data.message || JSON.stringify(err.response.data.error);
-        }
-        throw new Error(message);
+        // « Registration failed » ne disait rien à personne, et surtout pas
+        // dans une application française. Une requête qui n'atteint pas le
+        // serveur se distingue d'un refus : la première se retente, la
+        // seconde demande de corriger quelque chose.
+        const donnees = err.response?.data;
+
+        throw new Error(
+          donnees?.message
+            ?? (Array.isArray(donnees?.error) ? donnees.error[0] : null)
+            ?? (err.response
+              ? "L'inscription n'a pas abouti. Réessayez dans un instant."
+              : 'Le service ne répond pas. Vérifiez votre connexion, puis réessayez.')
+        );
       }
     },
 

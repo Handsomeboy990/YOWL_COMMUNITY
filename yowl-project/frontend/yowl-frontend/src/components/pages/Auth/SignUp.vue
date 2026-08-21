@@ -256,8 +256,17 @@ const submitForm = async () => {
 
   loading.value = true;
   try {
-    await userStore.registerUser(form.value);
+    const reponse = await userStore.registerUser(form.value);
     registeredEmail.value = form.value.email;
+
+    // Le compte est créé même quand le code n'a pas pu partir : le serveur
+    // répond alors 202 en le disant. Sans reprendre ce message, la fenêtre
+    // s'ouvre et réclame un code qui n'existe nulle part, et la personne
+    // attend un email qui ne viendra pas.
+    if (reponse?.delivered === false) {
+      verificationError.value = reponse.message;
+    }
+
     isMailModalOpen.value = true;
   } catch (err) {
     errorMessage.value = translateError(err.message);
