@@ -25,6 +25,19 @@
         <env name="DB_CONNECTION" value="sqlite"/>
         <env name="DB_DATABASE" value=":memory:"/>
         <env name="MAIL_MAILER" value="array"/>
+
+        <!--
+            Le disque des medias est impose, et force pour battre le .env.
+
+            Sans cela, la suite ecrit la ou pointe la machine qui la lance :
+            une fois MEDIA_DISK=s3 renseigne pour pousser les images, les
+            tests televersaient leurs fichiers dans le vrai stockage objet,
+            et les assertions portant sur un disque simule echouaient. Une
+            suite de tests ne doit toucher aucun stockage reel, et ne doit
+            pas dependre de la configuration locale de qui l'execute.
+        -->
+        <env name="MEDIA_DISK" value="public" force="true"/>
+        <env name="FILESYSTEM_DISK" value="public" force="true"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="PULSE_ENABLED" value="false"/>
