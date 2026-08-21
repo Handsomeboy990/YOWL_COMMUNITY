@@ -20,7 +20,7 @@
             :style="{ width: (option.share ?? 0) + '%' }" aria-hidden="true"></div>
           <div class="relative flex items-center justify-between gap-3 px-4 py-2.5 text-sm">
             <span class="min-w-0 truncate" :class="option.id === state.my_option_id ? 'font-medium text-blue-night' : 'text-gray-700'">
-              <i v-if="option.id === state.my_option_id" class="fa-solid fa-check text-orange-text mr-1.5"></i>
+              <Icon name="check" class="text-orange-text mr-1.5" v-if="option.id === state.my_option_id" />
               {{ option.label }}
             </span>
             <span class="shrink-0 tabular-nums text-gray-500">{{ option.share ?? 0 }}%</span>
@@ -43,6 +43,7 @@ import api from '@/services/apiService';
 import { useUserStore } from '@/stores/user';
 import { useNotify, apiErrorMessage } from '@/composables/useNotify';
 
+import Icon from '@/components/ui/Icon.vue';
 const props = defineProps({
   poll: { type: Object, default: null },
 });

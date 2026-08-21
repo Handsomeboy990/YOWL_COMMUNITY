@@ -12,13 +12,13 @@
                         class="cursor-pointer text-white text-[12px] p-2 rounded-full bg-blue-night hover:-translate-y-1 duration-200"
                         aria-label="Modifier le commentaire"
                         @click="toggleEdit">
-                        <i class="fa-solid fa-pen-to-square"></i>
+                        <Icon name="pen-to-square" />
                     </button>
                     <button
                         class="cursor-pointer text-white text-[12px] rounded-full p-2 bg-red-500 hover:-translate-y-1 duration-200"
                         aria-label="Supprimer le commentaire"
                         @click="deleteComment">
-                        <i class="fa-solid fa-trash"></i>
+                        <Icon name="trash" />
                     </button>
                 </div>
 
@@ -26,7 +26,7 @@
                     class="cursor-pointer text-gray-500 text-[12px] rounded-full p-2 hover:text-red-500 hover:bg-red-50 duration-200"
                     aria-label="Signaler le commentaire" title="Signaler"
                     @click="isReportOpen = true">
-                    <i class="fa-solid fa-flag"></i>
+                    <Icon name="flag" />
                 </button>
             </div>
 
@@ -45,12 +45,7 @@
                             : 'text-gray-500 hover:text-orange-text'
                     ]" @click="toggleReaction('like')">
                         <span class="w-8 h-8 bg-orange-primary mr-2 rounded-full grid place-items-center">
-                            <i :class="[
-                                currentComment?.user_reaction === 'like'
-                                    ? 'fa-solid fa-thumbs-up'
-                                    : 'fa-regular fa-thumbs-up',
-                                'text-white text-sm'
-                            ]"></i>
+                            <Icon name="thumbs-up" :filled="currentComment?.user_reaction === 'like'" class="text-white" :size="16" />
                         </span>
                         {{ comment.nb_like }}
                     </button>
@@ -63,12 +58,7 @@
                             : 'text-gray-500 hover:text-blue-500'
                     ]" @click="toggleReaction('dislike')">
                         <span class="w-8 h-8 bg-blue-night mr-2 rounded-full grid place-items-center">
-                            <i :class="[
-                                currentComment?.user_reaction === 'dislike'
-                                    ? 'fa-solid fa-thumbs-down'
-                                    : 'fa-regular fa-thumbs-down',
-                                'text-white text-sm'
-                            ]"></i>
+                            <Icon name="thumbs-down" :filled="currentComment?.user_reaction === 'dislike'" class="text-white" :size="16" />
                         </span>
                         {{ comment.nb_dislike }}
                     </button>
@@ -80,7 +70,7 @@
                         <span class="font-roboto text-caption">
                             {{ isReplying ? 'Annuler' : 'Répondre' }}
                         </span>
-                        <i class="fa-solid fa-reply ml-1"></i>
+                        <Icon name="reply" class="ml-1" />
                     </button>
                 </div>
 
@@ -120,6 +110,7 @@ import { useUserStore } from "@/stores/user";
 import { useNotify, apiErrorMessage } from '@/composables/useNotify';
 import { useConfirm } from '@/composables/useConfirm';
 
+import Icon from '@/components/ui/Icon.vue';
 const { t, locale } = useI18n();
 
 // Une date lue dans une phrase anglaise ne reste pas au format francais.

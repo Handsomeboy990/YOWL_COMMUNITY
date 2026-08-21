@@ -2,7 +2,7 @@
   <section class="mt-8 bg-white border border-gray-200 rounded-2xl p-5">
     <div class="flex items-start gap-4">
       <span class="w-10 h-10 shrink-0 rounded-xl bg-blue-night/5 grid place-items-center text-blue-night">
-        <i class="fa-solid fa-file-arrow-down" aria-hidden="true"></i>
+        <Icon name="file-arrow-down" aria-hidden="true" />
       </span>
       <div class="min-w-0 flex-1">
         <h2 class="font-poppins font-bold text-blue-night">{{ t('data.title') }}</h2>
@@ -20,7 +20,7 @@
           <div v-for="n in 6" :key="n" class="h-14 rounded-xl skeleton"></div>
         </div>
 
-        <BaseButton class="mt-5" variant="night" size="sm" icon="fa-solid fa-download"
+        <BaseButton class="mt-5" variant="night" size="sm" icon="download"
           :loading="downloading" @click="download">
           {{ t('data.download') }}
         </BaseButton>
@@ -36,6 +36,7 @@ import BaseButton from '@/components/ui/BaseButton.vue';
 import api from '@/services/apiService';
 import { useNotify, apiErrorMessage } from '@/composables/useNotify';
 
+import Icon from '@/components/ui/Icon.vue';
 const { t } = useI18n();
 const summary = ref(null);
 const loading = ref(true);

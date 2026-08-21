@@ -7,7 +7,7 @@
       <!-- Erreur de chargement -->
       <div v-if="profileStore.statsError"
         class="mt-6 flex flex-col items-center text-center bg-white border border-gray-200 rounded-2xl py-14 px-4">
-        <i class="fa-solid fa-plug-circle-exclamation text-4xl text-gray-400" aria-hidden="true"></i>
+        <Icon name="plug-circle-exclamation" :size="40" class="text-4xl text-gray-400" aria-hidden="true" />
         <h2 class="mt-5 text-lg font-semibold text-gray-800">Statistiques indisponibles</h2>
         <p class="mt-2 text-sm text-gray-600 max-w-md">{{ profileStore.statsError }}</p>
         <BaseButton class="mt-5" variant="primary" size="sm" @click="profileStore.fetchStats()">
@@ -82,6 +82,7 @@ import LeaveCommunity from '@/components/layouts/LeaveCommunity.vue';
 import BaseButton from '@/components/ui/BaseButton.vue';
 import { useProfileStore } from '@/stores/profile';
 
+import Icon from '@/components/ui/Icon.vue';
 const { t } = useI18n();
 
 ChartJS.register(ArcElement, LineElement, CategoryScale, LinearScale, PointElement, Filler, Tooltip);

@@ -40,7 +40,7 @@
 
       <!-- Erreur -->
       <div v-else-if="store.error" class="px-4 py-8 text-center">
-        <i class="fa-solid fa-triangle-exclamation text-2xl text-gray-400"></i>
+        <Icon name="triangle-exclamation" :size="26" class="text-2xl text-gray-400" />
         <p class="mt-2 text-sm text-gray-500">{{ store.error }}</p>
         <button type="button" class="mt-3 text-xs text-orange-text hover:underline cursor-pointer"
           @click="store.fetchNotifications()">
@@ -50,7 +50,7 @@
 
       <!-- Vide -->
       <div v-else-if="!store.items.length" class="px-4 py-10 text-center">
-        <i class="fa-regular fa-bell-slash text-3xl text-gray-200" aria-hidden="true"></i>
+        <Icon name="bell-slash" :size="32" class="text-3xl text-gray-200" aria-hidden="true" />
         <p class="mt-3 text-sm font-medium text-blue-night">Aucune notification</p>
         <p class="mt-1 text-xs text-gray-500">
           Les réactions et réponses à tes reviews apparaîtront ici.
@@ -72,7 +72,7 @@
                 </span>
                 <span class="absolute -bottom-0.5 -right-0.5 w-4.5 h-4.5 rounded-full grid place-items-center text-[9px] text-white"
                   :class="iconBackground(notification.data?.type)">
-                  <i :class="icon(notification.data?.type)"></i>
+                  <Icon :name="icon(notification.data?.type)" />
                 </span>
               </span>
 
@@ -94,7 +94,7 @@
               class="absolute top-2 right-2 w-6 h-6 rounded-full grid place-items-center text-gray-300 opacity-0 group-hover:opacity-100 hover:text-red-500 hover:bg-red-50 transition-all cursor-pointer"
               aria-label="Supprimer la notification"
               @click.stop="store.remove(notification.id)">
-              <i class="fa-solid fa-xmark text-xs"></i>
+              <Icon name="xmark" :size="14" class="text-xs" />
             </button>
           </div>
         </li>
@@ -108,6 +108,7 @@ import { useRouter } from 'vue-router';
 import { useNotificationStore } from '@/stores/notification';
 import { getStorageUrl } from '@/config';
 
+import Icon from '@/components/ui/Icon.vue';
 defineProps({
   push: { type: Object, required: true },
 });
@@ -135,14 +136,14 @@ function initials(username) {
 function icon(type) {
   switch (type) {
     case 'comment':
-      return 'fa-solid fa-comment';
+      return 'comment';
     case 'reply':
-      return 'fa-solid fa-reply';
+      return 'reply';
     case 'review_like':
     case 'comment_like':
-      return 'fa-solid fa-heart';
+      return 'heart';
     default:
-      return 'fa-solid fa-bell';
+      return 'bell';
   }
 }
 

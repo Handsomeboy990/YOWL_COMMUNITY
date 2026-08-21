@@ -16,7 +16,7 @@
               ? 'border-orange-primary bg-orange-50 text-orange-text'
               : 'border-gray-200 text-gray-500 hover:border-gray-300'">
             <input v-model="form.roles" type="checkbox" :value="role" class="sr-only" />
-            <i :class="form.roles.includes(role) ? 'fa-solid fa-check' : 'fa-regular fa-square'"></i>
+            <Icon name="check" :filled="form.roles.includes(role)" />
             {{ role }}
           </label>
         </div>
@@ -46,6 +46,7 @@ import BaseInput from '@/components/ui/BaseInput.vue';
 import BaseButton from '@/components/ui/BaseButton.vue';
 import { useNotify, apiErrorMessage } from '@/composables/useNotify';
 
+import Icon from '@/components/ui/Icon.vue';
 const props = defineProps({
   isOpen: { type: Boolean, default: false },
 });

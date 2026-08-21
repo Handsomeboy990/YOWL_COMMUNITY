@@ -21,7 +21,7 @@
 
             <div v-else-if="error"
               class="flex flex-col items-center text-center bg-white border border-gray-200 rounded-2xl py-16 px-4">
-              <i class="fa-regular fa-file-lines text-4xl text-gray-400" aria-hidden="true"></i>
+              <Icon name="file-lines" :size="40" class="text-4xl text-gray-400" aria-hidden="true" />
               <h1 class="mt-5 text-lg font-semibold text-gray-800">{{ t('legal.unavailable') }}</h1>
               <p class="mt-2 text-sm text-gray-600 max-w-md">{{ error }}</p>
               <BaseButton class="mt-5" size="sm" variant="primary" @click="load">{{ t('common.retry') }}</BaseButton>
@@ -34,11 +34,11 @@
                 </h1>
                 <div class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-gray-500">
                   <span v-if="page.updated_at" class="inline-flex items-center gap-1.5">
-                    <i class="fa-regular fa-clock" aria-hidden="true"></i>
+                    <Icon name="clock" aria-hidden="true" />
                     {{ t('legal.updated', { date: formatDate(page.updated_at) }) }}
                   </span>
                   <span class="inline-flex items-center gap-1.5">
-                    <i class="fa-regular fa-hourglass" aria-hidden="true"></i>
+                    <Icon name="hourglass" aria-hidden="true" />
                     {{ readingTime }}
                   </span>
                 </div>
@@ -53,7 +53,7 @@
                   {{ t('legal.question') }}
                 </p>
                 <BaseButton :tag="'router-link'" :to="'/suggestion'" variant="ghost" size="sm"
-                  icon="fa-regular fa-paper-plane">
+                  icon="paper-plane">
                   {{ t('nav.suggestions') }}
                 </BaseButton>
               </footer>
@@ -74,9 +74,8 @@
                     :class="item.slug === slug
                       ? 'bg-orange-50 text-orange-text font-medium'
                       : 'text-gray-600 hover:bg-gray-100'">
-                    <i :class="[item.icon, 'mt-0.5 text-xs shrink-0',
-                        item.slug === slug ? 'text-orange-text' : 'text-gray-400 group-hover:text-gray-600']"
-                      aria-hidden="true"></i>
+                    <Icon :name="item.icon" :size="15" class="mt-0.5 shrink-0"
+                      :class="item.slug === slug ? 'text-orange-text' : 'text-gray-400 group-hover:text-gray-600'" />
                     <span>{{ item.label }}</span>
                   </router-link>
                 </li>
@@ -153,6 +152,7 @@ import BaseButton from '@/components/ui/BaseButton.vue';
 import api from '@/services/apiService';
 import { apiErrorMessage } from '@/composables/useNotify';
 
+import Icon from '@/components/ui/Icon.vue';
 const { t, locale } = useI18n();
 const route = useRoute();
 
@@ -170,17 +170,17 @@ const groupes = computed(() => [
   {
     titre: t('legal.theService'),
     pages: [
-      { slug: 'a-propos', route: '/about', label: t('legal.about'), icon: 'fa-solid fa-circle-info' },
-      { slug: 'faq', route: '/faq', label: t('legal.faq'), icon: 'fa-solid fa-circle-question' },
+      { slug: 'a-propos', route: '/about', label: t('legal.about'), icon: 'circle-info' },
+      { slug: 'faq', route: '/faq', label: t('legal.faq'), icon: 'circle-question' },
     ],
   },
   {
     titre: t('legal.documents'),
     pages: [
-      { slug: 'charte', route: '/charte', label: t('legal.charter'), icon: 'fa-solid fa-handshake-angle' },
-      { slug: 'confidentialite', route: '/confidentialite', label: t('legal.privacy'), icon: 'fa-solid fa-shield-halved' },
-      { slug: 'conditions', route: '/conditions', label: t('legal.terms'), icon: 'fa-solid fa-file-signature' },
-      { slug: 'mentions-legales', route: '/mentions-legales', label: t('legal.notices'), icon: 'fa-solid fa-building-columns' },
+      { slug: 'charte', route: '/charte', label: t('legal.charter'), icon: 'handshake-angle' },
+      { slug: 'confidentialite', route: '/confidentialite', label: t('legal.privacy'), icon: 'shield-halved' },
+      { slug: 'conditions', route: '/conditions', label: t('legal.terms'), icon: 'file-signature' },
+      { slug: 'mentions-legales', route: '/mentions-legales', label: t('legal.notices'), icon: 'building-columns' },
     ],
   },
 ]);

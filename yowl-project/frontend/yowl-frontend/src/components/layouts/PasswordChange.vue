@@ -2,7 +2,7 @@
   <section class="mt-8 bg-white border border-gray-200 rounded-2xl p-5">
     <div class="flex items-start gap-4">
       <span class="w-10 h-10 shrink-0 rounded-xl bg-blue-night/5 grid place-items-center text-blue-night">
-        <i class="fa-solid fa-key" aria-hidden="true"></i>
+        <Icon name="key" aria-hidden="true" />
       </span>
 
       <div class="min-w-0 flex-1">
@@ -10,20 +10,20 @@
         <p class="mt-1 text-sm text-gray-600">{{ t('security.intro') }}</p>
 
         <BaseButton v-if="!open" class="mt-4" variant="night" size="sm"
-          icon="fa-solid fa-pen" @click="ouvrir">
+          icon="pen" @click="ouvrir">
           {{ t('security.change') }}
         </BaseButton>
 
         <form v-else class="mt-5 space-y-4 max-w-md" @submit.prevent="soumettre">
           <BaseInput v-model="form.current" :label="t('security.current')" type="password"
-            icon="fa-solid fa-lock" autocomplete="current-password" required
+            icon="lock" autocomplete="current-password" required
             :error="erreurs.current_password" />
 
           <!-- Le nouveau mot de passe ne s'ouvre qu'une fois l'ancien saisi :
                l'ordre du formulaire dit l'ordre de la vérification. -->
           <template v-if="form.current">
             <BaseInput v-model="form.next" :label="t('security.next')" type="password"
-              icon="fa-solid fa-key" autocomplete="new-password" required
+              icon="key" autocomplete="new-password" required
               :error="erreurs.password" :hint="t('security.rule')" />
 
             <div>
@@ -35,7 +35,7 @@
             </div>
 
             <BaseInput v-model="form.confirm" :label="t('security.confirm')" type="password"
-              autocomplete="new-password" icon="fa-solid fa-check-double" required
+              autocomplete="new-password" icon="check-double" required
               :error="desaccord ? t('security.mismatch') : ''" />
           </template>
 
@@ -64,6 +64,7 @@ import BaseButton from '@/components/ui/BaseButton.vue';
 import api from '@/services/apiService';
 import { useNotify, apiErrorMessage } from '@/composables/useNotify';
 
+import Icon from '@/components/ui/Icon.vue';
 const { t } = useI18n();
 const notify = useNotify();
 

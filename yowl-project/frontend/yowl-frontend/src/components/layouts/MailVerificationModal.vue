@@ -4,7 +4,7 @@
       <div
         class="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-primary to-orange-primary-dark grid place-items-center text-white text-2xl shadow-lg shadow-orange-primary/30 mb-5"
       >
-        <i class="fa-regular fa-envelope-open"></i>
+        <Icon name="envelope-open" />
       </div>
 
       <h2 class="text-2xl font-poppins font-bold text-blue-night mb-2">{{ t('auth.verifyTitle') }}</h2>
@@ -32,7 +32,7 @@
       </div>
 
       <p v-if="error" class="text-sm text-red-500 mb-2 flex items-center justify-center gap-1.5">
-        <i class="fa-solid fa-circle-exclamation text-xs" aria-hidden="true"></i>
+        <Icon name="circle-exclamation" :size="14" class="text-xs" aria-hidden="true" />
         {{ error }}
       </p>
 
@@ -59,6 +59,7 @@ import { useNotify } from '@/composables/useNotify';
 import BaseModal from '@/components/ui/BaseModal.vue';
 import BaseButton from '@/components/ui/BaseButton.vue';
 
+import Icon from '@/components/ui/Icon.vue';
 const { t } = useI18n();
 
 const props = defineProps({

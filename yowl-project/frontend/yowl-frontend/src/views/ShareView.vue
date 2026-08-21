@@ -24,7 +24,7 @@
         <!-- Aperçu du lien partagé -->
         <div v-if="form.link" class="mb-5 flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
           <span class="w-10 h-10 shrink-0 rounded-lg bg-orange-primary/10 text-orange-text grid place-items-center">
-            <i class="fa-solid fa-link"></i>
+            <Icon name="link" />
           </span>
           <div class="min-w-0">
             <p v-if="sharedTitle" class="text-sm font-semibold text-blue-night truncate">{{ sharedTitle }}</p>
@@ -32,7 +32,7 @@
           </div>
           <button type="button" class="ml-auto text-gray-300 hover:text-red-400 cursor-pointer"
             aria-label="Retirer le lien" @click="form.link = ''">
-            <i class="fa-solid fa-xmark"></i>
+            <Icon name="xmark" />
           </button>
         </div>
 
@@ -51,7 +51,7 @@
             label="Lien (optionnel)"
             type="url"
             placeholder="https://exemple.com"
-            icon="fa-solid fa-link"
+            icon="link"
           />
 
           <!-- Tags -->
@@ -63,14 +63,14 @@
                 #{{ tag }}
                 <button type="button" class="w-5 h-5 grid place-items-center rounded-full hover:bg-orange-primary/20 cursor-pointer"
                   :aria-label="`Retirer le tag ${tag}`" @click="form.tags.splice(index, 1)">
-                  <i class="fa-solid fa-xmark text-xs"></i>
+                  <Icon name="xmark" :size="14" class="text-xs" />
                 </button>
               </span>
             </div>
             <BaseInput
               :modelValue="tagInput"
               placeholder="Ajoute un tag puis Entrée"
-              icon="fa-solid fa-hashtag"
+              icon="hashtag"
               @update:modelValue="tagInput = $event"
               @keydown.enter.prevent="addTag"
             />
@@ -94,6 +94,7 @@ import BaseInput from '@/components/ui/BaseInput.vue';
 import BaseTextarea from '@/components/ui/BaseTextarea.vue';
 import BaseButton from '@/components/ui/BaseButton.vue';
 
+import Icon from '@/components/ui/Icon.vue';
 const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();

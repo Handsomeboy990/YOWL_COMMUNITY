@@ -12,7 +12,7 @@
     </div>
 
     <div v-else-if="error" class="p-8 text-center">
-      <i class="fa-solid fa-plug-circle-exclamation text-3xl text-gray-400" aria-hidden="true"></i>
+      <Icon name="plug-circle-exclamation" :size="32" class="text-3xl text-gray-400" aria-hidden="true" />
       <p class="mt-4 text-sm text-gray-600">{{ error }}</p>
       <BaseButton class="mt-4" size="sm" variant="primary" @click="load">Réessayer</BaseButton>
     </div>
@@ -54,13 +54,13 @@
                   class="w-14 h-14 shrink-0 rounded-xl border border-gray-200 bg-gray-50 grid place-items-center overflow-hidden">
                   <img v-if="draft[field.key]" :src="getStorageUrl(draft[field.key])" alt=""
                     class="w-full h-full object-contain" />
-                  <i v-else class="fa-regular fa-image text-gray-400" aria-hidden="true"></i>
+                  <Icon name="image" class="text-gray-400" v-else aria-hidden="true" />
                 </span>
 
                 <div class="min-w-0 flex-1">
                   <label
                     class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-700 hover:border-orange-primary hover:text-orange-text transition-colors cursor-pointer">
-                    <i class="fa-solid fa-arrow-up-from-bracket" aria-hidden="true"></i>
+                    <Icon name="arrow-up-from-bracket" aria-hidden="true" />
                     <span>{{ uploading === field.key ? 'Envoi...' : 'Choisir un fichier' }}</span>
                     <input :id="field.key" type="file" class="hidden"
                       accept="image/png,image/jpeg,image/webp,image/svg+xml"
@@ -108,6 +108,7 @@ import { getStorageUrl } from '@/config';
 import BaseButton from '@/components/ui/BaseButton.vue';
 import { useNotify, apiErrorMessage } from '@/composables/useNotify';
 
+import Icon from '@/components/ui/Icon.vue';
 const notify = useNotify();
 
 const fields = ref([]);

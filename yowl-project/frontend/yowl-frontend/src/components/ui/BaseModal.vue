@@ -26,7 +26,7 @@
                 aria-label="Fermer"
                 @click="$emit('close')"
               >
-                <i class="fa-solid fa-xmark text-lg"></i>
+                <Icon name="xmark" :size="20" class="text-lg" />
               </button>
             </header>
 
@@ -49,6 +49,7 @@
 <script setup>
 import { computed, watch } from 'vue';
 
+import Icon from '@/components/ui/Icon.vue';
 const props = defineProps({
   isOpen: { type: Boolean, default: false },
   title: { type: String, default: '' },

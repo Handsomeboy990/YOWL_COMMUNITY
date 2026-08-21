@@ -24,7 +24,7 @@
                 <template v-if="tag.followers_count"> &middot; {{ t('tag.followerCount', { count: tag.followers_count }) }}</template>
               </span>
             </span>
-            <i class="fa-solid fa-arrow-right text-gray-300" aria-hidden="true"></i>
+            <Icon name="arrow-right" class="text-gray-300" aria-hidden="true" />
           </router-link>
         </div>
 
@@ -40,6 +40,7 @@ import { useI18n } from 'vue-i18n';
 import AppShell from '@/components/layouts/AppShell.vue';
 import api from '@/services/apiService';
 
+import Icon from '@/components/ui/Icon.vue';
 const { t } = useI18n();
 const tags = ref([]);
 const loading = ref(true);

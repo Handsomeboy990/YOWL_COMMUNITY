@@ -24,11 +24,9 @@
         <i v-if="selected?.icon" :class="selected.icon" class="text-orange-text" aria-hidden="true"></i>
         {{ selected ? selected.label : placeholder }}
       </span>
-      <i
-        class="fa-solid fa-chevron-down text-xs text-gray-500 transition-transform duration-300"
-        :class="open ? 'rotate-180 text-orange-text' : ''"
-        aria-hidden="true"
-      ></i>
+      <Icon name="chevron-down" :size="14"
+        class="text-gray-500 transition-transform duration-300"
+        :class="open ? 'rotate-180 text-orange-text' : ''" />
     </button>
 
     <Transition name="select-pop">
@@ -55,11 +53,7 @@
         >
           <i v-if="option.icon" :class="option.icon" class="w-4 text-center" aria-hidden="true"></i>
           <span class="flex-1">{{ option.label }}</span>
-          <i
-            v-if="option.value === modelValue"
-            class="fa-solid fa-check text-xs"
-            aria-hidden="true"
-          ></i>
+          <Icon name="check" :size="14" class="text-xs" v-if="option.value === modelValue" aria-hidden="true" />
         </li>
       </ul>
     </Transition>
@@ -69,6 +63,7 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 
+import Icon from '@/components/ui/Icon.vue';
 const props = defineProps({
   modelValue: { type: [String, Number, null], default: null },
   // options: [{ value, label, icon? }]

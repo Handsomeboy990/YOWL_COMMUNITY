@@ -10,7 +10,7 @@
             {{ options.opted_out }} désinscrit(s).</span>
         </p>
       </div>
-      <BaseButton v-if="!composer" variant="primary" size="sm" icon="fa-solid fa-pen-nib"
+      <BaseButton v-if="!composer" variant="primary" size="sm" icon="pen-nib"
         @click="nouvelle">
         Nouvelle campagne
       </BaseButton>
@@ -97,7 +97,7 @@
         </select>
 
         <div v-if="form.audience === 'selected'">
-          <BaseInput v-model="recherche" label="Chercher un membre" icon="fa-solid fa-magnifying-glass"
+          <BaseInput v-model="recherche" label="Chercher un membre" icon="magnifying-glass"
             placeholder="Pseudo" @update:modelValue="chercher" />
 
           <ul v-if="resultats.length" class="mt-2 space-y-1">
@@ -117,14 +117,14 @@
               {{ membre.username }}
               <button type="button" class="w-5 h-5 grid place-items-center rounded-full hover:bg-orange-100 cursor-pointer"
                 :aria-label="'Retirer ' + membre.username" @click="retirer(membre.id)">
-                <i class="fa-solid fa-xmark text-xs"></i>
+                <Icon name="xmark" :size="14" class="text-xs" />
               </button>
             </li>
           </ul>
         </div>
 
         <p class="text-sm" :class="audienceCount === 0 ? 'text-red-600' : 'text-gray-600'">
-          <i class="fa-solid fa-users mr-1.5" aria-hidden="true"></i>
+          <Icon name="users" class="mr-1.5" aria-hidden="true" />
           Cette sélection touche <strong>{{ audienceCount }}</strong> membre(s).
           <span v-if="audienceCount === 0">L'envoi sera refusé.</span>
         </p>
@@ -159,7 +159,7 @@
       </div>
 
       <div v-else-if="!campagnes.length" class="px-5 py-16 text-center">
-        <i class="fa-regular fa-envelope text-4xl text-gray-300" aria-hidden="true"></i>
+        <Icon name="envelope" :size="40" class="text-4xl text-gray-300" aria-hidden="true" />
         <p class="mt-4 text-gray-700">Aucune campagne pour l'instant.</p>
         <p class="mt-1 text-sm text-gray-500">
           Une annonce, une demande de retour, une reprise de contact : commence par choisir pourquoi tu écris.
@@ -199,7 +199,7 @@
             <button type="button" aria-label="Supprimer la campagne"
               class="w-9 h-9 rounded-full grid place-items-center text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
               @click="supprimer(campagne)">
-              <i class="fa-solid fa-trash"></i>
+              <Icon name="trash" />
             </button>
           </div>
         </li>
@@ -218,6 +218,7 @@ import { getStorageUrl } from '@/config';
 import { useNotify, apiErrorMessage } from '@/composables/useNotify';
 import { useConfirm } from '@/composables/useConfirm';
 
+import Icon from '@/components/ui/Icon.vue';
 const notify = useNotify();
 const confirm = useConfirm();
 

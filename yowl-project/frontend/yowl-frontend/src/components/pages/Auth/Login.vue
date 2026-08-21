@@ -27,7 +27,7 @@
                 class="flex items-start gap-3 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600"
                 role="alert"
               >
-                <i class="fa-solid fa-circle-exclamation mt-0.5" aria-hidden="true"></i>
+                <Icon name="circle-exclamation" class="mt-0.5" aria-hidden="true" />
                 <span>{{ errorMessage }}</span>
               </div>
             </Transition>
@@ -37,7 +37,7 @@
               label="Adresse email"
               type="email"
               placeholder="toi@exemple.com"
-              icon="fa-regular fa-envelope"
+              icon="envelope"
               autocomplete="email"
               required
               @enter="submitForm"
@@ -48,7 +48,7 @@
               label="Mot de passe"
               type="password"
               placeholder="Ton mot de passe"
-              icon="fa-solid fa-lock"
+              icon="lock"
               autocomplete="current-password"
               required
               @enter="submitForm"
@@ -77,7 +77,7 @@
           <div
             class="mx-auto w-20 h-20 rounded-3xl bg-gradient-to-br from-orange-primary to-orange-primary-dark grid place-items-center text-white text-3xl shadow-2xl shadow-orange-primary/40 rotate-3 animate-fade-in-up"
           >
-            <i class="fa-solid fa-comments"></i>
+            <Icon name="comments" />
           </div>
           <h2 class="mt-8 font-poppins font-extrabold text-3xl text-white leading-snug animate-fade-in-up animation-delay-200">
             {{ t('auth.loginTitle') }}
@@ -88,7 +88,7 @@
 
           <blockquote class="mt-10 bg-white/5 border border-white/10 backdrop-blur-sm rounded-2xl p-6 text-left animate-fade-in-up animation-delay-400">
             <div class="flex gap-1 text-orange-text mb-3 text-xs" aria-hidden="true">
-              <i v-for="s in 5" :key="s" class="fa-solid fa-star"></i>
+              <Icon name="star" v-for="s in 5" :key="s" />
             </div>
             <p class="text-white/80 text-sm italic leading-relaxed">
               {{ t('auth.loginQuote') }}
@@ -117,7 +117,7 @@
         v-if="verificationSuccess"
         class="fixed top-8 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-emerald-500 text-white px-6 py-3 rounded-xl shadow-xl z-[110]"
       >
-        <i class="fa-solid fa-circle-check"></i>
+        <Icon name="circle-check" />
         {{ t('auth.verified') }}
       </div>
     </Transition>
@@ -135,6 +135,7 @@ import BaseInput from '@/components/ui/BaseInput.vue';
 import BaseButton from '@/components/ui/BaseButton.vue';
 import BaseCheckbox from '@/components/ui/BaseCheckbox.vue';
 
+import Icon from '@/components/ui/Icon.vue';
 const router = useRouter();
 const route = useRoute();
 const { t } = useI18n();

@@ -16,7 +16,6 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^7.1.0",
     "@fortawesome/fontawesome-svg-core": "^7.1.0",
     "@fortawesome/free-brands-svg-icons": "^7.1.0",
     "@fortawesome/free-regular-svg-icons": "^7.1.0",
@@ -31,6 +30,7 @@
     "axios": "^1.13.2",
     "chart.js": "^4.5.1",
     "laravel-echo": "^2.4.0",
+    "lucide-vue-next": "^1.0.0",
     "pinia": "^3.0.4",
     "pinia-plugin-persistedstate": "^4.7.1",
     "pusher-js": "^8.6.0",

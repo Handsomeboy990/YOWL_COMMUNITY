@@ -8,7 +8,7 @@
         class="px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
         @click="$emit('changePage', pagination.current_page - 1)"
       >
-        <i class="fa-solid fa-chevron-left text-xs mr-1" aria-hidden="true"></i>
+        <Icon name="chevron-left" :size="14" class="text-xs mr-1" aria-hidden="true" />
         Précédent
       </button>
 
@@ -35,7 +35,7 @@
         @click="$emit('changePage', pagination.current_page + 1)"
       >
         Suivant
-        <i class="fa-solid fa-chevron-right text-xs ml-1" aria-hidden="true"></i>
+        <Icon name="chevron-right" :size="14" class="text-xs ml-1" aria-hidden="true" />
       </button>
     </div>
   </nav>
@@ -44,6 +44,7 @@
 <script setup>
 import { computed } from 'vue'
 
+import Icon from '@/components/ui/Icon.vue';
 const props = defineProps({
   pagination: {
     type: Object,

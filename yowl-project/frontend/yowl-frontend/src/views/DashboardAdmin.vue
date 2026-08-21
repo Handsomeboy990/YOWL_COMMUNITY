@@ -9,7 +9,7 @@
             <p class="mt-1 text-sm text-white/75">Gestion de la communauté YOWL</p>
           </div>
           <div v-if="pendingReports" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-orange-primary/20 text-orange-200">
-            <i class="fa-solid fa-flag"></i>
+            <Icon name="flag" />
             <span class="text-sm font-medium">
               {{ pendingReports }} signalement{{ pendingReports > 1 ? 's' : '' }} en attente
             </span>
@@ -29,7 +29,7 @@
             ? 'bg-orange-primary text-white shadow-md shadow-orange-primary/30'
             : 'text-gray-500 hover:text-blue-night hover:bg-gray-100'"
           :aria-current="activeTab === tab.key ? 'page' : undefined" @click="selectTab(tab.key)">
-          <i :class="tab.icon"></i>
+          <Icon :name="tab.icon" />
           {{ tab.label }}
           <span v-if="tab.badge"
             class="min-w-5 h-5 px-1.5 rounded-full text-[11px] font-bold grid place-items-center"
@@ -51,7 +51,7 @@
               class="p-5 bg-white rounded-2xl border border-gray-200 shadow-sm">
               <div class="flex items-center justify-between">
                 <span class="w-11 h-11 rounded-xl grid place-items-center" :class="card.tone">
-                  <i :class="card.icon"></i>
+                  <Icon :name="card.icon" :size="20" :class="card.teinte" />
                 </span>
                 <span class="text-3xl font-bold text-blue-night">{{ card.value }}</span>
               </div>
@@ -152,7 +152,7 @@
           <Pagination v-if="reports.last_page > 1" :pagination="reports" @changePage="fetchReports" />
         </template>
 
-        <EmptyState v-else icon="fa-solid fa-shield-halved" title="Rien à modérer"
+        <EmptyState v-else icon="shield-halved" title="Rien à modérer"
           description="Aucun signalement ne correspond à ce filtre." />
       </section>
 
@@ -164,7 +164,7 @@
             <input v-model="userSearch" type="search" placeholder="Rechercher un membre..."
               class="w-full sm:w-64 px-3 py-2 text-sm bg-gray-100 focus:bg-white border border-transparent focus:border-orange-primary rounded-lg outline-none transition-colors"
               @keyup.enter="fetchUsers(1)">
-            <BaseButton variant="primary" size="sm" icon="fa-solid fa-user-plus" @click="isCreateUserOpen = true">
+            <BaseButton variant="primary" size="sm" icon="user-plus" @click="isCreateUserOpen = true">
               Créer un membre
             </BaseButton>
           </div>
@@ -239,7 +239,7 @@
           <Pagination v-if="users.last_page > 1" :pagination="users" @changePage="fetchUsers" />
         </template>
 
-        <EmptyState v-else icon="fa-solid fa-users" title="Aucun membre"
+        <EmptyState v-else icon="users" title="Aucun membre"
           description="Aucun membre ne correspond à cette recherche." />
       </section>
 
@@ -299,7 +299,7 @@
           <Pagination v-if="reviews.last_page > 1" :pagination="reviews" @changePage="fetchReviews" />
         </template>
 
-        <EmptyState v-else icon="fa-regular fa-newspaper" title="Aucun avis"
+        <EmptyState v-else icon="newspaper" title="Aucun avis"
           description="Aucun avis ne correspond à cette recherche." />
       </section>
 
@@ -347,7 +347,7 @@
           <Pagination v-if="comments.last_page > 1" :pagination="comments" @changePage="fetchComments" />
         </template>
 
-        <EmptyState v-else icon="fa-regular fa-comments" title="Aucun commentaire"
+        <EmptyState v-else icon="comments" title="Aucun commentaire"
           description="Aucun commentaire ne correspond à cette recherche." />
       </section>
 
@@ -395,7 +395,7 @@
                 </span>
                 <span v-if="suggestion.subject"
                   class="px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
-                  <i :class="subjectIcon(suggestion.subject)" class="mr-1"></i>{{ subjectLabel(suggestion.subject) }}
+                  <Icon :name="subjectIcon(suggestion.subject)" class="mr-1" />{{ subjectLabel(suggestion.subject) }}
                 </span>
                 <span class="text-xs text-gray-500">
                   {{ suggestion.user?.username || suggestion.name || 'Anonyme' }}
@@ -421,7 +421,7 @@
           <Pagination v-if="suggestions.last_page > 1" :pagination="suggestions" @changePage="fetchSuggestions" />
         </template>
 
-        <EmptyState v-else icon="fa-regular fa-lightbulb" title="Aucune suggestion"
+        <EmptyState v-else icon="lightbulb" title="Aucune suggestion"
           description="Les idées envoyées par les membres apparaîtront ici." />
       </section>
 
@@ -465,6 +465,7 @@ import { getStorageUrl } from '@/config';
 import BaseButton from '@/components/ui/BaseButton.vue';
 import { useAppealStore } from '@/stores/appeal';
 
+import Icon from '@/components/ui/Icon.vue';
 // Panneaux chargés à l'ouverture de leur onglet. L'éditeur de texte et
 // la bibliothèque de graphiques pèsent à eux deux la moitié de cette
 // console, et un modérateur qui traite des signalements n'en ouvre aucun.
@@ -523,26 +524,26 @@ const loading = ref({
 const loaded = { users: false, reviews: false, comments: false, reports: false, suggestions: false };
 
 const tabs = computed(() => [
-  { key: 'overview', label: "Vue d'ensemble", icon: 'fa-solid fa-chart-pie' },
-  { key: 'growth', label: 'Croissance', icon: 'fa-solid fa-arrow-trend-up' },
-  { key: 'reports', label: 'Modération', icon: 'fa-solid fa-flag', badge: pendingReports.value },
-  { key: 'appeals', label: 'Contestations', icon: 'fa-solid fa-scale-balanced', badge: appealStore.pendingCount },
-  { key: 'users', label: 'Membres', icon: 'fa-solid fa-users' },
-  { key: 'reviews', label: 'Avis', icon: 'fa-regular fa-newspaper' },
-  { key: 'comments', label: 'Commentaires', icon: 'fa-regular fa-comments' },
-  { key: 'suggestions', label: 'Suggestions', icon: 'fa-regular fa-lightbulb', badge: newSuggestions.value },
-  { key: 'campaigns', label: 'Campagnes', icon: 'fa-regular fa-envelope' },
-  { key: 'legal', label: 'Pages du site', icon: 'fa-regular fa-file-lines' },
-  { key: 'settings', label: 'Réglages', icon: 'fa-solid fa-sliders' },
-  { key: 'roles', label: 'Rôles et droits', icon: 'fa-solid fa-user-shield' },
-  { key: 'audit', label: 'Journal', icon: 'fa-solid fa-clipboard-list' },
+  { key: 'overview', label: "Vue d'ensemble", icon: 'chart-pie' },
+  { key: 'growth', label: 'Croissance', icon: 'arrow-trend-up' },
+  { key: 'reports', label: 'Modération', icon: 'flag', badge: pendingReports.value },
+  { key: 'appeals', label: 'Contestations', icon: 'scale-balanced', badge: appealStore.pendingCount },
+  { key: 'users', label: 'Membres', icon: 'users' },
+  { key: 'reviews', label: 'Avis', icon: 'newspaper' },
+  { key: 'comments', label: 'Commentaires', icon: 'comments' },
+  { key: 'suggestions', label: 'Suggestions', icon: 'lightbulb', badge: newSuggestions.value },
+  { key: 'campaigns', label: 'Campagnes', icon: 'envelope' },
+  { key: 'legal', label: 'Pages du site', icon: 'file-lines' },
+  { key: 'settings', label: 'Réglages', icon: 'sliders' },
+  { key: 'roles', label: 'Rôles et droits', icon: 'user-shield' },
+  { key: 'audit', label: 'Journal', icon: 'clipboard-list' },
 ]);
 
 const statCards = computed(() => [
-  { label: 'Membres', value: stats.value?.users ?? 0, icon: 'fa-solid fa-users text-blue-600', tone: 'bg-blue-50' },
-  { label: 'Avis', value: stats.value?.reviews ?? 0, icon: 'fa-regular fa-newspaper text-orange-text', tone: 'bg-orange-50' },
-  { label: 'Commentaires', value: stats.value?.comments ?? 0, icon: 'fa-regular fa-comments text-emerald-600', tone: 'bg-emerald-50' },
-  { label: 'Signalements en attente', value: stats.value?.pending_reports ?? 0, icon: 'fa-solid fa-flag text-red-600', tone: 'bg-red-50' },
+  { label: 'Membres', value: stats.value?.users ?? 0, icon: 'users', tone: 'bg-blue-50', teinte: 'text-blue-600' },
+  { label: 'Avis', value: stats.value?.reviews ?? 0, icon: 'newspaper', tone: 'bg-orange-50', teinte: 'text-orange-text' },
+  { label: 'Commentaires', value: stats.value?.comments ?? 0, icon: 'comments', tone: 'bg-emerald-50', teinte: 'text-emerald-600' },
+  { label: 'Signalements en attente', value: stats.value?.pending_reports ?? 0, icon: 'flag', tone: 'bg-red-50', teinte: 'text-red-600' },
 ]);
 
 const reportFilters = [
@@ -553,11 +554,11 @@ const reportFilters = [
 ];
 
 const SUBJECTS = {
-  feature: { label: 'Fonctionnalité', icon: 'fa-solid fa-wand-magic-sparkles' },
-  improvement: { label: 'Amélioration', icon: 'fa-solid fa-arrow-trend-up' },
-  bug: { label: 'Dysfonctionnement', icon: 'fa-solid fa-bug' },
-  content: { label: 'Contenu', icon: 'fa-regular fa-pen-to-square' },
-  other: { label: 'Autre', icon: 'fa-regular fa-comment-dots' },
+  feature: { label: 'Fonctionnalité', icon: 'wand-magic-sparkles' },
+  improvement: { label: 'Amélioration', icon: 'arrow-trend-up' },
+  bug: { label: 'Dysfonctionnement', icon: 'bug' },
+  content: { label: 'Contenu', icon: 'pen-to-square' },
+  other: { label: 'Autre', icon: 'comment-dots' },
 };
 
 const subjectFilters = [
@@ -566,7 +567,7 @@ const subjectFilters = [
 ];
 
 const subjectLabel = (value) => SUBJECTS[value]?.label ?? value;
-const subjectIcon = (value) => SUBJECTS[value]?.icon ?? 'fa-regular fa-comment-dots';
+const subjectIcon = (value) => SUBJECTS[value]?.icon ?? 'comment-dots';
 
 const suggestionFilters = [
   { value: '', label: 'Toutes' },

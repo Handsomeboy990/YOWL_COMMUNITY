@@ -17,7 +17,7 @@
       aria-label="Envoyer le commentaire"
       @click="submit"
     >
-      <i class="fa-solid fa-paper-plane"></i>
+      <Icon name="paper-plane" />
     </button>
   </div>
 </template>
@@ -29,6 +29,7 @@ import { useNotify } from '@/composables/useNotify';
 import { useDraft } from '@/composables/useDraft';
 import { useUserStore } from "@/stores/user";
 
+import Icon from '@/components/ui/Icon.vue';
 const props = defineProps({
   content: String,
   id: Number,

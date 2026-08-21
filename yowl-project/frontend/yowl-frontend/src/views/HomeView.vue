@@ -16,14 +16,14 @@
                   ? 'bg-orange-primary text-white shadow-sm'
                   : 'text-gray-500 hover:text-blue-night'"
                 :aria-pressed="feed === mode.value" @click="switchFeed(mode.value)">
-                <i :class="[mode.icon, 'mr-1.5']"></i>{{ mode.label }}
+                <Icon :name="mode.icon" class="mr-1.5" />{{ mode.label }}
               </button>
             </div>
 
             <!-- Filtres (mobile / tablette : repliables) -->
             <details class="xl:hidden mb-4 bg-white rounded-xl border border-gray-200 overflow-hidden">
                 <summary class="px-4 py-3 font-medium text-blue-night cursor-pointer select-none flex items-center gap-2">
-                    <i class="fa-solid fa-sliders text-orange-text"></i>
+                    <Icon name="sliders" class="text-orange-text" />
                     Filtres et tri
                 </summary>
                 <div class="p-4 pt-0">
@@ -53,7 +53,7 @@
             <!-- Erreur -->
             <div v-else-if="reviewStore.error && reviews.length === 0"
                 class="flex flex-col items-center justify-center text-center py-20 px-4">
-                <i class="fa-solid fa-plug-circle-exclamation text-4xl text-gray-400" aria-hidden="true"></i>
+                <Icon name="plug-circle-exclamation" :size="40" class="text-4xl text-gray-400" aria-hidden="true" />
                 <h2 class="mt-5 text-xl font-semibold text-gray-800">{{ t('feed.loadError') }}</h2>
                 <p class="mt-2 text-gray-600 text-sm max-w-md">{{ reviewStore.error }}</p>
                 <BaseButton class="mt-5" variant="primary" size="sm" @click="reviewStore.fetchReviews()">
@@ -64,7 +64,7 @@
             <!-- Aucun résultat pour la recherche ou les filtres -->
             <div v-else-if="reviews.length === 0 && reviewStore.hasActiveFilters"
                 class="flex flex-col items-center justify-center text-center py-20 px-4">
-                <i class="fa-solid fa-magnifying-glass text-4xl text-gray-400" aria-hidden="true"></i>
+                <Icon name="magnifying-glass" :size="40" class="text-4xl text-gray-400" aria-hidden="true" />
                 <h2 class="mt-5 text-xl font-semibold text-gray-800">{{ t('feed.noResults') }}</h2>
                 <p class="mt-2 text-gray-600 text-sm max-w-md">
                     {{ t('feed.noResultsHint') }}
@@ -136,6 +136,7 @@ import { useBookmarkStore } from '@/stores/bookmark'
 import { useCommentStore } from '@/stores/comment'
 import { useRoute } from 'vue-router'
 
+import Icon from '@/components/ui/Icon.vue';
 const { t } = useI18n()
 const reviewStore = useReviewStore()
 const userStore = useUserStore()
@@ -143,8 +144,8 @@ const followStore = useFollowStore()
 const bookmarkStore = useBookmarkStore()
 
 const feedModes = [
-    { value: 'all', label: t('feed.all'), icon: 'fa-solid fa-globe' },
-    { value: 'following', label: t('feed.following'), icon: 'fa-solid fa-user-group' },
+    { value: 'all', label: t('feed.all'), icon: 'globe' },
+    { value: 'following', label: t('feed.following'), icon: 'user-group' },
 ]
 const feed = ref('all')
 

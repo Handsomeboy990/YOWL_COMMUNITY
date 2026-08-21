@@ -21,7 +21,7 @@
         :class="focused ? 'text-orange-text' : 'text-gray-500'"
         aria-hidden="true"
       >
-        <i :class="icon"></i>
+        <Icon :name="icon" />
       </span>
 
       <input
@@ -51,13 +51,13 @@
         :aria-label="revealed ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
         @click="revealed = !revealed"
       >
-        <i :class="revealed ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+        <Icon :name="revealed ? 'eye-slash' : 'eye'" />
       </button>
     </div>
 
     <p v-if="error" :id="inputId + '-error'" role="alert"
       class="mt-1.5 text-sm text-red-500 flex items-center gap-1.5">
-      <i class="fa-solid fa-circle-exclamation text-xs" aria-hidden="true"></i>
+      <Icon name="circle-exclamation" :size="14" class="text-xs" aria-hidden="true" />
       {{ error }}
     </p>
     <p v-else-if="hint" :id="inputId + '-hint'" class="mt-1.5 text-xs text-gray-500">{{ hint }}</p>
@@ -67,6 +67,7 @@
 <script setup>
 import { computed, ref, useId } from 'vue';
 
+import Icon from '@/components/ui/Icon.vue';
 const props = defineProps({
   modelValue: { type: [String, Number], default: '' },
   label: { type: String, default: '' },

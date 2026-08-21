@@ -7,7 +7,7 @@
         ? 'border-emerald-400 bg-emerald-50 text-emerald-700'
         : 'border-gray-200 text-gray-500 hover:border-emerald-300'"
       :aria-pressed="vote === true" @click="send(true)">
-      <i class="fa-regular fa-thumbs-up mr-1"></i>Oui<span v-if="counts.helpful"> {{ counts.helpful }}</span>
+      <Icon name="thumbs-up" class="mr-1" />Oui<span v-if="counts.helpful"> {{ counts.helpful }}</span>
     </button>
     <button type="button"
       class="px-2.5 py-1 rounded-full border text-xs transition-colors cursor-pointer"
@@ -27,6 +27,7 @@ import api from '@/services/apiService';
 import { useUserStore } from '@/stores/user';
 import { useNotify, apiErrorMessage } from '@/composables/useNotify';
 
+import Icon from '@/components/ui/Icon.vue';
 const { t } = useI18n();
 
 const props = defineProps({

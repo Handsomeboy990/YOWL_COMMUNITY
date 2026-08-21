@@ -3,9 +3,9 @@
     <button type="button"
       class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-500 hover:text-blue-night hover:bg-gray-50 transition-colors cursor-pointer w-full"
       :aria-expanded="open" aria-haspopup="listbox" @click="open = !open">
-      <i class="fa-solid fa-language w-4 text-center"></i>
+      <Icon name="language" class="w-4 text-center" />
       <span class="flex-1 text-left">{{ current }}</span>
-      <i class="fa-solid fa-chevron-down text-xs"></i>
+      <Icon name="chevron-down" :size="14" class="text-xs" />
     </button>
 
     <ul v-if="open" role="listbox" :aria-label="t('settings.language')"
@@ -27,6 +27,7 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { setLocale, supportedLocales } from '@/i18n';
 
+import Icon from '@/components/ui/Icon.vue';
 const { t, locale } = useI18n();
 const open = ref(false);
 const root = ref(null);

@@ -1,6 +1,6 @@
 <template>
   <div class="mt-10 text-right pb-10">
-    <BaseButton variant="danger" icon="fa-solid fa-door-open" :shine="false" @click="leave">
+    <BaseButton variant="danger" icon="door-open" :shine="false" @click="leave">
       {{ t('profile.leave') }}
     </BaseButton>
   </div>

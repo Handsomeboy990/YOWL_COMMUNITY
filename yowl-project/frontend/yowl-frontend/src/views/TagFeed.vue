@@ -8,7 +8,7 @@
 
       <div v-else-if="error"
         class="flex flex-col items-center text-center bg-white border border-gray-200 rounded-2xl py-16 px-4">
-        <i class="fa-solid fa-hashtag text-5xl text-gray-400" aria-hidden="true"></i>
+        <Icon name="hashtag" :size="48" class="text-5xl text-gray-400" aria-hidden="true" />
         <h1 class="mt-5 text-xl font-semibold text-gray-800">{{ t('tag.notFound') }}</h1>
         <p class="mt-2 text-gray-600 text-sm max-w-md">{{ error }}</p>
         <BaseButton class="mt-5" :tag="'router-link'" :to="'/sujets'" variant="primary">
@@ -61,7 +61,7 @@
 
             <div v-else-if="!reviews.length"
               class="flex flex-col items-center text-center bg-white border border-gray-200 rounded-2xl py-14 px-4">
-              <i class="fa-regular fa-comments text-4xl text-gray-400" aria-hidden="true"></i>
+              <Icon name="comments" :size="40" class="text-4xl text-gray-400" aria-hidden="true" />
               <h2 class="mt-4 text-lg font-semibold text-gray-800">{{ t('tag.empty') }}</h2>
               <p class="mt-2 text-sm text-gray-600 max-w-md">{{ t('tag.emptyHint') }}</p>
             </div>
@@ -131,6 +131,7 @@ import { getStorageUrl } from '@/config';
 import { apiErrorMessage } from '@/composables/useNotify';
 import { useUserStore } from '@/stores/user';
 
+import Icon from '@/components/ui/Icon.vue';
 const { t } = useI18n();
 const route = useRoute();
 const userStore = useUserStore();

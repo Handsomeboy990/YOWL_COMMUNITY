@@ -22,7 +22,7 @@
                 <div class="flex-1 max-w-xl mx-auto">
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-500">
-                            <i class="fas fa-search text-sm"></i>
+                            <Icon name="search" :size="16" class="text-sm" />
                         </span>
                         <input v-model="searchQuery" type="text" :placeholder="t('common.search')"
                             class="pl-10 pr-4 py-2.5 w-full bg-gray-100 hover:bg-gray-200/70 focus:bg-white border border-transparent focus:border-orange-primary rounded-full text-gray-900 text-sm focus:outline-none transition-all duration-200"
@@ -32,7 +32,7 @@
 
                 <!-- Actions -->
                 <div class="flex items-center gap-2 md:gap-3 shrink-0">
-                    <BaseButton class="hidden md:inline-flex" variant="primary" size="sm" icon="fa-solid fa-plus" @click="openPublish">
+                    <BaseButton class="hidden md:inline-flex" variant="primary" size="sm" icon="plus" @click="openPublish">
                         {{ t('common.publish') }}
                     </BaseButton>
 
@@ -43,7 +43,7 @@
                             :class="isNotificationsOpen ? 'bg-orange-primary/10 text-orange-text' : 'text-gray-500 hover:bg-gray-100 hover:text-blue-night'"
                             aria-label="Notifications" :aria-expanded="isNotificationsOpen"
                             @click="toggleNotifications">
-                            <i :class="notificationStore.hasUnread ? 'fa-solid fa-bell' : 'fa-regular fa-bell'"></i>
+                            <Icon name="bell" :filled="notificationStore.hasUnread" />
                             <span v-if="notificationStore.hasUnread"
                                 class="absolute top-0.5 right-0.5 min-w-4 h-4 px-1 rounded-full bg-orange-primary text-white text-[10px] font-bold grid place-items-center">
                                 {{ notificationStore.unreadCount > 99 ? '99+' : notificationStore.unreadCount }}
@@ -78,16 +78,16 @@
                                     <p class="text-xs text-gray-500 truncate">@{{ userStore.user?.username }}</p>
                                 </div>
                                 <router-link to="/user/activity" class="flex items-center gap-2.5 px-4 py-2.5 text-sm hover:bg-gray-50" @click="isDropdownOpen = false">
-                                    <i class="fa-regular fa-user text-gray-500 w-4"></i> {{ t('nav.profile') }}
+                                    <Icon name="user" class="text-gray-500 w-4" /> {{ t('nav.profile') }}
                                 </router-link>
                                 <router-link to="/user/summary" class="flex items-center gap-2.5 px-4 py-2.5 text-sm hover:bg-gray-50" @click="isDropdownOpen = false">
-                                    <i class="fa-solid fa-chart-pie text-gray-500 w-4"></i> {{ t('nav.stats') }}
+                                    <Icon name="chart-pie" class="text-gray-500 w-4" /> {{ t('nav.stats') }}
                                 </router-link>
                                 <router-link v-if="userStore.isAdmin" to="/admin" class="flex items-center gap-2.5 px-4 py-2.5 text-sm hover:bg-gray-50" @click="isDropdownOpen = false">
-                                    <i class="fa-solid fa-gauge-high text-gray-500 w-4"></i> {{ t('nav.admin') }}
+                                    <Icon name="gauge-high" class="text-gray-500 w-4" /> {{ t('nav.admin') }}
                                 </router-link>
                                 <button class="w-full flex items-center gap-2.5 text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 cursor-pointer" @click="logout">
-                                    <i class="fa-solid fa-arrow-right-from-bracket w-4"></i> {{ t('common.logout') }}
+                                    <Icon name="arrow-right-from-bracket" class="w-4" /> {{ t('common.logout') }}
                                 </button>
                             </div>
                         </Transition>
@@ -95,7 +95,7 @@
 
                     <BaseButton v-else :tag="'router-link'" :to="'/login'" variant="night" size="sm" :shine="false">
                         <span class="hidden sm:inline">{{ t('common.login') }}</span>
-                        <i class="sm:hidden fa-solid fa-right-to-bracket"></i>
+                        <Icon name="right-to-bracket" class="sm:hidden" />
                     </BaseButton>
                 </div>
             </div>
@@ -108,12 +108,12 @@
                 <router-link v-for="item in mainNav" :key="item.to" :to="item.to"
                     class="flex items-center gap-3.5 px-4 py-3 rounded-xl font-medium transition-all duration-200"
                     :class="isActive(item) ? 'bg-orange-primary/10 text-orange-text' : 'text-blue-night hover:bg-gray-100'">
-                    <i :class="[item.icon, 'w-5 text-center text-lg']"></i>
+                    <Icon :name="item.icon" :size="20" class="w-5 text-lg" />
                     {{ item.label }}
                 </router-link>
 
                 <div class="pt-4">
-                    <BaseButton variant="primary" block icon="fa-solid fa-plus" @click="openPublish">
+                    <BaseButton variant="primary" block icon="plus" @click="openPublish">
                         Publier un avis
                     </BaseButton>
                 </div>
@@ -140,7 +140,7 @@
             <div class="pt-4 border-t border-gray-100 space-y-0.5">
                 <router-link v-for="item in secondaryNav" :key="item.to" :to="item.to"
                     class="flex items-center gap-3 px-4 py-2 rounded-lg text-sm text-gray-500 hover:text-blue-night hover:bg-gray-50 transition-colors">
-                    <i :class="[item.icon, 'w-4 text-center']"></i>
+                    <Icon :name="item.icon" class="w-4" />
                     {{ item.label }}
                 </router-link>
                 <div class="pt-2">
@@ -175,28 +175,28 @@
             <div class="grid grid-cols-5 h-16">
                 <router-link to="/feed" class="flex flex-col items-center justify-center gap-1 text-[11px]"
                     :class="route.name === 'home' ? 'text-orange-text font-semibold' : 'text-gray-500'">
-                    <i class="fa-solid fa-house text-lg"></i>
+                    <Icon name="house" :size="20" class="text-lg" />
                     Fil
                 </router-link>
                 <router-link to="/user/my-reviews" class="flex flex-col items-center justify-center gap-1 text-[11px]"
                     :class="route.name === 'my-reviews' ? 'text-orange-text font-semibold' : 'text-gray-500'">
-                    <i class="fa-solid fa-newspaper text-lg"></i>
+                    <Icon name="newspaper" :size="20" class="text-lg" />
                     Reviews
                 </router-link>
                 <button class="flex flex-col items-center justify-center cursor-pointer" aria-label="Publier un avis" @click="openPublish">
                     <span class="w-12 h-12 -mt-5 rounded-2xl bg-gradient-to-br from-orange-primary to-orange-primary-dark grid place-items-center text-white text-xl shadow-lg shadow-orange-brand/50 border-4 border-white">
-                        <i class="fa-solid fa-plus"></i>
+                        <Icon name="plus" />
                     </span>
                 </button>
                 <router-link to="/user/activity" class="flex flex-col items-center justify-center gap-1 text-[11px]"
                     :class="route.name === 'activity' ? 'text-orange-text font-semibold' : 'text-gray-500'">
-                    <i class="fa-solid fa-clock-rotate-left text-lg"></i>
+                    <Icon name="clock-rotate-left" :size="20" class="text-lg" />
                     Activité
                 </router-link>
                 <router-link :to="userStore.isAuthenticated ? '/user/summary' : '/login'"
                     class="flex flex-col items-center justify-center gap-1 text-[11px]"
                     :class="route.name === 'summary' || route.name === 'login' ? 'text-orange-text font-semibold' : 'text-gray-500'">
-                    <i class="fa-regular fa-user text-lg"></i>
+                    <Icon name="user" :size="20" class="text-lg" />
                     Profil
                 </router-link>
             </div>
@@ -227,6 +227,7 @@ import { usePushNotifications } from '@/composables/usePushNotifications';
 import { useNotificationStore } from '@/stores/notification';
 import NotificationPanel from '@/components/layouts/NotificationPanel.vue';
 
+import Icon from '@/components/ui/Icon.vue';
 const route = useRoute();
 const router = useRouter();
 const { t } = useI18n();
@@ -246,27 +247,27 @@ const notificationsRef = ref(null);
 
 const mainNav = computed(() => {
     const items = [
-        { to: '/feed', icon: 'fa-solid fa-house', label: t('nav.feed'), name: 'home' },
+        { to: '/feed', icon: 'house', label: t('nav.feed'), name: 'home' },
     ];
     if (userStore.isAuthenticated) {
         items.push(
-            { to: '/user/my-reviews', icon: 'fa-solid fa-newspaper', label: t('nav.myReviews'), name: 'my-reviews' },
-            { to: '/user/saved', icon: 'fa-regular fa-bookmark', label: t('nav.saved'), name: 'saved' },
-            { to: '/user/activity', icon: 'fa-solid fa-clock-rotate-left', label: t('nav.activity'), name: 'activity' },
-            { to: '/user/summary', icon: 'fa-solid fa-chart-pie', label: t('nav.stats'), name: 'summary' },
+            { to: '/user/my-reviews', icon: 'newspaper', label: t('nav.myReviews'), name: 'my-reviews' },
+            { to: '/user/saved', icon: 'bookmark', label: t('nav.saved'), name: 'saved' },
+            { to: '/user/activity', icon: 'clock-rotate-left', label: t('nav.activity'), name: 'activity' },
+            { to: '/user/summary', icon: 'chart-pie', label: t('nav.stats'), name: 'summary' },
         );
     }
     if (userStore.isAdmin) {
-        items.push({ to: '/admin', icon: 'fa-solid fa-gauge-high', label: t('nav.admin'), name: 'admin-dashboard' });
+        items.push({ to: '/admin', icon: 'gauge-high', label: t('nav.admin'), name: 'admin-dashboard' });
     }
     return items;
 });
 
 const secondaryNav = [
-    { to: '/about', icon: 'fa-regular fa-circle-question', label: 'À propos' },
-    { to: '/faq', icon: 'fa-regular fa-comments', label: 'FAQ' },
-    { to: '/charte', icon: 'fa-solid fa-shield-halved', label: 'Charte' },
-    { to: '/suggestion', icon: 'fa-regular fa-lightbulb', label: 'Suggestions' },
+    { to: '/about', icon: 'circle-question', label: 'À propos' },
+    { to: '/faq', icon: 'comments', label: 'FAQ' },
+    { to: '/charte', icon: 'shield-halved', label: 'Charte' },
+    { to: '/suggestion', icon: 'lightbulb', label: 'Suggestions' },
 ];
 
 const isActive = (item) => route.name === item.name;

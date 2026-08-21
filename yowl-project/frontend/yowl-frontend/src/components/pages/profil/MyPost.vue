@@ -10,7 +10,7 @@
               {{ profileStore.pagination.total }} review<span v-if="profileStore.pagination.total > 1">s</span>
             </span>
           </p>
-          <BaseButton variant="primary" size="sm" icon="fa-solid fa-plus" @click="openCreateModal">
+          <BaseButton variant="primary" size="sm" icon="plus" @click="openCreateModal">
             Publier un avis
           </BaseButton>
         </div>
@@ -28,7 +28,7 @@
         <!-- Erreur -->
         <div v-else-if="profileStore.reviewsError"
           class="mt-4 flex flex-col items-center text-center bg-white border border-gray-200 rounded-2xl py-14 px-4">
-          <i class="fa-solid fa-plug-circle-exclamation text-4xl text-gray-400" aria-hidden="true"></i>
+          <Icon name="plug-circle-exclamation" :size="40" class="text-4xl text-gray-400" aria-hidden="true" />
           <h2 class="mt-5 text-lg font-semibold text-gray-800">{{ t('profile.reviewsError') }}</h2>
           <p class="mt-2 text-sm text-gray-600 max-w-md">{{ profileStore.reviewsError }}</p>
           <BaseButton class="mt-5" variant="primary" size="sm"
@@ -40,12 +40,12 @@
         <!-- Etat vide -->
         <div v-else-if="!profileStore.reviews.length"
           class="mt-4 flex flex-col items-center text-center bg-white border border-gray-200 rounded-2xl py-16 px-4">
-          <i class="fa-regular fa-pen-to-square text-5xl text-gray-400" aria-hidden="true"></i>
+          <Icon name="pen-to-square" :size="48" class="text-5xl text-gray-400" aria-hidden="true" />
           <h2 class="mt-5 text-xl font-semibold text-gray-800">Aucun avis pour le moment</h2>
           <p class="mt-2 text-gray-600 text-sm max-w-md">
             {{ t('profile.reviewsEmpty') }}
           </p>
-          <BaseButton class="mt-5" variant="primary" icon="fa-solid fa-plus" @click="openCreateModal">
+          <BaseButton class="mt-5" variant="primary" icon="plus" @click="openCreateModal">
             Publier mon premier avis
           </BaseButton>
         </div>
@@ -62,24 +62,24 @@
                      attend simplement son heure. -->
                 <span v-if="isScheduled(review)"
                   class="inline-flex items-center gap-1.5 mt-1.5 px-2 py-0.5 rounded-full bg-sky-50 text-sky-700 text-xs font-medium">
-                  <i class="fa-regular fa-clock"></i>
+                  <Icon name="clock" />
                   {{ t('compose.scheduledBadge', { date: formatDateTime(review.scheduled_for) }) }}
                 </span>
                 <span v-else-if="!review.is_published"
                   class="inline-flex items-center gap-1.5 mt-1.5 px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 text-xs font-medium">
-                  <i class="fa-solid fa-eye-slash"></i> {{ t('profile.removedFromFeed') }}
+                  <Icon name="eye-slash" /> {{ t('profile.removedFromFeed') }}
                 </span>
               </div>
               <div class="flex gap-2 shrink-0">
                 <button type="button" aria-label="Modifier l'avis"
                   class="w-9 h-9 rounded-full grid place-items-center text-gray-500 hover:text-blue-night hover:bg-gray-100 transition-colors cursor-pointer"
                   @click="openEditModal(review)">
-                  <i class="fa-solid fa-pen-to-square"></i>
+                  <Icon name="pen-to-square" />
                 </button>
                 <button type="button" aria-label="Supprimer l'avis"
                   class="w-9 h-9 rounded-full grid place-items-center text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
                   @click="deletePost(review.id)">
-                  <i class="fa-solid fa-trash"></i>
+                  <Icon name="trash" />
                 </button>
               </div>
             </header>
@@ -98,13 +98,13 @@
             <a v-if="safeLink(review)" :href="safeLink(review)" target="_blank" rel="noopener noreferrer"
               class="group mt-4 flex items-center gap-3 p-3 rounded-xl border border-gray-200 hover:border-orange-primary hover:bg-orange-50/40 transition-colors">
               <span class="w-9 h-9 shrink-0 rounded-lg bg-orange-primary/10 grid place-items-center text-orange-text">
-                <i class="fa-solid fa-link"></i>
+                <Icon name="link" />
               </span>
               <span class="min-w-0 flex-1">
                 <span class="block text-sm font-medium text-blue-night truncate">{{ linkHost(review) }}</span>
                 <span class="block text-xs text-gray-500 truncate">{{ safeLink(review) }}</span>
               </span>
-              <i class="fa-solid fa-arrow-up-right-from-square text-gray-300 group-hover:text-orange-text transition-colors"></i>
+              <Icon name="arrow-up-right-from-square" class="text-gray-300 group-hover:text-orange-text transition-colors" />
             </a>
 
             <!-- Une decision de moderation doit ouvrir une porte de sortie,
@@ -122,13 +122,13 @@
             <footer class="mt-auto pt-4 flex items-center justify-between border-t border-gray-100 text-sm">
               <div class="flex items-center gap-4 text-gray-600">
                 <span class="flex items-center gap-1.5">
-                  <i class="fa-solid fa-thumbs-up text-orange-text"></i>{{ review.nb_like }}
+                  <Icon name="thumbs-up" class="text-orange-text" />{{ review.nb_like }}
                 </span>
                 <span class="flex items-center gap-1.5">
-                  <i class="fa-solid fa-thumbs-down"></i>{{ review.nb_dislike }}
+                  <Icon name="thumbs-down" />{{ review.nb_dislike }}
                 </span>
                 <span class="flex items-center gap-1.5">
-                  <i class="fa-regular fa-eye"></i>{{ review.nb_views }}
+                  <Icon name="eye" />{{ review.nb_views }}
                 </span>
               </div>
               <router-link :to="{ name: 'review-detail', params: { id: review.id } }"
@@ -168,6 +168,7 @@ import { useConfirm } from '@/composables/useConfirm';
 import { useReviewStore } from '@/stores/review';
 import { useProfileStore } from '@/stores/profile';
 
+import Icon from '@/components/ui/Icon.vue';
 const { t, locale } = useI18n();
 
 // Une date lue dans une phrase anglaise ne doit pas rester au format francais.

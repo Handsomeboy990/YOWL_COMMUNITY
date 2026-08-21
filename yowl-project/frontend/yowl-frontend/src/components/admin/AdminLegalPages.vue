@@ -51,7 +51,7 @@
         </div>
 
         <div v-if="hasDraft" class="mt-4 flex items-start gap-3 p-3 rounded-xl bg-amber-50 border border-amber-200">
-          <i class="fa-solid fa-circle-info text-amber-600 mt-0.5" aria-hidden="true"></i>
+          <Icon name="circle-info" class="text-amber-600 mt-0.5" aria-hidden="true" />
           <p class="text-sm text-gray-700 flex-1">
             Un brouillon non publié existe. Les visiteurs voient toujours la version précédente.
           </p>
@@ -82,6 +82,7 @@ import RichTextEditor from '@/components/admin/RichTextEditor.vue';
 import { useNotify, apiErrorMessage } from '@/composables/useNotify';
 import { useConfirm } from '@/composables/useConfirm';
 
+import Icon from '@/components/ui/Icon.vue';
 const notify = useNotify();
 const confirm = useConfirm();
 

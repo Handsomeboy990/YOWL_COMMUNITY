@@ -16,7 +16,7 @@
                 :label="t('compose.linkLabel')"
                 type="url"
                 placeholder="https://exemple.com"
-                icon="fa-solid fa-link"
+                icon="link"
                 :hint="t('compose.linkHint')"
             />
 
@@ -25,7 +25,7 @@
                  page arbitraire lui donnerait la main sur ce formulaire. -->
             <div v-if="linkHost" class="flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
                 <span class="w-9 h-9 shrink-0 rounded-lg bg-orange-primary/10 grid place-items-center text-orange-text">
-                    <i class="fa-solid fa-link" aria-hidden="true"></i>
+                    <Icon name="link" aria-hidden="true" />
                 </span>
                 <span class="min-w-0">
                     <span class="block text-sm font-medium text-blue-night truncate">{{ linkHost }}</span>
@@ -59,7 +59,7 @@
                                     {{ t('compose.replyCount', existing.comments_count, { count: existing.comments_count }) }}
                                 </span>
                             </span>
-                            <i class="fa-solid fa-arrow-right text-sky-300 group-hover:text-sky-600 transition-colors mt-1"></i>
+                            <Icon name="arrow-right" class="text-sky-300 group-hover:text-sky-600 transition-colors mt-1" />
                         </a>
                     </li>
                 </ul>
@@ -71,7 +71,7 @@
                 <label
                     class="group flex flex-col items-center justify-center gap-2 w-full rounded-xl border-2 border-dashed border-gray-300 hover:border-orange-primary bg-gray-50 hover:bg-orange-50/50 px-4 py-6 cursor-pointer transition-colors"
                 >
-                    <i class="fa-solid fa-cloud-arrow-up text-2xl text-gray-500 group-hover:text-orange-text transition-colors"></i>
+                    <Icon name="cloud-arrow-up" :size="26" class="text-2xl text-gray-500 group-hover:text-orange-text transition-colors" />
                     <span class="text-sm text-gray-500">{{ t('compose.imagesDrop') }}</span>
                     <input type="file" accept="image/*" multiple class="hidden" @change="submitMedia" />
                 </label>
@@ -84,7 +84,7 @@
                             class="absolute -top-2 -right-2 w-7 h-7 grid place-items-center bg-white rounded-full shadow text-red-500 hover:bg-red-50 cursor-pointer"
                             :aria-label="t('compose.removeImage')"
                             @click="removeNewMedia(index)">
-                            <i class="fas fa-times text-xs"></i>
+                            <Icon name="times" :size="14" class="text-xs" />
                         </button>
                     </div>
                 </div>
@@ -98,7 +98,7 @@
                             class="absolute -top-2 -right-2 w-7 h-7 grid place-items-center bg-white rounded-full shadow text-red-500 hover:bg-red-50 cursor-pointer"
                             :aria-label="t('compose.removeImage')"
                             @click="removeExistingMedia(idx)">
-                            <i class="fas fa-times text-xs"></i>
+                            <Icon name="times" :size="14" class="text-xs" />
                         </button>
                     </div>
                 </div>
@@ -116,7 +116,7 @@
                             class="w-5 h-5 grid place-items-center rounded-full hover:bg-orange-primary/20 cursor-pointer"
                             :aria-label="`Retirer le tag ${tag}`"
                             @click="removeTag(index)">
-                            <i class="fa-solid fa-xmark text-xs"></i>
+                            <Icon name="xmark" :size="14" class="text-xs" />
                         </button>
                     </span>
                 </div>
@@ -125,7 +125,7 @@
                     <BaseInput
                         :modelValue="form.tagInput"
                         :placeholder="t('compose.tagsPlaceholder')"
-                        icon="fa-solid fa-hashtag"
+                        icon="hashtag"
                         @update:modelValue="onTagInput"
                         @keydown="onTagKeydown"
                     />
@@ -149,13 +149,14 @@
                     :aria-expanded="scheduling"
                     @click="toggleScheduling">
                     <span class="flex items-center gap-2.5 text-sm text-blue-night">
-                        <i class="fa-regular fa-clock text-gray-500" aria-hidden="true"></i>
+                        <Icon name="clock" class="text-gray-500" aria-hidden="true" />
                         {{ form.scheduled_for
                             ? t('compose.scheduledFor', { date: formatSchedule(form.scheduled_for) })
                             : t('compose.schedule') }}
                     </span>
-                    <i class="fa-solid fa-chevron-down text-xs text-gray-400 transition-transform"
-                        :class="scheduling ? 'rotate-180' : ''" aria-hidden="true"></i>
+                    <Icon name="chevron-down" :size="14"
+                        class="text-gray-400 transition-transform"
+                        :class="scheduling ? 'rotate-180' : ''" />
                 </button>
 
                 <div v-if="scheduling" class="border-t border-gray-100 px-4 py-4 space-y-3">
@@ -198,6 +199,7 @@ import BaseInput from '@/components/ui/BaseInput.vue';
 import BaseTextarea from '@/components/ui/BaseTextarea.vue';
 import BaseButton from '@/components/ui/BaseButton.vue';
 
+import Icon from '@/components/ui/Icon.vue';
 const props = defineProps({
     isOpen: Boolean,
     editedReview: Object,

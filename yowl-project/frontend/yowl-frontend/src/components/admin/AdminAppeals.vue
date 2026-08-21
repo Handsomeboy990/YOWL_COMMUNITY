@@ -25,7 +25,7 @@
     </div>
 
     <div v-else-if="!store.queue.length" class="px-5 py-16 text-center">
-      <i class="fa-regular fa-circle-check text-4xl text-gray-300" aria-hidden="true"></i>
+      <Icon name="circle-check" :size="40" class="text-4xl text-gray-300" aria-hidden="true" />
       <p class="mt-4 text-gray-600">
         {{ statut === 'pending' ? 'Aucune contestation en attente.' : 'Rien à afficher pour ce filtre.' }}
       </p>
@@ -98,6 +98,7 @@ import BaseTextarea from '@/components/ui/BaseTextarea.vue';
 import { getStorageUrl } from '@/config';
 import { useAppealStore } from '@/stores/appeal';
 
+import Icon from '@/components/ui/Icon.vue';
 const store = useAppealStore();
 const statut = ref('pending');
 const ouvert = ref(null);

@@ -14,7 +14,7 @@
 
         <div v-else-if="!store.mine.length"
           class="mt-6 flex flex-col items-center text-center bg-white border border-gray-200 rounded-2xl py-16 px-4">
-          <i class="fa-regular fa-comments text-5xl text-gray-400" aria-hidden="true"></i>
+          <Icon name="comments" :size="48" class="text-5xl text-gray-400" aria-hidden="true" />
           <h2 class="mt-5 text-lg font-semibold text-gray-800">{{ t('appeal.empty') }}</h2>
           <p class="mt-2 text-gray-600 text-sm max-w-md">{{ t('appeal.emptyHint') }}</p>
         </div>
@@ -49,7 +49,7 @@
             </div>
 
             <p v-else class="mt-4 text-sm text-gray-500 flex items-center gap-2">
-              <i class="fa-regular fa-clock" aria-hidden="true"></i>
+              <Icon name="clock" aria-hidden="true" />
               {{ t('appeal.waiting') }}
             </p>
           </li>
@@ -66,6 +66,7 @@ import AppShell from '@/components/layouts/AppShell.vue';
 import ProfileHeader from '@/components/layouts/ProfileHeader.vue';
 import { useAppealStore } from '@/stores/appeal';
 
+import Icon from '@/components/ui/Icon.vue';
 const { t, locale } = useI18n();
 const store = useAppealStore();
 

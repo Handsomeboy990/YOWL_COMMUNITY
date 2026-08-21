@@ -4,7 +4,7 @@
     <div class="w-full max-w-md bg-white border border-gray-200 rounded-2xl p-8 text-center">
       <span class="mx-auto w-14 h-14 rounded-2xl grid place-items-center text-2xl"
         :class="etat === 'fait' ? 'bg-emerald-50 text-emerald-600' : 'bg-gray-100 text-gray-500'">
-        <i :class="etat === 'fait' ? 'fa-solid fa-check' : 'fa-regular fa-envelope'" aria-hidden="true"></i>
+        <Icon name="check" />
       </span>
 
       <h1 class="mt-5 font-poppins font-bold text-xl text-blue-night">
@@ -32,6 +32,7 @@ import BaseButton from '@/components/ui/BaseButton.vue';
 import api from '@/services/apiService';
 import { apiErrorMessage } from '@/composables/useNotify';
 
+import Icon from '@/components/ui/Icon.vue';
 const route = useRoute();
 const etat = ref('attente');
 const envoi = ref(false);

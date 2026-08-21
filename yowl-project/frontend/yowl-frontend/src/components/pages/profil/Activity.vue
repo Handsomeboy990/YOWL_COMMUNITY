@@ -11,7 +11,7 @@
       <div v-else>
         <template v-if="!groups.length">
           <div class="flex flex-col items-center text-center py-12">
-            <i class="fa-regular fa-clock text-4xl text-gray-400" aria-hidden="true"></i>
+            <Icon name="clock" :size="40" class="text-4xl text-gray-400" aria-hidden="true" />
             <h2 class="mt-4 text-lg font-semibold text-gray-800">{{ t('profile.activityEmpty') }}</h2>
             <p class="mt-2 text-sm text-gray-600 max-w-md">
               {{ t('profile.activityEmptyHelp') }}
@@ -55,6 +55,7 @@ import { ref, onMounted } from 'vue';
 import { useUserStore } from '@/stores/user';
 import api from '@/services/apiService';
 
+import Icon from '@/components/ui/Icon.vue';
 const { t } = useI18n();
 
 const groups = ref([]);

@@ -9,10 +9,10 @@
     <!-- Au survol d'un abonnement actif, le libelle annonce le desabonnement,
          pour qu'on ne clique pas sans savoir ce que ca fait. -->
     <span v-if="following" class="inline-flex items-center gap-1.5">
-      <i class="fa-solid fa-check"></i>{{ hovered ? t('review.unfollow') : t('review.following') }}
+      <Icon name="check" />{{ hovered ? t('review.unfollow') : t('review.following') }}
     </span>
     <span v-else class="inline-flex items-center gap-1.5">
-      <i class="fa-solid fa-plus"></i>{{ t('review.follow') }}
+      <Icon name="plus" />{{ t('review.follow') }}
     </span>
   </button>
 </template>
@@ -22,6 +22,7 @@ import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useFollowStore } from '@/stores/follow';
 
+import Icon from '@/components/ui/Icon.vue';
 const props = defineProps({
   type: { type: String, default: 'user' },
   id: { type: Number, required: true },

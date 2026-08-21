@@ -9,7 +9,7 @@
         Retournez sur le fil pour continuer à explorer les avis de la communauté.
       </p>
       <div class="mt-8 flex justify-center gap-4">
-        <BaseButton :tag="'router-link'" :to="'/'" variant="primary" size="lg" icon="fa-solid fa-house">
+        <BaseButton :tag="'router-link'" :to="'/'" variant="primary" size="lg" icon="house">
           Retour à l'accueil
         </BaseButton>
       </div>

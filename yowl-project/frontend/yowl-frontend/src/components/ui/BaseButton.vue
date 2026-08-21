@@ -11,7 +11,7 @@
       class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"
       aria-hidden="true"
     ></span>
-    <i v-else-if="icon" :class="icon" aria-hidden="true"></i>
+    <Icon v-if="icon" :name="icon" :size="16" />
     <slot />
     <span
       v-if="shine"
@@ -28,6 +28,7 @@
 <script setup>
 import { computed } from 'vue';
 
+import Icon from '@/components/ui/Icon.vue';
 const props = defineProps({
   variant: { type: String, default: 'primary' }, // primary | night | ghost | danger | outline
   size: { type: String, default: 'md' }, // sm | md | lg | xl

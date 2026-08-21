@@ -38,7 +38,7 @@
     </div>
 
     <div v-else-if="error" class="bg-white rounded-2xl border border-gray-200 p-8 text-center">
-      <i class="fa-solid fa-plug-circle-exclamation text-3xl text-gray-400" aria-hidden="true"></i>
+      <Icon name="plug-circle-exclamation" :size="32" class="text-3xl text-gray-400" aria-hidden="true" />
       <p class="mt-4 text-sm text-gray-600">{{ error }}</p>
       <BaseButton class="mt-4" size="sm" variant="primary" @click="load">Réessayer</BaseButton>
     </div>
@@ -61,7 +61,7 @@
         <button v-if="!role.protected" type="button"
           class="w-9 h-9 rounded-full grid place-items-center text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
           aria-label="Supprimer le rôle" @click="removeRole(role)">
-          <i class="fa-solid fa-trash"></i>
+          <Icon name="trash" />
         </button>
       </header>
 
@@ -73,7 +73,7 @@
             : 'border-gray-200 text-gray-500 hover:border-gray-300'">
           <input type="checkbox" class="sr-only" :checked="role.permissions.includes(permission)"
             @change="togglePermission(role, permission)" />
-          <i :class="role.permissions.includes(permission) ? 'fa-solid fa-check' : 'fa-regular fa-square'"></i>
+          <Icon name="check" />
           {{ permission }}
         </label>
       </div>
@@ -91,6 +91,7 @@ import BaseButton from '@/components/ui/BaseButton.vue';
 import { useNotify, apiErrorMessage } from '@/composables/useNotify';
 import { useConfirm } from '@/composables/useConfirm';
 
+import Icon from '@/components/ui/Icon.vue';
 const notify = useNotify();
 const confirm = useConfirm();
 

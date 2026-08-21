@@ -13,7 +13,7 @@
             <span class="text-sm" :class="index === step ? 'text-blue-night font-medium' : 'text-gray-500'">
               {{ label }}
             </span>
-            <i v-if="index < steps.length - 1" class="fa-solid fa-chevron-right text-gray-300 text-xs ml-1"></i>
+            <Icon name="chevron-right" :size="14" class="text-gray-300 text-xs ml-1" v-if="index < steps.length - 1" />
           </li>
         </ol>
 
@@ -35,7 +35,7 @@
                 ? 'border-orange-primary bg-orange-50 text-orange-text font-medium'
                 : 'border-gray-200 text-gray-600 hover:border-gray-300'"
               :aria-pressed="chosenTags.has(tag.id)" @click="toggleTag(tag.id)">
-              <i v-if="chosenTags.has(tag.id)" class="fa-solid fa-check mr-1.5"></i>#{{ tag.name }}
+              <Icon name="check" class="mr-1.5" v-if="chosenTags.has(tag.id)" />#{{ tag.name }}
             </button>
           </div>
 
@@ -93,7 +93,7 @@
           </p>
 
           <div class="mt-8 flex flex-col sm:flex-row gap-3">
-            <BaseButton variant="primary" icon="fa-solid fa-plus" @click="publishFirst">
+            <BaseButton variant="primary" icon="plus" @click="publishFirst">
               Publier mon premier avis
             </BaseButton>
             <BaseButton variant="ghost" @click="finish">Voir mon fil</BaseButton>
@@ -120,6 +120,7 @@ import { useFollowStore } from '@/stores/follow';
 import { useReviewStore } from '@/stores/review';
 import { useNotify, apiErrorMessage } from '@/composables/useNotify';
 
+import Icon from '@/components/ui/Icon.vue';
 const { t } = useI18n();
 
 const router = useRouter();

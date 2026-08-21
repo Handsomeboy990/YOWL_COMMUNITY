@@ -9,7 +9,7 @@
     </div>
 
     <div v-else-if="error" class="py-10 text-center">
-      <i class="fa-solid fa-plug-circle-exclamation text-3xl text-gray-400" aria-hidden="true"></i>
+      <Icon name="plug-circle-exclamation" :size="32" class="text-3xl text-gray-400" aria-hidden="true" />
       <p class="mt-4 text-sm text-gray-600">{{ error }}</p>
       <BaseButton class="mt-4" size="sm" variant="primary" @click="load">Réessayer</BaseButton>
     </div>
@@ -76,9 +76,8 @@
             <span class="shrink-0 mt-0.5 px-2 py-0.5 rounded bg-gray-100 text-[11px] text-gray-500">#{{ review.id }}</span>
             <p class="flex-1 min-w-0 text-sm text-gray-700">{{ truncate(review.content, 90) }}</p>
             <span class="shrink-0 text-xs text-gray-500">
-              <i class="fa-solid fa-thumbs-up mr-1"></i>{{ review.nb_like }}
-              <i v-if="!review.is_published" class="fa-solid fa-eye-slash ml-2 text-amber-500"
-                title="Retiré du fil"></i>
+              <Icon name="thumbs-up" class="mr-1" />{{ review.nb_like }}
+              <Icon name="eye-slash" class="ml-2 text-amber-500" v-if="!review.is_published" title="Retiré du fil" />
             </span>
           </li>
         </ul>
@@ -123,7 +122,7 @@
 
         <div v-if="newPassword" class="mt-3 flex items-center gap-2 p-3 rounded-xl bg-orange-50 border border-orange-200">
           <code class="flex-1 font-mono text-sm text-blue-night break-all">{{ newPassword }}</code>
-          <BaseButton size="sm" variant="ghost" icon="fa-regular fa-copy" @click="copyPassword">Copier</BaseButton>
+          <BaseButton size="sm" variant="ghost" icon="copy" @click="copyPassword">Copier</BaseButton>
         </div>
 
         <div class="mt-3 flex justify-end">
@@ -152,6 +151,7 @@ import { getStorageUrl } from '@/config';
 import { useNotify, apiErrorMessage } from '@/composables/useNotify';
 import { useConfirm } from '@/composables/useConfirm';
 
+import Icon from '@/components/ui/Icon.vue';
 const props = defineProps({
   isOpen: { type: Boolean, default: false },
   userId: { type: [Number, String], default: null },

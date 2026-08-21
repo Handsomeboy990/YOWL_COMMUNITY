@@ -20,12 +20,12 @@
           </h1>
           <p class="text-white/75 text-sm mt-0.5">@{{ user?.username }}</p>
           <p class="text-white/70 text-sm mt-2">
-            <i class="fa-regular fa-calendar mr-1.5"></i>
+            <Icon name="calendar" class="mr-1.5" />
             Membre depuis {{ memberSince }}
           </p>
         </div>
 
-        <BaseButton variant="primary" size="sm" icon="fa-solid fa-pen" @click="isEditOpen = true">
+        <BaseButton variant="primary" size="sm" icon="pen" @click="isEditOpen = true">
           Modifier le profil
         </BaseButton>
       </div>
@@ -36,7 +36,7 @@
       <div v-for="tile in tiles" :key="tile.label"
         class="bg-white border border-gray-200 rounded-xl px-4 py-4 transition-shadow hover:shadow-md">
         <div class="flex items-center gap-2 text-gray-500 text-xs sm:text-sm">
-          <i :class="[tile.icon, 'text-orange-text']"></i>
+          <Icon :name="tile.icon" class="text-orange-text" />
           {{ tile.label }}
         </div>
         <p v-if="loading" class="mt-2 h-8 w-16 rounded skeleton"></p>
@@ -53,7 +53,7 @@
         :class="route.name === tab.name
           ? 'text-orange-text'
           : 'text-gray-500 hover:text-blue-night'">
-        <i :class="[tab.icon, 'mr-2']"></i>{{ tab.label }}
+        <Icon :name="tab.icon" class="mr-2" />{{ tab.label }}
         <span v-if="route.name === tab.name"
           class="absolute left-3 right-3 -bottom-px h-0.5 rounded-full bg-orange-primary"></span>
       </router-link>
@@ -73,6 +73,7 @@ import EditProfilModal from '@/components/pages/profil/EditProfilModal.vue';
 import { useUserStore } from '@/stores/user';
 import { useProfileStore } from '@/stores/profile';
 
+import Icon from '@/components/ui/Icon.vue';
 const { t, locale } = useI18n();
 
 const route = useRoute();
@@ -107,18 +108,18 @@ const format = (value) => (value ?? 0).toLocaleString(locale.value === 'en' ? 'e
 const tiles = computed(() => {
   const stats = profileStore.stats;
   return [
-    { label: t('profile.statReviews'), icon: 'fa-solid fa-newspaper', value: format(stats?.reviews) },
-    { label: t('profile.statViews'), icon: 'fa-regular fa-eye', value: format(stats?.views) },
-    { label: t('profile.statLikes'), icon: 'fa-regular fa-thumbs-up', value: format(stats?.likes) },
-    { label: t('profile.statComments'), icon: 'fa-regular fa-comment', value: format(stats?.comments_received) },
+    { label: t('profile.statReviews'), icon: 'newspaper', value: format(stats?.reviews) },
+    { label: t('profile.statViews'), icon: 'eye', value: format(stats?.views) },
+    { label: t('profile.statLikes'), icon: 'thumbs-up', value: format(stats?.likes) },
+    { label: t('profile.statComments'), icon: 'comment', value: format(stats?.comments_received) },
   ];
 });
 
 const tabs = computed(() => [
-  { to: '/user/summary', name: 'summary', label: t('profile.tabSummary'), icon: 'fa-solid fa-chart-pie' },
-  { to: '/user/my-reviews', name: 'my-reviews', label: t('profile.tabReviews'), icon: 'fa-solid fa-newspaper' },
-  { to: '/user/saved', name: 'saved', label: t('profile.tabSaved'), icon: 'fa-regular fa-bookmark' },
-  { to: '/user/activity', name: 'activity', label: t('profile.tabActivity'), icon: 'fa-solid fa-clock-rotate-left' },
-  { to: '/user/contestations', name: 'appeals', label: t('profile.tabAppeals'), icon: 'fa-solid fa-scale-balanced' },
+  { to: '/user/summary', name: 'summary', label: t('profile.tabSummary'), icon: 'chart-pie' },
+  { to: '/user/my-reviews', name: 'my-reviews', label: t('profile.tabReviews'), icon: 'newspaper' },
+  { to: '/user/saved', name: 'saved', label: t('profile.tabSaved'), icon: 'bookmark' },
+  { to: '/user/activity', name: 'activity', label: t('profile.tabActivity'), icon: 'clock-rotate-left' },
+  { to: '/user/contestations', name: 'appeals', label: t('profile.tabAppeals'), icon: 'scale-balanced' },
 ]);
 </script>

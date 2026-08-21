@@ -8,7 +8,7 @@
 
       <div v-else-if="error"
         class="flex flex-col items-center text-center bg-white border border-gray-200 rounded-2xl py-16 px-4">
-        <i class="fa-regular fa-circle-question text-5xl text-gray-400" aria-hidden="true"></i>
+        <Icon name="circle-question" :size="48" class="text-5xl text-gray-400" aria-hidden="true" />
         <h1 class="mt-5 text-xl font-semibold text-gray-800">{{ t('member.notFound') }}</h1>
         <p class="mt-2 text-gray-600 text-sm max-w-md">{{ error }}</p>
         <BaseButton class="mt-5" :tag="'router-link'" :to="'/feed'" variant="primary">Retour au fil</BaseButton>
@@ -30,7 +30,7 @@
               </h1>
               <p class="text-white/75 text-sm mt-0.5">@{{ member.username }}</p>
               <p class="text-white/70 text-sm mt-2">
-                <i class="fa-regular fa-calendar mr-1.5" aria-hidden="true"></i>
+                <Icon name="calendar" class="mr-1.5" aria-hidden="true" />
                 Membre depuis {{ memberSince }}
               </p>
             </div>
@@ -43,7 +43,7 @@
                   ? 'border-white/40 text-white hover:bg-white/10'
                   : 'border-white/30 text-white/80 hover:border-red-300 hover:text-red-200'"
                 @click="toggleBlock">
-                <i class="fa-solid fa-ban mr-1.5" aria-hidden="true"></i>
+                <Icon name="ban" class="mr-1.5" aria-hidden="true" />
                 {{ member.blocked ? t('member.unblock') : t('member.block') }}
               </button>
             </div>
@@ -89,6 +89,7 @@ import { getStorageUrl } from '@/config';
 import { useNotify, apiErrorMessage } from '@/composables/useNotify';
 import { useConfirm } from '@/composables/useConfirm';
 
+import Icon from '@/components/ui/Icon.vue';
 const { t } = useI18n();
 const route = useRoute();
 const notify = useNotify();

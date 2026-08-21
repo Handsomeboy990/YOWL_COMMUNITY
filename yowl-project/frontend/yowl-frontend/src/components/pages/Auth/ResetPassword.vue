@@ -21,7 +21,7 @@
             <div v-if="errorMessage"
               class="flex items-start gap-3 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600"
               role="alert">
-              <i class="fa-solid fa-circle-exclamation mt-0.5" aria-hidden="true"></i>
+              <Icon name="circle-exclamation" class="mt-0.5" aria-hidden="true" />
               <span>{{ errorMessage }}</span>
             </div>
           </Transition>
@@ -31,7 +31,7 @@
             label="Nouveau mot de passe"
             type="password"
             placeholder="8 caractères minimum"
-            icon="fa-solid fa-lock"
+            icon="lock"
             autocomplete="new-password"
             required
           />
@@ -41,7 +41,7 @@
             label="Confirmation"
             type="password"
             placeholder="Confirme ton mot de passe"
-            icon="fa-solid fa-lock"
+            icon="lock"
             autocomplete="new-password"
             required
             @enter="submit"
@@ -56,7 +56,7 @@
       <template v-else>
         <div class="text-center py-4">
           <div class="mx-auto w-16 h-16 rounded-2xl bg-emerald-500/10 grid place-items-center text-emerald-500 text-2xl mb-5">
-            <i class="fa-solid fa-circle-check"></i>
+            <Icon name="circle-check" />
           </div>
           <h1 class="font-poppins font-extrabold text-2xl text-blue-night">{{ t('auth.resetDone') }}</h1>
           <p class="text-gray-500 mt-3 text-sm">
@@ -70,7 +70,7 @@
 
       <p v-if="!done" class="mt-6 text-center text-sm text-gray-500">
         <router-link to="/login" class="text-orange-text font-semibold hover:underline">
-          <i class="fa-solid fa-arrow-left text-xs mr-1"></i>
+          <Icon name="arrow-left" :size="14" class="text-xs mr-1" />
           {{ t('auth.backToLogin') }}
         </router-link>
       </p>
@@ -86,6 +86,7 @@ import api from '@/services/apiService';
 import BaseInput from '@/components/ui/BaseInput.vue';
 import BaseButton from '@/components/ui/BaseButton.vue';
 
+import Icon from '@/components/ui/Icon.vue';
 const { t } = useI18n();
 
 const route = useRoute();

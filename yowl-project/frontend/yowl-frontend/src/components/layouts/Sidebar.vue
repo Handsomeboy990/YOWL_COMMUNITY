@@ -38,7 +38,7 @@
            tout remettre a zero, et n'apparait que s'il y a quelque chose a
            remettre a zero. -->
       <BaseButton v-if="hasActiveFilters" variant="ghost" block :shine="false"
-        icon="fa-solid fa-arrow-rotate-left" @click="resetAll">
+        icon="arrow-rotate-left" @click="resetAll">
         {{ t('filters.reset') }}
       </BaseButton>
       <p v-else class="text-white/70 text-xs text-center">

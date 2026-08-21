@@ -6,7 +6,7 @@
       <!-- Retour au fil -->
       <router-link to="/feed"
         class="inline-flex items-center gap-2 text-gray-600 hover:text-orange-text mb-6 transition-colors font-medium">
-        <i class="fa-solid fa-arrow-left"></i>
+        <Icon name="arrow-left" />
         <span>Retour au fil</span>
       </router-link>
 
@@ -35,7 +35,7 @@
                 :src="getStorageUrl(review.user.picture)" alt="Photo de profil">
             </div>
             <div v-else class="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-gray-200 to-gray-300 rounded-full grid place-items-center">
-              <i class="fa-solid fa-user text-gray-600 text-xl"></i>
+              <Icon name="user" :size="22" class="text-gray-600 text-xl" />
             </div>
             <div>
               <p class="font-semibold text-gray-900 text-base md:text-lg">{{ review.user?.username }}</p>
@@ -43,7 +43,7 @@
             </div>
           </div>
           <div class="flex items-center gap-2 text-gray-500 text-sm">
-            <i class="fa-regular fa-eye"></i>
+            <Icon name="eye" />
             <span>{{ review.nb_views }} vues</span>
           </div>
         </header>
@@ -91,10 +91,7 @@
                   : 'text-gray-600 hover:text-orange-text'
               ]" @click="toggleReaction('like')">
                 <div class="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-orange-primary to-orange-primary-dark rounded-full grid place-items-center shadow-sm group-hover:shadow-md transition-all group-active:scale-95">
-                  <i :class="[
-                    review.user_reaction === 'like' ? 'fa-solid fa-thumbs-up' : 'fa-regular fa-thumbs-up',
-                    'text-white'
-                  ]"></i>
+                  <Icon name="thumbs-up" />
                 </div>
                 <span class="font-semibold text-base md:text-lg">{{ review.nb_like }}</span>
               </button>
@@ -107,10 +104,7 @@
                   : 'text-gray-600 hover:text-blue-600'
               ]" @click="toggleReaction('dislike')">
                 <div class="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-blue-night to-blue-night-light rounded-full grid place-items-center shadow-sm group-hover:shadow-md transition-all group-active:scale-95">
-                  <i :class="[
-                    review.user_reaction === 'dislike' ? 'fa-solid fa-thumbs-down' : 'fa-regular fa-thumbs-down',
-                    'text-white'
-                  ]"></i>
+                  <Icon name="thumbs-down" />
                 </div>
                 <span class="font-semibold text-base md:text-lg">{{ review.nb_dislike }}</span>
               </button>
@@ -118,7 +112,7 @@
 
             <!-- Nombre de commentaires -->
             <div class="flex items-center gap-2 text-gray-600 font-medium">
-              <i class="fa-regular fa-comment text-lg"></i>
+              <Icon name="comment" :size="20" class="text-lg" />
               <span class="text-base md:text-lg">{{ commentCount }} commentaires</span>
             </div>
           </footer>
@@ -132,7 +126,7 @@
 
       <!-- Introuvable -->
       <div v-else class="flex flex-col items-center justify-center py-20 animate-fade-in">
-        <i class="fa-regular fa-file-lines text-6xl text-gray-300 mb-4"></i>
+        <Icon name="file-lines" :size="56" class="text-6xl text-gray-300 mb-4" />
         <h2 class="text-xl font-semibold text-gray-700 mb-2">Review introuvable</h2>
         <p class="text-gray-500 mb-6">Cette review a peut-être été supprimée ou n'existe pas.</p>
         <router-link to="/feed"
@@ -162,6 +156,7 @@ import { useNotify, apiErrorMessage } from '@/composables/useNotify';
 import { useUserStore } from '@/stores/user'
 import api from '@/services/apiService'
 
+import Icon from '@/components/ui/Icon.vue';
 const { t, locale } = useI18n();
 
 // Une date lue dans une phrase anglaise ne reste pas au format francais.

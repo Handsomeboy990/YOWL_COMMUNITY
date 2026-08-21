@@ -41,7 +41,7 @@
 
     <p v-if="error" :id="textareaId + '-error'" role="alert"
       class="mt-1.5 text-sm text-red-500 flex items-center gap-1.5">
-      <i class="fa-solid fa-circle-exclamation text-xs" aria-hidden="true"></i>
+      <Icon name="circle-exclamation" :size="14" class="text-xs" aria-hidden="true" />
       {{ error }}
     </p>
   </div>
@@ -50,6 +50,7 @@
 <script setup>
 import { computed, ref, useId } from 'vue';
 
+import Icon from '@/components/ui/Icon.vue';
 const props = defineProps({
   modelValue: { type: String, default: '' },
   label: { type: String, default: '' },

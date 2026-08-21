@@ -7,7 +7,7 @@
              au lieu de le confier a un toast qui disparait. -->
         <div v-if="sent" class="bg-white border border-gray-200 rounded-2xl p-8 text-center animate-fade-in-up">
           <span class="w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-600 grid place-items-center mx-auto">
-            <i class="fa-solid fa-check text-2xl"></i>
+            <Icon name="check" :size="26" class="text-2xl" />
           </span>
           <h1 class="mt-5 font-poppins font-bold text-2xl text-blue-night">{{ t('suggest.received') }}</h1>
           <p class="mt-3 text-gray-600 leading-relaxed">
@@ -29,7 +29,7 @@
 
           <!-- Ce que ce formulaire n'est pas : la confusion la plus frequente -->
           <aside class="mt-5 flex gap-3 p-4 rounded-2xl bg-orange-50 border border-orange-200">
-            <i class="fa-solid fa-circle-info text-orange-text mt-0.5"></i>
+            <Icon name="circle-info" class="text-orange-text mt-0.5" />
             <p class="text-sm text-gray-700 leading-relaxed">
               Pour signaler le message d'un membre, n'utilise pas ce formulaire :
               passe par le bouton <span class="font-medium">Signaler</span> {{ t('suggest.reportInstead') }}
@@ -47,7 +47,7 @@
                     ? 'border-orange-primary bg-orange-50 text-orange-text'
                     : 'border-gray-200 text-gray-600 hover:border-gray-300'">
                   <input v-model="form.subject" type="radio" :value="option.value" class="sr-only" />
-                  <i :class="option.icon"></i>
+                  <Icon :name="option.icon" />
                   {{ option.label }}
                 </label>
               </div>
@@ -78,14 +78,14 @@
               </p>
               <div v-if="!userStore.isAuthenticated" class="grid sm:grid-cols-2 gap-3">
                 <BaseInput v-model="form.name" label="Ton nom" placeholder="Jean Dupont"
-                  icon="fa-regular fa-user" />
+                  icon="user" />
                 <BaseInput v-model="form.email" label="Ton email" type="email" placeholder="toi@exemple.com"
-                  icon="fa-regular fa-envelope" />
+                  icon="envelope" />
               </div>
             </div>
 
             <div class="flex flex-col sm:flex-row sm:justify-end gap-3 pt-2">
-              <BaseButton type="submit" variant="primary" icon="fa-regular fa-paper-plane"
+              <BaseButton type="submit" variant="primary" icon="paper-plane"
                 :loading="isSending" :disabled="tooShort">
                 Envoyer ma suggestion
               </BaseButton>
@@ -108,17 +108,18 @@ import { useNotify, apiErrorMessage } from '@/composables/useNotify';
 import { useUserStore } from '@/stores/user';
 import api from '@/services/apiService';
 
+import Icon from '@/components/ui/Icon.vue';
 const { t } = useI18n();
 
 const notify = useNotify();
 const userStore = useUserStore();
 
 const subjects = computed(() => [
-  { value: 'feature', label: t('suggest.subjectFeature'), icon: 'fa-solid fa-wand-magic-sparkles' },
-  { value: 'improvement', label: t('suggest.subjectImprovement'), icon: 'fa-solid fa-arrow-trend-up' },
-  { value: 'bug', label: t('suggest.subjectBug'), icon: 'fa-solid fa-bug' },
-  { value: 'content', label: t('suggest.subjectContent'), icon: 'fa-regular fa-pen-to-square' },
-  { value: 'other', label: t('suggest.subjectOther'), icon: 'fa-regular fa-comment-dots' },
+  { value: 'feature', label: t('suggest.subjectFeature'), icon: 'wand-magic-sparkles' },
+  { value: 'improvement', label: t('suggest.subjectImprovement'), icon: 'arrow-trend-up' },
+  { value: 'bug', label: t('suggest.subjectBug'), icon: 'bug' },
+  { value: 'content', label: t('suggest.subjectContent'), icon: 'pen-to-square' },
+  { value: 'other', label: t('suggest.subjectOther'), icon: 'comment-dots' },
 ]);
 
 const blank = () => ({ name: '', email: '', subject: 'feature', message: '' });

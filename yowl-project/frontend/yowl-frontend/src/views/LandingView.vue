@@ -79,10 +79,10 @@
           </p>
 
           <div class="mt-10 flex flex-wrap items-center gap-4 animate-fade-in-up animation-delay-400">
-            <BaseButton :tag="'router-link'" :to="'/signup'" variant="primary" size="xl" icon="fa-solid fa-rocket">
+            <BaseButton :tag="'router-link'" :to="'/signup'" variant="primary" size="xl" icon="rocket">
               Créer mon compte
             </BaseButton>
-            <BaseButton :tag="'router-link'" :to="'/feed'" variant="outline" size="xl" icon="fa-regular fa-eye" :shine="false">
+            <BaseButton :tag="'router-link'" :to="'/feed'" variant="outline" size="xl" icon="eye" :shine="false">
               Explorer le fil
             </BaseButton>
           </div>
@@ -126,17 +126,17 @@
               <p class="text-blue-night/80 text-[15px] leading-relaxed mb-4">{{ card.content }}</p>
               <div class="flex items-center gap-5 text-sm text-gray-500 border-t border-gray-100 pt-3.5">
                 <span class="flex items-center gap-1.5 text-orange-text font-semibold">
-                  <i class="fa-solid fa-thumbs-up"></i> {{ card.likes }}
+                  <Icon name="thumbs-up" /> {{ card.likes }}
                 </span>
-                <span class="flex items-center gap-1.5"><i class="fa-regular fa-comment"></i> {{ card.comments }}</span>
-                <span class="flex items-center gap-1.5 ml-auto"><i class="fa-regular fa-eye"></i> {{ card.views }}</span>
+                <span class="flex items-center gap-1.5"><Icon name="comment" /> {{ card.comments }}</span>
+                <span class="flex items-center gap-1.5 ml-auto"><Icon name="eye" /> {{ card.views }}</span>
               </div>
             </article>
 
             <!-- Bulles de réaction flottantes -->
-            <span class="float-emoji-badge badge-like"><i class="fa-solid fa-thumbs-up"></i></span>
-            <span class="float-emoji-badge badge-comment"><i class="fa-solid fa-comment"></i></span>
-            <span class="float-emoji-badge badge-star"><i class="fa-solid fa-bolt"></i></span>
+            <span class="float-emoji-badge badge-like"><Icon name="thumbs-up" /></span>
+            <span class="float-emoji-badge badge-comment"><Icon name="comment" /></span>
+            <span class="float-emoji-badge badge-star"><Icon name="bolt" /></span>
           </div>
         </div>
       </div>
@@ -199,7 +199,7 @@
             class="w-14 h-14 rounded-2xl grid place-items-center text-xl text-white mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500"
             :class="feature.bg"
           >
-            <i :class="feature.icon"></i>
+            <Icon :name="feature.icon" />
           </div>
           <h3 class="font-poppins font-bold text-xl text-blue-night mb-3">{{ feature.title }}</h3>
           <p class="text-gray-500 leading-relaxed">{{ feature.text }}</p>
@@ -222,7 +222,7 @@
             <span
               class="w-20 h-20 rounded-3xl bg-gradient-to-br from-orange-primary to-orange-primary-dark text-white inline-grid place-items-center text-2xl shadow-xl shadow-orange-brand/40 rotate-3 hover:rotate-0 transition-transform duration-500"
             >
-              <i :class="step.icon"></i>
+              <Icon :name="step.icon" />
             </span>
             <span
               class="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-blue-night text-white text-sm font-poppins font-bold grid place-items-center"
@@ -231,11 +231,7 @@
           </div>
           <h3 class="mt-6 font-poppins font-bold text-xl text-blue-night">{{ step.title }}</h3>
           <p class="mt-3 text-gray-500 leading-relaxed">{{ step.text }}</p>
-          <i
-            v-if="i < steps.length - 1"
-            class="hidden md:block fa-solid fa-arrow-right-long absolute top-8 -right-7 text-orange-text/40 text-2xl"
-            aria-hidden="true"
-          ></i>
+          <Icon name="arrow-right-long" :size="26" class="hidden md:block absolute top-8 -right-7 text-orange-text/40 text-2xl" v-if="i < steps.length - 1" aria-hidden="true" />
         </div>
       </div>
     </section>
@@ -258,7 +254,7 @@
         <article class="reveal bg-white rounded-2xl border border-gray-100 p-8 shadow-sm hover:shadow-2xl hover:shadow-orange-brand/20 hover:-translate-y-2 transition-all duration-500">
           <div class="flex items-center justify-between mb-6">
             <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-primary to-orange-primary-dark grid place-items-center text-white text-xl">
-              <i class="fa-solid fa-mobile-screen-button"></i>
+              <Icon name="mobile-screen-button" />
             </div>
             <span class="text-xs font-bold uppercase tracking-wide px-3 py-1 rounded-full bg-emerald-50 text-emerald-600">Recommandé</span>
           </div>
@@ -277,7 +273,7 @@
         <!-- Bookmarklet -->
         <article class="reveal bg-white rounded-2xl border border-gray-100 p-8 shadow-sm hover:shadow-2xl hover:shadow-orange-brand/20 hover:-translate-y-2 transition-all duration-500">
           <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#7C5CFC] to-[#9d85ff] grid place-items-center text-white text-xl mb-6">
-            <i class="fa-solid fa-bookmark"></i>
+            <Icon name="bookmark" />
           </div>
           <h3 class="font-poppins font-bold text-xl text-blue-night mb-3">Le bouton favori</h3>
           <p class="text-gray-500 text-sm leading-relaxed mb-5">
@@ -288,7 +284,7 @@
             class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#5B3FD4] text-white font-semibold text-sm shadow-lg shadow-[#5B3FD4]/30 cursor-grab active:cursor-grabbing select-none"
             title="Glisse-moi dans ta barre de favoris"
             @click.prevent>
-            <i class="fa-solid fa-bolt"></i>
+            <Icon name="bolt" />
             Partager sur YOWL
           </a>
           <p class="mt-4 text-xs text-gray-500">
@@ -299,7 +295,7 @@
         <!-- Extension -->
         <article class="reveal bg-white rounded-2xl border border-gray-100 p-8 shadow-sm hover:shadow-2xl hover:shadow-orange-brand/20 hover:-translate-y-2 transition-all duration-500">
           <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-night to-blue-night-light grid place-items-center text-white text-xl mb-6">
-            <i class="fa-solid fa-puzzle-piece"></i>
+            <Icon name="puzzle-piece" />
           </div>
           <h3 class="font-poppins font-bold text-xl text-blue-night mb-3">L'extension Chrome</h3>
           <p class="text-gray-500 text-sm leading-relaxed mb-5">
@@ -332,7 +328,7 @@
           class="reveal bg-white/5 border border-white/10 backdrop-blur-sm rounded-2xl p-8 hover:bg-white/10 transition-colors duration-500"
         >
           <div class="flex gap-1 text-orange-text mb-5" aria-hidden="true">
-            <i v-for="s in 5" :key="s" class="fa-solid fa-star text-sm"></i>
+            <Icon name="star" :size="16" class="text-sm" v-for="s in 5" :key="s" />
           </div>
           <p class="text-white/80 leading-relaxed italic">« {{ quote.text }} »</p>
           <footer class="mt-6 flex items-center gap-3">
@@ -363,7 +359,7 @@
           Inscription gratuite en moins de deux minutes. Rejoins la conversation dès maintenant.
         </p>
         <div class="relative mt-10 flex flex-wrap justify-center gap-4">
-          <BaseButton :tag="'router-link'" :to="'/signup'" variant="night" size="xl" icon="fa-solid fa-user-plus">
+          <BaseButton :tag="'router-link'" :to="'/signup'" variant="night" size="xl" icon="user-plus">
             Je m'inscris gratuitement
           </BaseButton>
           <BaseButton :tag="'router-link'" :to="'/about'" variant="outline" size="xl" :shine="false">
@@ -415,6 +411,7 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import BaseButton from '@/components/ui/BaseButton.vue';
 import { useReviewStore } from '@/stores/review';
 
+import Icon from '@/components/ui/Icon.vue';
 const reviewStore = useReviewStore();
 
 const scrolled = ref(false);
@@ -464,37 +461,37 @@ const mockCards = [
 
 const features = [
   {
-    icon: 'fa-solid fa-pen-nib',
+    icon: 'pen-nib',
     bg: 'bg-gradient-to-br from-orange-primary to-orange-primary-dark',
     title: 'Publie tes avis',
     text: "Un article, une vidéo, un produit ? Partage le lien, ajoute tes photos et donne ton avis en toute liberté.",
   },
   {
-    icon: 'fa-solid fa-comments',
+    icon: 'comments',
     bg: 'bg-gradient-to-br from-blue-night to-blue-night-light',
     title: 'Discussions en fil',
     text: 'Réponds aux avis, lance des débats et suis les conversations grâce aux fils de commentaires imbriqués.',
   },
   {
-    icon: 'fa-solid fa-thumbs-up',
+    icon: 'thumbs-up',
     bg: 'bg-gradient-to-br from-[#7C5CFC] to-[#9d85ff]',
     title: 'Réactions instantanées',
     text: "Like ou dislike en un clic : l'opinion de la communauté se dessine en temps réel sur chaque contenu.",
   },
   {
-    icon: 'fa-solid fa-magnifying-glass',
+    icon: 'magnifying-glass',
     bg: 'bg-gradient-to-br from-[#12B886] to-[#3dd9a4]',
     title: 'Recherche et filtres',
     text: "Retrouve les avis par mots-clés, tags, popularité ou fraîcheur. Le contenu qui t'intéresse, sans bruit.",
   },
   {
-    icon: 'fa-solid fa-chart-line',
+    icon: 'chart-line',
     bg: 'bg-gradient-to-br from-[#F59F00] to-[#ffc94d]',
     title: 'Statistiques personnelles',
     text: "Suis l'impact de tes publications : vues, réactions et engagement, le tout dans ton tableau de bord.",
   },
   {
-    icon: 'fa-solid fa-shield-heart',
+    icon: 'shield-heart',
     bg: 'bg-gradient-to-br from-[#E64980] to-[#f783ac]',
     title: 'Espace bienveillant',
     text: 'Une charte claire et une modération active pour des échanges respectueux entre 13 et 35 ans.',
@@ -503,17 +500,17 @@ const features = [
 
 const steps = [
   {
-    icon: 'fa-solid fa-user-plus',
+    icon: 'user-plus',
     title: 'Crée ton compte',
     text: 'Inscription gratuite avec ton email. Un code de vérification et te voilà membre de la communauté.',
   },
   {
-    icon: 'fa-solid fa-link',
+    icon: 'link',
     title: 'Partage un contenu',
     text: "Colle le lien d'une page qui t'a marqué, ajoute ton avis, des images et quelques tags.",
   },
   {
-    icon: 'fa-solid fa-bolt',
+    icon: 'bolt',
     title: 'Fais réagir',
     text: 'La communauté commente, like et débat. Ton avis devient une conversation.',
   },

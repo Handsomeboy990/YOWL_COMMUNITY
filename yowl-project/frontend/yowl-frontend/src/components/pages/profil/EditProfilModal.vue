@@ -7,19 +7,19 @@
         <label
           class="cursor-pointer inline-flex items-center gap-2 text-sm font-medium text-orange-text hover:text-orange-primary-dark transition-colors"
         >
-          <i class="fa-solid fa-camera"></i>
+          <Icon name="camera" />
           Changer ma photo
           <input type="file" accept="image/*" class="hidden" @change="submitPhoto" />
         </label>
       </div>
 
-      <BaseInput v-model="form.fullname" label="Nom complet" icon="fa-regular fa-user" disabled />
-      <BaseInput v-model="form.username" label="Pseudo" icon="fa-solid fa-at" />
-      <BaseInput v-model="form.email" label="Adresse email" type="email" icon="fa-regular fa-envelope" />
-      <BaseInput v-model="form.birthdate" label="Date de naissance" type="date" icon="fa-regular fa-calendar" readonly
+      <BaseInput v-model="form.fullname" label="Nom complet" icon="user" disabled />
+      <BaseInput v-model="form.username" label="Pseudo" icon="at" />
+      <BaseInput v-model="form.email" label="Adresse email" type="email" icon="envelope" />
+      <BaseInput v-model="form.birthdate" label="Date de naissance" type="date" icon="calendar" readonly
         hint="La date de naissance ne peut pas être modifiée" />
       <BaseInput v-model="form.newPassword" label="Nouveau mot de passe" type="password"
-        placeholder="Laisser vide pour ne pas changer" icon="fa-solid fa-lock" autocomplete="new-password" />
+        placeholder="Laisser vide pour ne pas changer" icon="lock" autocomplete="new-password" />
 
       <!-- Actions -->
       <div class="flex justify-end gap-3 pt-2">
@@ -40,6 +40,7 @@ import BaseModal from '@/components/ui/BaseModal.vue';
 import BaseInput from '@/components/ui/BaseInput.vue';
 import BaseButton from '@/components/ui/BaseButton.vue';
 
+import Icon from '@/components/ui/Icon.vue';
 const userStore = useUserStore();
 const notify = useNotify();
 const saving = ref(false);

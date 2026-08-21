@@ -8,7 +8,7 @@
           hebdomadaires. Recalculés au plus toutes les quinze minutes.
         </p>
       </div>
-      <BaseButton variant="night" size="sm" icon="fa-solid fa-file-csv" :loading="exporting" @click="exporter">
+      <BaseButton variant="night" size="sm" icon="file-csv" :loading="exporting" @click="exporter">
         Exporter en CSV
       </BaseButton>
     </header>
@@ -18,7 +18,7 @@
     </div>
 
     <div v-else-if="error" class="bg-white rounded-2xl border border-gray-200 px-5 py-14 text-center">
-      <i class="fa-solid fa-plug-circle-exclamation text-4xl text-gray-300" aria-hidden="true"></i>
+      <Icon name="plug-circle-exclamation" :size="40" class="text-4xl text-gray-300" aria-hidden="true" />
       <p class="mt-4 text-gray-700">{{ error }}</p>
       <BaseButton class="mt-4" variant="primary" size="sm" @click="charger">Réessayer</BaseButton>
     </div>
@@ -30,7 +30,7 @@
           class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
           <div class="flex items-center gap-3">
             <span class="w-10 h-10 rounded-xl grid place-items-center" :class="carte.tone">
-              <i :class="carte.icon" aria-hidden="true"></i>
+              <Icon :name="carte.icon" />
             </span>
             <p class="text-sm text-gray-600">{{ carte.label }}</p>
           </div>
@@ -166,6 +166,7 @@ import BaseButton from '@/components/ui/BaseButton.vue';
 import api from '@/services/apiService';
 import { useNotify, apiErrorMessage } from '@/composables/useNotify';
 
+import Icon from '@/components/ui/Icon.vue';
 ChartJS.register(
   ArcElement, BarElement, CategoryScale, Filler, Legend,
   LinearScale, LineElement, PointElement, Tooltip
@@ -188,21 +189,21 @@ const cartes = computed(() => {
   return [
     {
       label: 'Actifs ce mois', value: format(dernier?.actifs),
-      hint: dernier?.libelle ?? '', icon: 'fa-solid fa-users text-blue-600', tone: 'bg-blue-50',
+      hint: dernier?.libelle ?? '', icon: 'users', tone: 'bg-blue-50',
     },
     {
       label: 'Commentaires par membre', value: data.value.commentaires.moyenne,
       hint: 'médiane ' + data.value.commentaires.mediane,
-      icon: 'fa-regular fa-comments text-emerald-600', tone: 'bg-emerald-50',
+      icon: 'comments', tone: 'bg-emerald-50',
     },
     {
       label: "Taux d'engagement", value: data.value.engagement.taux + ' %',
-      hint: 'sur trente jours', icon: 'fa-solid fa-bolt text-orange-text', tone: 'bg-orange-50',
+      hint: 'sur trente jours', icon: 'bolt', tone: 'bg-orange-50',
     },
     {
       label: 'Temps par session', value: data.value.sessions.moyenne_minutes + ' min',
       hint: data.value.sessions.sessions + ' session(s) mesurée(s)',
-      icon: 'fa-regular fa-clock text-violet-600', tone: 'bg-violet-50',
+      icon: 'clock', tone: 'bg-violet-50',
     },
   ];
 });

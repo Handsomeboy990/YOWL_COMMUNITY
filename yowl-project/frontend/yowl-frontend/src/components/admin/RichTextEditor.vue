@@ -10,7 +10,7 @@
           ? 'bg-orange-primary text-white'
           : 'text-gray-600 hover:bg-gray-200'"
         @click="outil.action">
-        <i :class="outil.icone" aria-hidden="true"></i>
+        <Icon :name="outil.icone" />
       </button>
 
       <span class="w-px h-6 bg-gray-300 mx-1" aria-hidden="true"></span>
@@ -19,17 +19,17 @@
         class="w-9 h-9 rounded-lg grid place-items-center text-sm text-gray-600 hover:bg-gray-200 cursor-pointer"
         :class="editor.isActive('link') ? 'bg-orange-primary text-white' : ''"
         @click="setLink">
-        <i class="fa-solid fa-link" aria-hidden="true"></i>
+        <Icon name="link" aria-hidden="true" />
       </button>
       <button type="button" title="Insérer une image" aria-label="Insérer une image"
         class="w-9 h-9 rounded-lg grid place-items-center text-sm text-gray-600 hover:bg-gray-200 cursor-pointer"
         @click="pickImage">
-        <i class="fa-regular fa-image" aria-hidden="true"></i>
+        <Icon name="image" aria-hidden="true" />
       </button>
       <button type="button" title="Insérer une vidéo" aria-label="Insérer une vidéo"
         class="w-9 h-9 rounded-lg grid place-items-center text-sm text-gray-600 hover:bg-gray-200 cursor-pointer"
         @click="setVideo">
-        <i class="fa-brands fa-youtube" aria-hidden="true"></i>
+        <Icon name="youtube" aria-hidden="true" />
       </button>
 
       <span class="flex-1"></span>
@@ -37,12 +37,12 @@
       <button type="button" title="Annuler" aria-label="Annuler"
         class="w-9 h-9 rounded-lg grid place-items-center text-sm text-gray-600 hover:bg-gray-200 cursor-pointer disabled:opacity-40"
         :disabled="!editor.can().undo()" @click="editor.chain().focus().undo().run()">
-        <i class="fa-solid fa-rotate-left" aria-hidden="true"></i>
+        <Icon name="rotate-left" aria-hidden="true" />
       </button>
       <button type="button" title="Rétablir" aria-label="Rétablir"
         class="w-9 h-9 rounded-lg grid place-items-center text-sm text-gray-600 hover:bg-gray-200 cursor-pointer disabled:opacity-40"
         :disabled="!editor.can().redo()" @click="editor.chain().focus().redo().run()">
-        <i class="fa-solid fa-rotate-right" aria-hidden="true"></i>
+        <Icon name="rotate-right" aria-hidden="true" />
       </button>
     </div>
 
@@ -62,6 +62,7 @@ import Youtube from '@tiptap/extension-youtube';
 import api from '@/services/apiService';
 import { useNotify, apiErrorMessage } from '@/composables/useNotify';
 
+import Icon from '@/components/ui/Icon.vue';
 const props = defineProps({
   modelValue: { type: String, default: '' },
 });
@@ -101,15 +102,15 @@ watch(
 );
 
 const outils = [
-  { nom: 'Gras', icone: 'fa-solid fa-bold', action: () => editor.value.chain().focus().toggleBold().run(), actif: () => editor.value?.isActive('bold') },
-  { nom: 'Italique', icone: 'fa-solid fa-italic', action: () => editor.value.chain().focus().toggleItalic().run(), actif: () => editor.value?.isActive('italic') },
-  { nom: 'Barré', icone: 'fa-solid fa-strikethrough', action: () => editor.value.chain().focus().toggleStrike().run(), actif: () => editor.value?.isActive('strike') },
-  { nom: 'Titre de section', icone: 'fa-solid fa-heading', action: () => editor.value.chain().focus().toggleHeading({ level: 2 }).run(), actif: () => editor.value?.isActive('heading', { level: 2 }) },
-  { nom: 'Sous-titre', icone: 'fa-solid fa-h', action: () => editor.value.chain().focus().toggleHeading({ level: 3 }).run(), actif: () => editor.value?.isActive('heading', { level: 3 }) },
-  { nom: 'Liste à puces', icone: 'fa-solid fa-list-ul', action: () => editor.value.chain().focus().toggleBulletList().run(), actif: () => editor.value?.isActive('bulletList') },
-  { nom: 'Liste numérotée', icone: 'fa-solid fa-list-ol', action: () => editor.value.chain().focus().toggleOrderedList().run(), actif: () => editor.value?.isActive('orderedList') },
-  { nom: 'Citation', icone: 'fa-solid fa-quote-left', action: () => editor.value.chain().focus().toggleBlockquote().run(), actif: () => editor.value?.isActive('blockquote') },
-  { nom: 'Séparateur', icone: 'fa-solid fa-minus', action: () => editor.value.chain().focus().setHorizontalRule().run() },
+  { nom: 'Gras', icone: 'bold', action: () => editor.value.chain().focus().toggleBold().run(), actif: () => editor.value?.isActive('bold') },
+  { nom: 'Italique', icone: 'italic', action: () => editor.value.chain().focus().toggleItalic().run(), actif: () => editor.value?.isActive('italic') },
+  { nom: 'Barré', icone: 'strikethrough', action: () => editor.value.chain().focus().toggleStrike().run(), actif: () => editor.value?.isActive('strike') },
+  { nom: 'Titre de section', icone: 'heading', action: () => editor.value.chain().focus().toggleHeading({ level: 2 }).run(), actif: () => editor.value?.isActive('heading', { level: 2 }) },
+  { nom: 'Sous-titre', icone: 'h', action: () => editor.value.chain().focus().toggleHeading({ level: 3 }).run(), actif: () => editor.value?.isActive('heading', { level: 3 }) },
+  { nom: 'Liste à puces', icone: 'list-ul', action: () => editor.value.chain().focus().toggleBulletList().run(), actif: () => editor.value?.isActive('bulletList') },
+  { nom: 'Liste numérotée', icone: 'list-ol', action: () => editor.value.chain().focus().toggleOrderedList().run(), actif: () => editor.value?.isActive('orderedList') },
+  { nom: 'Citation', icone: 'quote-left', action: () => editor.value.chain().focus().toggleBlockquote().run(), actif: () => editor.value?.isActive('blockquote') },
+  { nom: 'Séparateur', icone: 'minus', action: () => editor.value.chain().focus().setHorizontalRule().run() },
 ];
 
 function setLink() {

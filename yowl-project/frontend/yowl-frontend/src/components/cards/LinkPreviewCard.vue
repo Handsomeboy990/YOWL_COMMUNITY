@@ -11,7 +11,7 @@
     <div class="flex items-start gap-3 p-3">
       <span v-if="!preview?.image || imageFailed"
         class="w-10 h-10 shrink-0 rounded-lg bg-orange-primary/10 grid place-items-center text-orange-text">
-        <i class="fa-solid fa-link"></i>
+        <Icon name="link" />
       </span>
 
       <span class="min-w-0 flex-1">
@@ -25,7 +25,7 @@
         </span>
       </span>
 
-      <i class="fa-solid fa-arrow-up-right-from-square text-gray-300 group-hover:text-orange-text transition-colors mt-1"></i>
+      <Icon name="arrow-up-right-from-square" class="text-gray-300 group-hover:text-orange-text transition-colors mt-1" />
     </div>
   </a>
 </template>
@@ -33,6 +33,7 @@
 <script setup>
 import { computed, ref } from 'vue';
 
+import Icon from '@/components/ui/Icon.vue';
 const props = defineProps({
   url: { type: String, required: true },
   preview: { type: Object, default: null },

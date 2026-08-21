@@ -12,20 +12,20 @@
     </div>
 
     <div v-else-if="error" class="p-8 text-center">
-      <i class="fa-solid fa-plug-circle-exclamation text-3xl text-gray-400" aria-hidden="true"></i>
+      <Icon name="plug-circle-exclamation" :size="32" class="text-3xl text-gray-400" aria-hidden="true" />
       <p class="mt-4 text-sm text-gray-600">{{ error }}</p>
       <BaseButton class="mt-4" size="sm" variant="primary" @click="load()">Réessayer</BaseButton>
     </div>
 
     <div v-else-if="!entries.length" class="p-12 text-center">
-      <i class="fa-regular fa-clipboard text-4xl text-gray-400" aria-hidden="true"></i>
+      <Icon name="clipboard" :size="40" class="text-4xl text-gray-400" aria-hidden="true" />
       <p class="mt-4 text-sm text-gray-600">Aucune action enregistrée pour le moment.</p>
     </div>
 
     <ul v-else class="divide-y divide-gray-50">
       <li v-for="entry in entries" :key="entry.id" class="px-5 py-4 flex items-start gap-4">
         <span class="w-9 h-9 shrink-0 rounded-xl grid place-items-center bg-gray-100 text-gray-500">
-          <i :class="iconFor(entry.action)"></i>
+          <Icon :name="iconFor(entry.action)" />
         </span>
         <div class="min-w-0 flex-1">
           <p class="text-sm text-blue-night">
@@ -53,6 +53,7 @@ import BaseButton from '@/components/ui/BaseButton.vue';
 import Pagination from '@/components/layouts/Pagination.vue';
 import { apiErrorMessage } from '@/composables/useNotify';
 
+import Icon from '@/components/ui/Icon.vue';
 const entries = ref([]);
 const pagination = ref({ current_page: 1, last_page: 1, total: 0 });
 const loading = ref(true);
@@ -69,17 +70,17 @@ const LABELS = {
 };
 
 const ICONS = {
-  'settings.updated': 'fa-solid fa-sliders',
-  'role.created': 'fa-solid fa-user-shield',
-  'role.deleted': 'fa-solid fa-user-slash',
-  'role.permissions_updated': 'fa-solid fa-key',
-  'permission.created': 'fa-solid fa-key',
-  'user.created': 'fa-solid fa-user-plus',
-  'user.roles_updated': 'fa-solid fa-user-gear',
+  'settings.updated': 'sliders',
+  'role.created': 'user-shield',
+  'role.deleted': 'user-slash',
+  'role.permissions_updated': 'key',
+  'permission.created': 'key',
+  'user.created': 'user-plus',
+  'user.roles_updated': 'user-gear',
 };
 
 const labelFor = (action) => LABELS[action] ?? action;
-const iconFor = (action) => ICONS[action] ?? 'fa-solid fa-circle-info';
+const iconFor = (action) => ICONS[action] ?? 'circle-info';
 
 const formatDate = (value) =>
   new Date(value).toLocaleString('fr-FR', {

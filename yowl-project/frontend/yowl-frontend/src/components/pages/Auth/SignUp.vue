@@ -10,7 +10,7 @@
           <div
             class="w-20 h-20 rounded-3xl bg-gradient-to-br from-orange-primary to-orange-primary-dark grid place-items-center text-white text-3xl shadow-2xl shadow-orange-primary/40 -rotate-3 animate-fade-in-up"
           >
-            <i class="fa-solid fa-bullhorn"></i>
+            <Icon name="bullhorn" />
           </div>
           <h2 class="mt-8 font-poppins font-extrabold text-3xl text-white leading-snug animate-fade-in-up animation-delay-200">
             Exprime-toi librement
@@ -22,7 +22,7 @@
           <ul class="mt-10 space-y-4 animate-fade-in-up animation-delay-400">
             <li v-for="perk in perks" :key="perk" class="flex items-center gap-3 text-white/80">
               <span class="w-7 h-7 rounded-full bg-orange-primary/20 text-orange-text grid place-items-center text-xs">
-                <i class="fa-solid fa-check"></i>
+                <Icon name="check" />
               </span>
               {{ perk }}
             </li>
@@ -55,7 +55,7 @@
                 class="flex items-start gap-3 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600"
                 role="alert"
               >
-                <i class="fa-solid fa-circle-exclamation mt-0.5" aria-hidden="true"></i>
+                <Icon name="circle-exclamation" class="mt-0.5" aria-hidden="true" />
                 <span>{{ errorMessage }}</span>
               </div>
             </Transition>
@@ -65,7 +65,7 @@
                 v-model="form.firstname"
                 :label="t('auth.firstName')"
                 placeholder="Jean"
-                icon="fa-regular fa-user"
+                icon="user"
                 autocomplete="given-name"
                 required
               />
@@ -73,7 +73,7 @@
                 v-model="form.lastname"
                 label="Nom"
                 placeholder="Dupont"
-                icon="fa-regular fa-user"
+                icon="user"
                 autocomplete="family-name"
                 required
               />
@@ -83,7 +83,7 @@
               v-model="form.username"
               label="Pseudo"
               placeholder="Le_J0k3r"
-              icon="fa-solid fa-at"
+              icon="at"
               :hint="t('auth.visibleToAll')"
               required
             />
@@ -93,7 +93,7 @@
               label="Adresse email"
               type="email"
               placeholder="toi@exemple.com"
-              icon="fa-regular fa-envelope"
+              icon="envelope"
               autocomplete="email"
               required
             />
@@ -102,7 +102,7 @@
               v-model="form.birthdate"
               label="Date de naissance"
               type="date"
-              icon="fa-regular fa-calendar"
+              icon="calendar"
               :hint="t('auth.ageRule')"
               required
             />
@@ -113,7 +113,7 @@
                 label="Mot de passe"
                 type="password"
                 :placeholder="t('auth.passwordHint')"
-                icon="fa-solid fa-lock"
+                icon="lock"
                 autocomplete="new-password"
                 required
               />
@@ -122,7 +122,7 @@
                 label="Confirmation"
                 type="password"
                 placeholder="Confirme-le"
-                icon="fa-solid fa-lock"
+                icon="lock"
                 autocomplete="new-password"
                 required
               />
@@ -158,7 +158,7 @@
         v-if="verificationSuccess"
         class="fixed top-8 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-emerald-500 text-white px-6 py-3 rounded-xl shadow-xl z-[110]"
       >
-        <i class="fa-solid fa-circle-check"></i>
+        <Icon name="circle-check" />
         {{ t('auth.verified') }}
       </div>
     </Transition>
@@ -176,6 +176,7 @@ import BaseInput from '@/components/ui/BaseInput.vue';
 import BaseButton from '@/components/ui/BaseButton.vue';
 import BaseCheckbox from '@/components/ui/BaseCheckbox.vue';
 
+import Icon from '@/components/ui/Icon.vue';
 const { t } = useI18n();
 
 const userStore = useUserStore();
