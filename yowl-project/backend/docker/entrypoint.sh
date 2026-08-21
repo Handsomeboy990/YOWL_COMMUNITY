@@ -18,10 +18,22 @@ php artisan view:cache
 # veille, negocie son TLS, ou l'hebergeur n'a pas fini de cabler le reseau.
 # Avec set -e, un seul refus tuait le conteneur, et l'hebergeur ne rapportait
 # qu'un echec de reveil sans dire ce qui n'avait pas repondu.
+# Les migrations evitent le pooler.
+#
+# Neon fait tourner PgBouncer en mode transaction sur son endpoint "-pooler",
+# qui ne supporte pas le DDL : la premiere instruction echoue, la transaction
+# est empoisonnee, et les suivantes remontent un 25P02 qui masque la cause.
+# Le pooler reste utilise a l'execution, ou il economise les connexions.
+if [ "${DB_CONNECTION:-}" = "pgsql" ] || [ -n "${PGHOST:-}" ]; then
+    CONNEXION_MIGRATION=pgsql_unpooled
+else
+    CONNEXION_MIGRATION="${DB_CONNECTION:-sqlite}"
+fi
+
 attendre_la_base() {
     essai=1
     while [ "$essai" -le 10 ]; do
-        if php artisan db:show --json > /dev/null 2>&1; then
+        if php artisan db:show --database="$CONNEXION_MIGRATION" --json > /dev/null 2>&1; then
             echo "Base joignable au bout de $essai tentative(s)."
             return 0
         fi
@@ -40,6 +52,7 @@ attendre_la_base() {
     echo "  identifiant : ${DB_USERNAME:-${PGUSER:-non renseigne}}"
     echo "  mot de passe : $([ -n "${DB_PASSWORD:-${PGPASSWORD:-}}" ] && echo renseigne || echo ABSENT)"
     echo "  sslmode : ${DB_SSLMODE:-${PGSSLMODE:-prefer}}"
+    echo "  connexion utilisee pour migrer : $CONNEXION_MIGRATION"
     echo ""
     echo "Neon exige sslmode=require. Verifie aussi que l'hote est bien celui"
     echo "de la branche active dans la console Neon."
@@ -49,7 +62,7 @@ attendre_la_base() {
 
 attendre_la_base || exit 1
 
-php artisan migrate --force
+php artisan migrate --force --database="$CONNEXION_MIGRATION"
 
 # Premier administrateur, cree au demarrage.
 #
