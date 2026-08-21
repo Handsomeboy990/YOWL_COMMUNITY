@@ -87,6 +87,15 @@ attendre_la_base || exit 1
 
 php artisan migrate --force --database="$CONNEXION_MIGRATION"
 
+# Les six pages du site : a propos, FAQ, charte, confidentialite, conditions,
+# mentions legales. Le pied de page y renvoie, et une base fraichement migree
+# ne les contient pas : les six liens repondaient 404.
+#
+# Seul ce qui manque est cree, jamais ce qui existe : les modifications faites
+# depuis la console survivent au redemarrage. Le retour au texte livre passe
+# par yowl:seed-pages --reset.
+php artisan yowl:seed-pages
+
 # Premier administrateur, cree au demarrage.
 #
 # Les offres gratuites de la plupart des hebergeurs ne donnent aucun acces

@@ -26,9 +26,37 @@ class LegalPageSeeder extends Seeder
         'mentions-legales' => 'Mentions légales',
     ];
 
+    /**
+     * Set by yowl:seed-pages --reset, and by nothing else.
+     *
+     * Overwriting a page an administrator has edited is a deliberate act, so
+     * it takes a deliberate flag rather than a default.
+     */
+    public static bool $reinitialiser = false;
+
+    /**
+     * Create the pages that are missing, and touch nothing else.
+     *
+     * This runs at every container start, so that a fresh deployment has its
+     * six pages rather than six 404 links in its own footer. It therefore
+     * must never overwrite: an earlier version used updateOrCreate, which
+     * would have wiped an administrator's edits on every restart, silently
+     * and permanently.
+     *
+     * Resetting a page to the shipped text is a deliberate act, and it has
+     * its own flag.
+     */
     public function run(): void
     {
+        $crees = 0;
+
         foreach (self::PAGES as $slug => $title) {
+            $existante = LegalPage::where('slug', $slug)->first();
+
+            if ($existante && ! self::$reinitialiser) {
+                continue;
+            }
+
             $body = $this->body($slug);
 
             LegalPage::updateOrCreate(
@@ -40,7 +68,11 @@ class LegalPageSeeder extends Seeder
                     'published_at' => now(),
                 ]
             );
+
+            $crees++;
         }
+
+        $this->command?->info($crees.' page(s) du site créée(s).');
     }
 
     /**
