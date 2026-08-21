@@ -1,5 +1,5 @@
 <template>
-    <AppShell>
+    <div class="w-full">
         <!-- Colonne centrale du fil.
              Elle occupe toute la place laissee par les rails : le max-w-2xl
              centre d'avant reduisait le fil a une bande etroite avec du vide
@@ -105,8 +105,12 @@
             </div>
         </div>
 
-        <!-- Rail droit : filtres + KPI -->
-        <template #rail>
+        <!-- Rail droit : filtres + KPI.
+             Projete dans la coquille par un Teleport : celle-ci est montee
+             une fois pour toutes dans App.vue, donc au-dessus de cette vue et
+             non plus autour d'elle. Un emplacement nomme ne peut plus la
+             joindre. -->
+        <Teleport to="#rail-lateral">
             <div class="space-y-5">
                 <Sidebar />
                 <div class="bg-gradient-to-br from-orange-50 to-white rounded-xl border border-orange-200 p-5">
@@ -116,15 +120,15 @@
                     <KpiSideBar />
                 </div>
             </div>
-        </template>
-    </AppShell>
+        </Teleport>
+    </div>
 </template>
 
 <script setup>
 import BaseButton from '@/components/ui/BaseButton.vue';
 import { ref, watch, onBeforeMount } from 'vue'
+import { useRail } from '@/composables/useRail'
 import { useI18n } from 'vue-i18n'
-import AppShell from '@/components/layouts/AppShell.vue'
 import Sidebar from '@/components/layouts/Sidebar.vue'
 import ReviewCard from '@/components/cards/ReviewCard.vue'
 import Pagination from '@/components/layouts/Pagination.vue'
@@ -138,6 +142,9 @@ import { useRoute } from 'vue-router'
 
 import Icon from '@/components/ui/Icon.vue';
 const { t } = useI18n()
+// Cette vue occupe le rail lateral : la coquille lui reserve la place.
+useRail();
+
 const reviewStore = useReviewStore()
 const userStore = useUserStore()
 const followStore = useFollowStore()

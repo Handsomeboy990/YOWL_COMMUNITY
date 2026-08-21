@@ -1,5 +1,5 @@
 <template>
-  <AppShell>
+  <div class="w-full">
   <div class="w-full py-6">
     <div class="container mx-auto px-4 max-w-4xl">
 
@@ -137,13 +137,12 @@
     </div>
   </div>
 
-  </AppShell>
+  </div>
 </template>
 
 <script setup>
 import { useI18n } from 'vue-i18n';
 import { usePageMeta } from '@/composables/usePageMeta';
-import AppShell from '@/components/layouts/AppShell.vue';
 import { getStorageUrl } from '@/config';
 import { computed, onBeforeMount, ref } from 'vue'
 import { useRoute } from 'vue-router'

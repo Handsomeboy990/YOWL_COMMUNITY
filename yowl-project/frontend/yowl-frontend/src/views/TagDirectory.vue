@@ -1,5 +1,5 @@
 <template>
-  <AppShell>
+  <div class="w-full">
     <div class="w-full px-4 xl:px-6 py-8 pb-24">
       <div class="max-w-4xl">
         <h1 class="font-poppins font-extrabold text-3xl text-blue-night">{{ t('tag.directory') }}</h1>
@@ -31,13 +31,12 @@
         <p v-if="!loading && !visibles.length" class="mt-8 text-sm text-gray-500">{{ t('tag.noMatch') }}</p>
       </div>
     </div>
-  </AppShell>
+  </div>
 </template>
 
 <script setup>
 import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import AppShell from '@/components/layouts/AppShell.vue';
 import api from '@/services/apiService';
 
 import Icon from '@/components/ui/Icon.vue';

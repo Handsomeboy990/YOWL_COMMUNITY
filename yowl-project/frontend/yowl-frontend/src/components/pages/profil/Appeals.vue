@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <AppShell>
+  <div class="w-full">
     <div class="w-full px-4 xl:px-6 py-6 pb-24">
       <ProfileHeader />
 
@@ -56,13 +56,12 @@
         </ul>
       </div>
     </div>
-  </AppShell>
+  </div>
 </template>
 
 <script setup>
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import AppShell from '@/components/layouts/AppShell.vue';
 import ProfileHeader from '@/components/layouts/ProfileHeader.vue';
 import { useAppealStore } from '@/stores/appeal';
 

@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <AppShell>
+  <div class="w-full">
     <div class="w-full px-4 xl:px-6 py-8 pb-24">
       <div class="max-w-2xl">
         <!-- Progression : trois etapes, on sait toujours ou on en est -->
@@ -103,14 +103,13 @@
     </div>
 
     <AddReviewModal :isOpen="isPublishOpen" @close="isPublishOpen = false" @publish="onPublished" />
-  </AppShell>
+  </div>
 </template>
 
 <script setup>
 import { useI18n } from 'vue-i18n';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import AppShell from '@/components/layouts/AppShell.vue';
 import BaseButton from '@/components/ui/BaseButton.vue';
 import FollowButton from '@/components/ui/FollowButton.vue';
 import AddReviewModal from '@/components/layouts/AddReviewModal.vue';

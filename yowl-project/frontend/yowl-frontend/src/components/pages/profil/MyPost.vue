@@ -1,6 +1,6 @@
 <template>
   <div>
-    <AppShell>
+    <div class="w-full">
       <div class="w-full px-4 xl:px-6 py-6">
         <ProfileHeader />
 
@@ -147,7 +147,7 @@
 
       <AddReviewModal :isOpen="isModalOpen" :editedReview="selectedReview" @close="closeModal" @publish="addPost"
         @update="updatePost" />
-    </AppShell>
+    </div>
 
     <AppealDialog v-model:open="appealOpen" :id="appealTarget" type="review" @sent="refresh" />
   </div>
@@ -156,7 +156,6 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import AppShell from '@/components/layouts/AppShell.vue';
 import ProfileHeader from '@/components/layouts/ProfileHeader.vue';
 import Pagination from '@/components/layouts/Pagination.vue';
 import LeaveCommunity from '@/components/layouts/LeaveCommunity.vue';

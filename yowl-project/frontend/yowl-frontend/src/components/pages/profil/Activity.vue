@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <AppShell>
+  <div class="w-full">
   <div class="w-full px-4 xl:px-6 py-6">
     <ProfileHeader />
 
@@ -43,12 +43,11 @@
 
     <LeaveCommunity class="mt-6" />
   </div>
-  </AppShell>
+  </div>
 </template>
 
 <script setup>
 import { useI18n } from 'vue-i18n';
-import AppShell from '@/components/layouts/AppShell.vue';
 import ProfileHeader from '@/components/layouts/ProfileHeader.vue';
 import LeaveCommunity from '@/components/layouts/LeaveCommunity.vue';
 import { ref, onMounted } from 'vue';

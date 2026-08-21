@@ -1,5 +1,5 @@
 <template>
-  <AppShell>
+  <div class="w-full">
     <div class="w-full px-4 xl:px-6 py-6 pb-24">
       <div v-if="loading" class="space-y-4">
         <div class="h-40 rounded-2xl skeleton"></div>
@@ -72,14 +72,13 @@
         <Pagination v-if="pagination.last_page > 1" class="mt-8" :pagination="pagination" @changePage="loadReviews" />
       </template>
     </div>
-  </AppShell>
+  </div>
 </template>
 
 <script setup>
 import { computed, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import AppShell from '@/components/layouts/AppShell.vue';
 import ReviewCard from '@/components/cards/ReviewCard.vue';
 import Pagination from '@/components/layouts/Pagination.vue';
 import BaseButton from '@/components/ui/BaseButton.vue';

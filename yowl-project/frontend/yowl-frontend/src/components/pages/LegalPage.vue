@@ -1,5 +1,5 @@
 <template>
-  <AppShell>
+  <div class="w-full">
     <div class="w-full px-4 xl:px-6 py-8 pb-24">
       <div class="w-full">
         <!-- Fil d'Ariane : on arrive souvent ici par un lien de pied de page,
@@ -178,7 +178,7 @@
         </div>
       </div>
     </div>
-  </AppShell>
+  </div>
 </template>
 
 <script setup>
@@ -186,7 +186,6 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { usePageMeta } from '@/composables/usePageMeta';
-import AppShell from '@/components/layouts/AppShell.vue';
 import BaseButton from '@/components/ui/BaseButton.vue';
 import api from '@/services/apiService';
 import { apiErrorMessage, useNotify } from '@/composables/useNotify';

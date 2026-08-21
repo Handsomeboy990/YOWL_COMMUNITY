@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <AppShell>
+  <div class="w-full">
     <div class="w-full px-4 xl:px-6 py-6">
       <ProfileHeader />
 
@@ -57,7 +57,7 @@
 
       <LeaveCommunity />
     </div>
-  </AppShell>
+  </div>
 </template>
 
 <script setup>
@@ -76,7 +76,6 @@ import {
   Tooltip,
 } from 'chart.js';
 import { Doughnut, Line } from 'vue-chartjs';
-import AppShell from '@/components/layouts/AppShell.vue';
 import ProfileHeader from '@/components/layouts/ProfileHeader.vue';
 import LeaveCommunity from '@/components/layouts/LeaveCommunity.vue';
 import BaseButton from '@/components/ui/BaseButton.vue';

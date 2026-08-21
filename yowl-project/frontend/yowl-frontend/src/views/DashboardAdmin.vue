@@ -1,5 +1,5 @@
 <template>
-  <AppShell>
+  <div class="w-full">
     <div class="w-full px-4 xl:px-6 py-6 pb-24">
       <!-- Bandeau -->
       <header class="mb-6 p-6 bg-blue-night text-white rounded-2xl shadow-lg shadow-blue-night/10">
@@ -451,11 +451,10 @@
 
     <UserDetailModal :is-open="detailUserId !== null" :user-id="detailUserId"
       @close="detailUserId = null" @updated="fetchUsers(users?.current_page || 1)" />
-  </AppShell>
+  </div>
 </template>
 
 <script setup>
-import AppShell from '@/components/layouts/AppShell.vue';
 import Pagination from '@/components/layouts/Pagination.vue';
 import EmptyState from '@/components/ui/EmptyState.vue';
 import TableSkeleton from '@/components/ui/TableSkeleton.vue';

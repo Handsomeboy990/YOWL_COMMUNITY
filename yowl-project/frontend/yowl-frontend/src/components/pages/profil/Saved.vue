@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <AppShell>
+  <div class="w-full">
     <div class="w-full px-4 xl:px-6 py-6 pb-24">
       <ProfileHeader />
 
@@ -36,13 +36,12 @@
 
       <Pagination v-if="pagination.last_page > 1" class="mt-8" :pagination="pagination" @changePage="load" />
     </div>
-  </AppShell>
+  </div>
 </template>
 
 <script setup>
 import { useI18n } from 'vue-i18n';
 import { onMounted, ref } from 'vue';
-import AppShell from '@/components/layouts/AppShell.vue';
 import ProfileHeader from '@/components/layouts/ProfileHeader.vue';
 import ReviewCard from '@/components/cards/ReviewCard.vue';
 import Pagination from '@/components/layouts/Pagination.vue';

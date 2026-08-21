@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <AppShell>
+  <div class="w-full">
     <div class="w-full px-4 xl:px-6 py-8 pb-24">
       <div class="max-w-2xl">
         <!-- Etat de confirmation : la page dit ce qui vient de se passer,
@@ -94,13 +94,12 @@
         </template>
       </div>
     </div>
-  </AppShell>
+  </div>
 </template>
 
 <script setup>
 import { useI18n } from 'vue-i18n';
 import { computed, ref } from 'vue';
-import AppShell from '@/components/layouts/AppShell.vue';
 import BaseInput from '@/components/ui/BaseInput.vue';
 import BaseTextarea from '@/components/ui/BaseTextarea.vue';
 import BaseButton from '@/components/ui/BaseButton.vue';

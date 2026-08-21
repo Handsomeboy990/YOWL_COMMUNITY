@@ -159,7 +159,7 @@
              l'ecran. La colonne centrale prend tout ce qui reste : c'est ce
              qui supprime la gouttiere vide entre le fil et les options. -->
         <div class="pt-16 w-full lg:pl-60 xl:pl-64 2xl:pl-68"
-            :class="$slots.rail ? 'xl:pr-80 2xl:pr-96' : ''">
+            :class="railActif ? 'xl:pr-80 2xl:pr-96' : ''">
             <!-- Rappel de verification, dans le flux et non flottant : il
                  pousse le contenu vers le bas au lieu de le recouvrir. -->
             <EmailVerificationBanner />
@@ -169,10 +169,12 @@
             </main>
         </div>
 
-        <!-- ===== RAIL DROIT (optionnel) ===== -->
-        <aside v-if="$slots.rail"
+        <!-- ===== RAIL DROIT (optionnel) =====
+             v-show et non v-if : la vue qui le remplit y projette son contenu
+             par un Teleport, et une cible absente du document ferait echouer
+             la projection au montage. -->
+        <aside v-show="railActif" id="rail-lateral"
             class="hidden xl:block fixed right-0 top-16 bottom-0 w-80 2xl:w-96 border-l border-gray-200 bg-white overflow-y-auto p-5 z-40">
-            <slot name="rail" />
         </aside>
 
         <!-- ===== NAVIGATION BASSE (mobile) ===== -->
@@ -235,6 +237,7 @@ import NotificationPanel from '@/components/layouts/NotificationPanel.vue';
 
 import Icon from '@/components/ui/Icon.vue';
 import EmailVerificationBanner from '@/components/layouts/EmailVerificationBanner.vue';
+import { railActif } from '@/composables/useRail';
 const route = useRoute();
 const router = useRouter();
 const { t } = useI18n();
