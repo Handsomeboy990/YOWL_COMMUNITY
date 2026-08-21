@@ -46,8 +46,41 @@ function retirerEcranDeDemarrage() {
   setTimeout(enlever, 700);
 }
 
+/**
+ * Duree minimale d'affichage de l'ecran de demarrage, en millisecondes.
+ *
+ * Mesure a l'appui, l'ecran ne restait que trente-cinq a cent millisecondes
+ * une fois les fichiers en cache : l'animation d'entree dure six cent vingt
+ * millisecondes et n'avait jamais le temps de commencer. Ce qui se voyait
+ * n'etait pas une animation mais un clignotement, sur telephone comme sur
+ * ordinateur.
+ *
+ * La valeur suit la duree de l'animation qu'il existe pour montrer. Plus
+ * court, on retombe sur le clignotement ; plus long, on fait attendre pour
+ * rien quelqu'un dont l'application est deja prete.
+ */
+const AFFICHAGE_MINIMAL_MS = 620;
+
 router.isReady().then(() => {
-  requestAnimationFrame(() => requestAnimationFrame(retirerEcranDeDemarrage));
+  requestAnimationFrame(() =>
+    requestAnimationFrame(() => {
+      // Qui a demande moins d'animations n'a rien a attendre : il n'y a pas
+      // d'animation a laisser finir, seulement un ecran a retirer.
+      const mouvementReduit = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+
+      // performance.now() compte depuis le debut de la navigation, c'est a
+      // dire depuis le moment ou l'ecran est apparu.
+      const restant = mouvementReduit
+        ? 0
+        : Math.max(0, AFFICHAGE_MINIMAL_MS - performance.now());
+
+      if (restant === 0) {
+        retirerEcranDeDemarrage();
+      } else {
+        setTimeout(retirerEcranDeDemarrage, restant);
+      }
+    })
+  );
 });
 
 const userStore = useUserStore();
