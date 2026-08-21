@@ -29,6 +29,16 @@ class Cached
     public const GROWTH = 'admin.growth';
 
     /**
+     * Audience figures, one entry per window.
+     *
+     * La fenêtre fait partie de la clé : sans elle, ouvrir sept jours après
+     * trente rendrait les chiffres de trente. Les trois fenêtres sont
+     * déclarées plutôt que composées à la volée, sinon leur durée retomberait
+     * sur la valeur par défaut et flush() ne saurait pas les oublier.
+     */
+    public const AUDIENCE = 'admin.audience';
+
+    /**
      * Time to live, in seconds, per entry.
      *
      * The counters tolerate being a few minutes late; the tag list changes
@@ -42,6 +52,12 @@ class Cached
         // et personne ne lit une courbe de croissance assez souvent pour
         // justifier de la refaire a chaque ouverture.
         self::GROWTH => 900,
+        // Dix minutes : le calcul balaie la table des visites, et une mesure
+        // d'audience ne se lit pas à la seconde près. La date du calcul est
+        // renvoyée avec les chiffres, personne ne les croit temps réel.
+        self::AUDIENCE.'.7' => 600,
+        self::AUDIENCE.'.30' => 600,
+        self::AUDIENCE.'.90' => 600,
     ];
 
     /**

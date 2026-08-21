@@ -162,6 +162,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
 });
 
 // Admin routes
+// Mesure d'audience. Ouverte, puisqu'un visiteur non connecte compte autant
+// qu'un membre, et limitee en debit : c'est une ecriture accessible a tous.
+Route::post('/visite', \App\Http\Controllers\Api\VisitController::class)
+    ->middleware('throttle:60,1');
+
 Route::middleware(['auth:sanctum','role:admin'])->prefix('admin')->group(function(){
   Route::patch('/users/{user}/role', [AdminController::class, 'changeUserRole']);
   Route::get('/stats', [AdminController::class, 'stats']);
@@ -179,6 +184,8 @@ Route::middleware(['auth:sanctum','role:admin'])->prefix('admin')->group(functio
   // Croissance : les cinq indicateurs du cahier des charges
   Route::get('/croissance', [GrowthController::class, 'index']);
   Route::get('/croissance/export', [GrowthController::class, 'export']);
+  Route::get('/analytique', [\App\Http\Controllers\Api\AnalyticsController::class, 'index']);
+  Route::get('/analytique/export', [\App\Http\Controllers\Api\AnalyticsController::class, 'export']);
   Route::get('/users', [AdminController::class, 'users']);
   Route::get('/reviews', [AdminController::class, 'reviews']);
   Route::get('/comments', [AdminController::class, 'comments']);
