@@ -1,4 +1,5 @@
 import api from '@/services/apiService';
+import { identifiants } from '@/composables/useConsent';
 
 /**
  * Signale une page consultée, sans rien qui désigne la personne.
@@ -33,7 +34,10 @@ let provenanceEnvoyee = false;
  * @returns {Promise<void>} toujours tenue, jamais rejetée
  */
 export async function signalerVisite(chemin) {
-  const charge = { path: chemin };
+  // Vides tant que la mesure detaillee n'a pas ete acceptee. La visite part
+  // quand meme : refuser retire le recoupement entre deux pages, pas le
+  // comptage de la page elle-meme.
+  const charge = { path: chemin, ...identifiants() };
 
   if (!provenanceEnvoyee) {
     provenanceEnvoyee = true;

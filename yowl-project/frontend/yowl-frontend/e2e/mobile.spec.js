@@ -130,3 +130,24 @@ test("l'ecran de demarrage disparait une fois l'application montee", async ({ pa
   // Il intercepte les touchers tant qu'il est dans le document, meme invisible.
   await expect(page.locator('#yowl-demarrage')).toHaveCount(0);
 });
+
+test('le bandeau de consentement ne recouvre aucune commande', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/login');
+
+  const bandeau = page.getByRole('heading', { name: "Mesurer l'audience plus finement" });
+  await expect(bandeau).toBeVisible();
+
+  // Le bandeau flotte en bas de l'écran. Sans compensation du bas de page, il
+  // recouvrait le bouton « Se connecter » : le clic partait sur le bandeau et
+  // le formulaire ne répondait plus. Playwright refuse de cliquer un élément
+  // masqué par un autre, donc ce clic échoue si la régression revient.
+  await page.getByRole('button', { name: 'Se connecter' }).click({ timeout: 5000 });
+
+  // Les deux réponses ont la même taille. Un refus plus discret que
+  // l'acceptation n'est pas un choix libre, et la CNIL le refuse.
+  const accepter = await page.getByRole('button', { name: 'Accepter' }).boundingBox();
+  const refuser = await page.getByRole('button', { name: 'Refuser' }).boundingBox();
+  expect(Math.abs(accepter.width - refuser.width)).toBeLessThan(2);
+  expect(Math.abs(accepter.height - refuser.height)).toBeLessThan(2);
+});

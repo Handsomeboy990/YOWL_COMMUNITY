@@ -294,6 +294,110 @@ class Audience
             ->all();
     }
 
+    /**
+     * Ce que l'accord a débloqué, et sur quelle part du trafic.
+     *
+     * Les trois mesures qui suivent ne portent que sur les visites munies
+     * d'un identifiant, donc sur les personnes qui l'ont accepté. La part est
+     * renvoyée avec elles, et le tableau de bord l'affiche : un nombre de
+     * visiteurs uniques calculé sur un tiers du trafic n'est pas un nombre de
+     * visiteurs uniques, et le présenter comme tel serait un chiffre faux.
+     *
+     * @return array{avec: int, sans: int, part: float}
+     */
+    public static function consentement(int $days = 30): array
+    {
+        $depuis = CarbonImmutable::now()->subDays($days);
+        $base = PageVisit::where('visited_at', '>=', $depuis);
+
+        $avec = (clone $base)->whereNotNull('visitor_id')->count();
+        $total = (clone $base)->count();
+
+        return [
+            'avec' => $avec,
+            'sans' => $total - $avec,
+            'part' => $total > 0 ? round($avec / $total * 100, 1) : 0.0,
+        ];
+    }
+
+    /**
+     * Visiteurs distincts, nouveaux et revenants.
+     *
+     * Est nouveau celui dont la toute première visite tombe dans la fenêtre.
+     * La comparaison se fait sur l'historique entier, pas sur la fenêtre :
+     * quelqu'un venu il y a six mois et revenu hier est un revenant, même si
+     * la fenêtre affichée ne montre que sa visite d'hier.
+     *
+     * @return array{uniques: int, nouveaux: int, revenants: int}
+     */
+    public static function visiteurs(int $days = 30): array
+    {
+        $depuis = CarbonImmutable::now()->subDays($days);
+
+        $identifiants = PageVisit::query()
+            ->where('visited_at', '>=', $depuis)
+            ->whereNotNull('visitor_id')
+            ->distinct()
+            ->pluck('visitor_id');
+
+        if ($identifiants->isEmpty()) {
+            return ['uniques' => 0, 'nouveaux' => 0, 'revenants' => 0];
+        }
+
+        // Une seule requête pour les premières venues, par paquets : la liste
+        // des identifiants peut être longue et certains moteurs bornent le
+        // nombre de paramètres d'un IN.
+        $nouveaux = 0;
+        foreach ($identifiants->chunk(500) as $lot) {
+            $nouveaux += PageVisit::query()
+                ->whereIn('visitor_id', $lot)
+                ->groupBy('visitor_id')
+                ->havingRaw('min(visited_at) >= ?', [$depuis])
+                ->get(['visitor_id'])
+                ->count();
+        }
+
+        return [
+            'uniques' => $identifiants->count(),
+            'nouveaux' => $nouveaux,
+            'revenants' => $identifiants->count() - $nouveaux,
+        ];
+    }
+
+    /**
+     * Pages par session, et part des sessions d'une seule page.
+     *
+     * Une session s'arrête après trente minutes sans page ouverte ; la coupe
+     * est faite par le navigateur, qui seul sait quand la personne a cessé de
+     * naviguer. Le taux d'une seule page est ce que d'autres outils appellent
+     * le rebond : arrivé, reparti sans rien ouvrir d'autre.
+     *
+     * @return array{moyenne: float, sessions: int, une_seule_page: float}
+     */
+    public static function sessions(int $days = 30): array
+    {
+        $depuis = CarbonImmutable::now()->subDays($days);
+
+        $parSession = PageVisit::query()
+            ->where('visited_at', '>=', $depuis)
+            ->whereNotNull('session_id')
+            ->select('session_id', DB::raw('count(*) as pages'))
+            ->groupBy('session_id')
+            ->pluck('pages');
+
+        if ($parSession->isEmpty()) {
+            return ['moyenne' => 0.0, 'sessions' => 0, 'une_seule_page' => 0.0];
+        }
+
+        $seules = $parSession->filter(fn ($n) => (int) $n === 1)->count();
+
+        return [
+            'moyenne' => round($parSession->sum() / $parSession->count(), 2),
+            'sessions' => $parSession->count(),
+            'une_seule_page' => round($seules / $parSession->count() * 100, 1),
+        ];
+    }
+
     /** Le total de visites sur la fenêtre, toutes pages confondues. */
     public static function total(int $days = 30): int
     {

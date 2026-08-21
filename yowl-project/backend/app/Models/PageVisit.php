@@ -19,6 +19,8 @@ class PageVisit extends Model
         'referrer_host',
         'device',
         'is_member',
+        'visitor_id',
+        'session_id',
         'visited_at',
     ];
 

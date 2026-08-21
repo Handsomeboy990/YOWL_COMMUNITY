@@ -72,11 +72,15 @@ class AudienceTest extends TestCase
         $this->assertSame('mobile', $visite->device);
         $this->assertFalse($visite->is_member);
 
-        // La table ne porte aucune colonne rattachable a une personne.
+        // Aucune colonne rattachable a une personne. visitor_id et session_id
+        // existent depuis l'ajout du consentement, mais restent nuls sans
+        // accord, ce que verifie le test dedie plus bas.
         $colonnes = array_keys($visite->getAttributes());
-        foreach (['user_id', 'ip', 'ip_address', 'session_id', 'fingerprint'] as $interdite) {
+        foreach (['user_id', 'ip', 'ip_address', 'fingerprint'] as $interdite) {
             $this->assertNotContains($interdite, $colonnes);
         }
+        $this->assertNull($visite->visitor_id);
+        $this->assertNull($visite->session_id);
     }
 
     public function test_a_tablet_is_not_counted_as_a_phone(): void
@@ -173,5 +177,81 @@ class AudienceTest extends TestCase
                 ->assertOk()
                 ->assertJsonPath('data.fenetre', 30);
         }
+    }
+
+    public function test_identifiers_are_refused_unless_they_are_opaque(): void
+    {
+        // Ces colonnes ne doivent jamais recevoir autre chose qu'un
+        // identifiant tiré au hasard : ni pseudo, ni adresse, ni rien qui
+        // désigne quelqu'un.
+        $this->postJson('/api/visite', [
+            'path' => '/feed',
+            'visitor' => 'handsomeboy@proton.me',
+        ], ['HTTP_USER_AGENT' => 'Mozilla/5.0 (Macintosh)'])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('visitor');
+
+        $this->assertSame(0, PageVisit::count());
+    }
+
+    public function test_a_visit_without_consent_is_still_counted(): void
+    {
+        // Refuser retire le recoupement d'une page à l'autre, pas la page.
+        $this->postJson('/api/visite', ['path' => '/feed'], ['HTTP_USER_AGENT' => 'Mozilla/5.0 (Macintosh)'])
+            ->assertOk();
+
+        $visite = PageVisit::sole();
+        $this->assertNull($visite->visitor_id);
+        $this->assertNull($visite->session_id);
+
+        $this->assertSame(0.0, Audience::consentement(30)['part']);
+        $this->assertSame(0, Audience::visiteurs(30)['uniques']);
+    }
+
+    public function test_consent_tells_visitors_apart_from_visits(): void
+    {
+        $anne = '11111111-1111-4111-8111-111111111111';
+        $bertrand = '22222222-2222-4222-8222-222222222222';
+
+        // Anne, venue il y a deux mois, revenue aujourd'hui en deux pages.
+        PageVisit::create(['path' => '/feed', 'device' => 'mobile', 'is_member' => false,
+            'visitor_id' => $anne, 'session_id' => 'aaaaaaaa-1111-4111-8111-111111111111',
+            'visited_at' => now()->subDays(60)]);
+        PageVisit::create(['path' => '/feed', 'device' => 'mobile', 'is_member' => false,
+            'visitor_id' => $anne, 'session_id' => 'aaaaaaaa-2222-4222-8222-222222222222',
+            'visited_at' => now()]);
+        PageVisit::create(['path' => '/sujets', 'device' => 'mobile', 'is_member' => false,
+            'visitor_id' => $anne, 'session_id' => 'aaaaaaaa-2222-4222-8222-222222222222',
+            'visited_at' => now()]);
+
+        // Bertrand, première venue, une seule page.
+        PageVisit::create(['path' => '/feed', 'device' => 'desktop', 'is_member' => false,
+            'visitor_id' => $bertrand, 'session_id' => 'bbbbbbbb-1111-4111-8111-111111111111',
+            'visited_at' => now()]);
+
+        // Un troisième, sans accord : compté en visites, invisible ici.
+        PageVisit::create(['path' => '/feed', 'device' => 'desktop', 'is_member' => false,
+            'visited_at' => now()]);
+
+        $visiteurs = Audience::visiteurs(30);
+
+        $this->assertSame(2, $visiteurs['uniques'], 'quatre visites, deux personnes');
+        // Anne est venue il y a soixante jours : la fenêtre de trente jours ne
+        // montre que son retour, mais elle n'en est pas nouvelle pour autant.
+        $this->assertSame(1, $visiteurs['nouveaux']);
+        $this->assertSame(1, $visiteurs['revenants']);
+
+        $sessions = Audience::sessions(30);
+        $this->assertSame(2, $sessions['sessions']);
+        $this->assertSame(1.5, $sessions['moyenne'], 'trois pages pour deux sessions');
+        $this->assertSame(50.0, $sessions['une_seule_page']);
+
+        // La part se calcule sur la fenetre seule : la venue d'Anne il y a
+        // soixante jours n'y figure pas, meme si elle compte pour la
+        // distinguer d'une nouvelle venue.
+        $consentement = Audience::consentement(30);
+        $this->assertSame(3, $consentement['avec']);
+        $this->assertSame(1, $consentement['sans']);
+        $this->assertSame(75.0, $consentement['part']);
     }
 }

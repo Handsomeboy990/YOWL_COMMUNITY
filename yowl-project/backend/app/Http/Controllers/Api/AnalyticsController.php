@@ -38,6 +38,13 @@ class AnalyticsController extends Controller
             'provenances' => Audience::topReferrers($jours),
             'appareils' => Audience::devices($jours),
             'contenus' => Audience::topContent(),
+            // Ce bloc ne porte que sur les visites munies d'un identifiant.
+            // La part est renvoyée avec, et affichée : des visiteurs uniques
+            // calculés sur un tiers du trafic ne sont pas des visiteurs
+            // uniques.
+            'consentement' => Audience::consentement($jours),
+            'visiteurs' => Audience::visiteurs($jours),
+            'sessions' => Audience::sessions($jours),
             'mesure_depuis' => Audience::mesureDepuis(),
             'calcule_le' => now()->toIso8601String(),
         ]);

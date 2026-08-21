@@ -43,6 +43,13 @@ class VisitController extends Controller
         $donnees = $request->validate([
             'path' => ['required', 'string', 'max:2048'],
             'referrer' => ['nullable', 'string', 'max:2048'],
+            // Deux identifiants tirés au hasard par le navigateur, présents
+            // seulement si la personne a accepté la mesure détaillée. Le
+            // format est imposé pour qu'aucune autre valeur ne s'y glisse :
+            // ces colonnes ne doivent jamais recevoir autre chose qu'un
+            // identifiant opaque, surtout pas un pseudo ou une adresse.
+            'visitor' => ['nullable', 'string', 'uuid'],
+            'session' => ['nullable', 'string', 'uuid'],
         ]);
 
         $agent = (string) $request->userAgent();
@@ -73,6 +80,11 @@ class VisitController extends Controller
             // Résolu par le garde, jamais déclaré par le client, qui n'aurait
             // aucune raison d'être cru sur ce point.
             'is_member' => auth('sanctum')->check(),
+            // Nuls tant que l'accord n'est pas donné, et la mesure continue
+            // sans eux : refuser ne rend pas invisible, cela retire seulement
+            // le recoupement d'une page à l'autre.
+            'visitor_id' => $donnees['visitor'] ?? null,
+            'session_id' => $donnees['session'] ?? null,
             'visited_at' => now(),
         ]);
 

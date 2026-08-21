@@ -133,6 +133,54 @@
           </div>
         </div>
 
+        <!-- Ce que l'accord des visiteurs a debloque. Separe du reste, et
+             precede de la part du trafic concernee : ces chiffres ne portent
+             que sur les personnes ayant accepte. -->
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
+          <div class="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h3 class="font-poppins font-semibold text-blue-night">Mesure détaillée</h3>
+              <p class="mt-0.5 text-sm text-gray-600">
+                Calculée sur les seules visites dont la personne a accepté le
+                suivi d'une page à l'autre.
+              </p>
+            </div>
+            <span class="shrink-0 inline-flex items-center min-h-8 px-3 rounded-full text-sm font-medium"
+              :class="data.consentement.part >= 50
+                ? 'bg-emerald-100 text-emerald-800'
+                : data.consentement.part > 0 ? 'bg-amber-100 text-amber-800' : 'bg-gray-100 text-gray-600'">
+              {{ data.consentement.part }} % du trafic
+            </span>
+          </div>
+
+          <div v-if="!data.consentement.avec" class="mt-5 rounded-xl bg-gray-50 px-4 py-6 text-center">
+            <p class="text-sm text-gray-700">
+              Personne n'a encore accepté sur cette période, ou le bandeau vient
+              d'être mis en service.
+            </p>
+            <p class="mt-1 text-sm text-gray-500">
+              Les chiffres du haut, eux, portent sur la totalité du trafic : ils
+              ne dépendent d'aucun accord.
+            </p>
+          </div>
+
+          <div v-else class="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <div v-for="mesure in mesuresDetaillees" :key="mesure.label"
+              class="rounded-xl border border-gray-100 bg-gray-50/60 p-4">
+              <p class="text-sm text-gray-600">{{ mesure.label }}</p>
+              <p class="mt-1.5 font-poppins font-bold text-2xl text-blue-night tabular-nums">
+                {{ mesure.value }}
+              </p>
+              <p class="mt-0.5 text-xs text-gray-500">{{ mesure.hint }}</p>
+            </div>
+          </div>
+
+          <p class="mt-4 text-xs text-gray-500">
+            Une part faible ne se corrige pas en insistant : refuser doit rester
+            aussi simple qu'accepter. Les chiffres du haut restent complets.
+          </p>
+        </div>
+
         <div class="grid gap-5 lg:grid-cols-2 items-start">
           <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
             <h3 class="font-poppins font-semibold text-blue-night">Appareils</h3>
@@ -237,6 +285,34 @@ const cartes = computed(() => {
       label: 'Part mobile', icon: 'mobile-screen-button', tone: 'bg-violet-100 text-violet-700',
       value: mobile + ' %',
       hint: 'téléphones seuls, hors tablettes',
+    },
+  ];
+});
+
+const mesuresDetaillees = computed(() => {
+  const v = data.value.visiteurs;
+  const s = data.value.sessions;
+
+  return [
+    {
+      label: 'Visiteurs distincts',
+      value: v.uniques.toLocaleString('fr-FR'),
+      hint: 'personnes, non visites',
+    },
+    {
+      label: 'Nouveaux',
+      value: v.uniques ? Math.round((v.nouveaux / v.uniques) * 100) + ' %' : '0 %',
+      hint: `${v.nouveaux.toLocaleString('fr-FR')} première venue`,
+    },
+    {
+      label: 'Pages par session',
+      value: s.moyenne.toLocaleString('fr-FR'),
+      hint: `${s.sessions.toLocaleString('fr-FR')} session(s)`,
+    },
+    {
+      label: 'Sessions d\'une page',
+      value: s.une_seule_page + ' %',
+      hint: 'arrivés puis repartis',
     },
   ];
 });

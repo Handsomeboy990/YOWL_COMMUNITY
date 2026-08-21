@@ -48,6 +48,45 @@
                    partir d'une liste blanche de balises. -->
               <div ref="body" class="contenu-legal mt-8" v-html="page.body"></div>
 
+              <!-- Revenir sur son choix doit etre possible depuis la page
+                   ou on l'explique, sans quoi le consentement n'est pas
+                   revocable en pratique. Le bandeau renvoie ici. -->
+              <section v-if="slug === 'confidentialite'"
+                class="mt-10 rounded-2xl border border-gray-200 bg-gray-50/70 p-5">
+                <h2 class="font-poppins font-bold text-blue-night">Votre choix sur la mesure d'audience</h2>
+
+                <p class="mt-2 text-sm text-gray-700 leading-relaxed">
+                  Le comptage des pages ouvertes fonctionne sans rien déposer sur
+                  votre appareil, et ne s'arrête jamais. Ce réglage ne porte que
+                  sur l'identifiant qui permet de reconnaître un même appareil
+                  d'une visite à l'autre.
+                </p>
+
+                <p class="mt-3 text-sm font-medium" :class="choixMesure === 'oui' ? 'text-emerald-700' : 'text-gray-700'">
+                  Actuellement :
+                  <template v-if="choixMesure === 'oui'">accepté</template>
+                  <template v-else-if="choixMesure === 'non'">refusé</template>
+                  <template v-else>aucun choix enregistré</template>
+                </p>
+
+                <div class="mt-4 flex flex-col sm:flex-row gap-2.5">
+                  <BaseButton variant="primary" size="sm" class="sm:w-48"
+                    :disabled="choixMesure === 'oui'" @click="accepterMesure">
+                    Accepter
+                  </BaseButton>
+                  <BaseButton variant="outline" size="sm" class="sm:w-48"
+                    :disabled="choixMesure === 'non'" @click="refuserMesure">
+                    Refuser et effacer
+                  </BaseButton>
+                </div>
+
+                <p class="mt-3 text-xs text-gray-500">
+                  Refuser retire immédiatement l'identifiant de cet appareil.
+                  Les visites déjà comptées restent, elles ne portent aucun moyen
+                  de remonter jusqu'à vous.
+                </p>
+              </section>
+
               <footer class="mt-12 pt-6 border-t border-gray-200 flex flex-wrap items-center justify-between gap-4">
                 <p class="text-sm text-gray-500">
                   {{ t('legal.question') }}
@@ -150,13 +189,26 @@ import { usePageMeta } from '@/composables/usePageMeta';
 import AppShell from '@/components/layouts/AppShell.vue';
 import BaseButton from '@/components/ui/BaseButton.vue';
 import api from '@/services/apiService';
-import { apiErrorMessage } from '@/composables/useNotify';
+import { apiErrorMessage, useNotify } from '@/composables/useNotify';
+import { accepter, choix, refuser } from '@/composables/useConsent';
 
 import Icon from '@/components/ui/Icon.vue';
 const { t, locale } = useI18n();
 const route = useRoute();
 
+const notify = useNotify();
 const slug = ref(route.params.slug ?? route.meta.slug);
+
+// Reglage de la mesure d'audience, propose sur la seule page qui l'explique.
+const choixMesure = choix;
+const accepterMesure = () => {
+  accepter();
+  notify.success('Merci. La mesure détaillée est active sur cet appareil.');
+};
+const refuserMesure = () => {
+  refuser();
+  notify.success("C'est fait. L'identifiant a été retiré de cet appareil.");
+};
 const page = ref({});
 const loading = ref(true);
 const error = ref(null);

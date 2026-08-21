@@ -17,6 +17,11 @@
 
     <!-- Dialogue de confirmation pilote par useConfirm() -->
     <ConfirmDialog />
+
+    <!-- Accord pour la mesure detaillee. Charge a la demande : il ne
+         s'affiche qu'une fois par appareil et n'a rien a peser dans le
+         paquet initial. -->
+    <ConsentBanner />
   </div>
 </template>
 
@@ -26,6 +31,7 @@ import { Toaster } from 'vue-sonner';
 // import les toasts s'empilent sans mise en forme, en haut de la page.
 import 'vue-sonner/style.css';
 import ConfirmDialog from '@/components/ui/ConfirmDialog.vue';
+import ConsentBanner from '@/components/ui/ConsentBanner.vue';
 </script>
 
 <style>
