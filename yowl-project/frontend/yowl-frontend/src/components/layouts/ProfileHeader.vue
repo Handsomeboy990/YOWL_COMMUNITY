@@ -46,18 +46,24 @@
       </div>
     </div>
 
-    <!-- Onglets -->
-    <nav class="flex gap-1 mt-6 border-b border-gray-200 overflow-x-auto" aria-label="Sections du profil">
-      <router-link v-for="tab in tabs" :key="tab.to" :to="tab.to"
-        class="relative px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors"
-        :class="route.name === tab.name
-          ? 'text-orange-text'
-          : 'text-gray-500 hover:text-blue-night'">
-        <Icon :name="tab.icon" class="mr-2" />{{ tab.label }}
-        <span v-if="route.name === tab.name"
-          class="absolute left-3 right-3 -bottom-px h-0.5 rounded-full bg-orange-primary"></span>
-      </router-link>
-    </nav>
+    <!-- Onglets
+         Sept onglets ne tiennent pas sur 360 pixels : le bandeau defile, et
+         le degrade du bord droit dit qu'il reste des sections a atteindre. -->
+    <div class="mt-6 defilement-indique" :style="{ '--reste-a-defiler': resteADefiler }">
+      <nav ref="bandeauOnglets"
+        class="flex gap-1 border-b border-gray-200 overflow-x-auto defilement-horizontal snap-x"
+        aria-label="Sections du profil">
+        <router-link v-for="tab in tabs" :key="tab.to" :to="tab.to"
+          class="relative px-4 py-3 min-h-11 flex items-center text-sm font-medium whitespace-nowrap snap-start transition-colors"
+          :class="route.name === tab.name
+            ? 'text-orange-text'
+            : 'text-gray-500 hover:text-blue-night'">
+          <Icon :name="tab.icon" class="mr-2" />{{ tab.label }}
+          <span v-if="route.name === tab.name"
+            class="absolute left-3 right-3 bottom-0 h-0.5 rounded-full bg-orange-primary"></span>
+        </router-link>
+      </nav>
+    </div>
 
     <EditProfilModal :isOpen="isEditOpen" @close="isEditOpen = false" />
   </div>
@@ -68,6 +74,7 @@ import { useI18n } from 'vue-i18n';
 import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { getStorageUrl } from '@/config';
+import { useDefilementHorizontal } from '@/composables/useDefilementHorizontal';
 import BaseButton from '@/components/ui/BaseButton.vue';
 import EditProfilModal from '@/components/pages/profil/EditProfilModal.vue';
 import { useUserStore } from '@/stores/user';
@@ -77,6 +84,10 @@ import Icon from '@/components/ui/Icon.vue';
 const { t, locale } = useI18n();
 
 const route = useRoute();
+
+// Le bandeau d'onglets deborde sous 500 pixels : on suit sa position pour
+// afficher ou effacer le degrade qui signale la suite.
+const { element: bandeauOnglets, resteADefiler } = useDefilementHorizontal();
 const userStore = useUserStore();
 const profileStore = useProfileStore();
 const isEditOpen = ref(false);

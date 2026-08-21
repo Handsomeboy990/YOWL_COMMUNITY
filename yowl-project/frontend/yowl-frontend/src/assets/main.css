@@ -666,3 +666,42 @@ main:focus {
         transition: none;
     }
 }
+
+/* ---------------------------------------------------------------------------
+   Bandeaux defilants sur telephone
+   ---------------------------------------------------------------------------
+   Une rangee d'onglets plus large que l'ecran defile deja, mais rien ne le
+   dit : le dernier onglet est coupe net et se lit comme un defaut d'affichage.
+   La barre native n'aide pas, elle recouvre le soulignement de l'onglet actif
+   et n'apparait de toute facon pas sur telephone.
+
+   D'ou ces deux morceaux : on retire la barre, et un degrade sur le bord droit
+   signale qu'il reste quelque chose a atteindre. Le degrade s'efface des que
+   la fin est atteinte, via la propriete personnalisee posee en JavaScript. */
+.defilement-horizontal {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    scroll-behavior: smooth;
+    overscroll-behavior-x: contain;
+}
+
+.defilement-horizontal::-webkit-scrollbar {
+    display: none;
+}
+
+.defilement-indique {
+    position: relative;
+}
+
+.defilement-indique::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 2.5rem;
+    pointer-events: none;
+    background: linear-gradient(to right, transparent, var(--fond-defilement, #f9fafb));
+    opacity: var(--reste-a-defiler, 0);
+    transition: opacity 200ms ease;
+}
