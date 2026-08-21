@@ -3,7 +3,7 @@
 namespace App\Support;
 
 use Illuminate\Support\Facades\Log;
-use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Throwable;
 
 /**
  * Sending an email that fails must not look like a broken application.
@@ -31,13 +31,28 @@ class MailDelivery
             $envoi();
 
             return true;
-        } catch (TransportExceptionInterface $exception) {
+        } catch (Throwable $exception) {
+            // Toute exception, et non les seules erreurs de transport.
+            //
+            // Un email peut échouer avant même de partir : sans en-tête From,
+            // la couche Mime lève une LogicException, qui n'appartient pas à
+            // la famille des erreurs de transport. Elle échappait donc à ce
+            // filet et emportait la requête entière. À l'inscription, cela
+            // donnait un compte créé, une réponse en erreur, et personne pour
+            // comprendre lequel des deux croire.
+            //
+            // Le nom de la classe part au journal : c'est lui qui distingue
+            // un relais injoignable d'un email mal formé, et les deux ne se
+            // corrigent pas au même endroit.
             Log::error("L'email n'a pas pu être remis.", $contexte + [
+                'exception' => $exception::class,
                 'message' => $exception->getMessage(),
                 'mailer' => config('mail.default'),
                 'host' => config('mail.mailers.smtp.host'),
                 'port' => config('mail.mailers.smtp.port'),
-                'indice' => 'Vérifie MAIL_MAILER, MAIL_HOST, MAIL_USERNAME et MAIL_PASSWORD. '
+                'expediteur' => config('mail.from.address') ?: 'NON RENSEIGNE',
+                'indice' => 'Vérifie MAIL_MAILER, MAIL_HOST, MAIL_USERNAME, MAIL_PASSWORD '
+                    .'et MAIL_FROM_ADDRESS, qui ne doit pas être vide. '
                     .'MAIL_MAILER=log écrit dans les journaux sans rien envoyer.',
             ]);
 

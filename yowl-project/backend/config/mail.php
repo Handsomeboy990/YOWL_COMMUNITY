@@ -45,7 +45,21 @@ return [
             'port' => env('MAIL_PORT', 2525),
             'username' => env('MAIL_USERNAME'),
             'password' => env('MAIL_PASSWORD'),
-            'timeout' => null,
+            /*
+             * Délai d'attente du relais, en secondes.
+             *
+             * À null, Symfony s'en remet à default_socket_timeout, soit
+             * soixante secondes chez PHP. Un relais qui ne répond pas, parce
+             * que le port est filtré ou l'hôte injoignable, ne provoque alors
+             * aucune erreur : la requête reste suspendue jusqu'à ce que le
+             * serveur web renonce et réponde 504. L'inscription se terminait
+             * ainsi sur une passerelle expirée, avec le compte déjà créé, et
+             * le filet de MailDelivery n'avait jamais l'occasion de servir.
+             *
+             * Dix secondes laissent le temps à un relais lent de répondre,
+             * tout en échouant bien avant la limite d'un hébergeur.
+             */
+            'timeout' => (int) (env('MAIL_TIMEOUT') ?: 10),
             'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url((string) env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
         ],
 
@@ -110,9 +124,22 @@ return [
     |
     */
 
+    /*
+    |--------------------------------------------------------------------------
+    | Expediteur
+    |--------------------------------------------------------------------------
+    |
+    | Le repli passe par ?: et non par le second argument de env(). Une
+    | variable declaree vide, ce que produit un champ laisse blanc dans le
+    | tableau de bord d'un hebergeur, rend une chaine vide et non null : le
+    | defaut de env() ne s'applique pas, l'email part sans en-tete From, et
+    | la couche Mime leve une exception au moment de la construction.
+    |
+    */
+
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
-        'name' => env('MAIL_FROM_NAME', 'Example'),
+        'address' => env('MAIL_FROM_ADDRESS') ?: 'hello@example.com',
+        'name' => env('MAIL_FROM_NAME') ?: 'Example',
     ],
 
 ];

@@ -103,4 +103,60 @@ class MailFailureTest extends TestCase
             ->assertStatus(200)
             ->assertJsonPath('delivered', true);
     }
+
+    /**
+     * Un expéditeur vide, et non un relais injoignable.
+     *
+     * Une variable MAIL_FROM_ADDRESS déclarée mais laissée blanche, ce que
+     * produit un champ vide dans le tableau de bord d'un hébergeur, rend une
+     * chaîne vide et non null : le défaut de env() ne s'applique pas. La
+     * couche Mime refuse alors de construire l'email, avec une LogicException
+     * qui n'est pas une erreur de transport et échappait au filet.
+     *
+     * Le compte était créé, la réponse partait en 500, et les trois symptômes
+     * suivaient : « inscription échouée » à l'écran, un compte bien présent en
+     * base, et aucun email.
+     */
+    public function test_registration_survives_a_sender_address_that_cannot_build_an_email(): void
+    {
+        config(['mail.default' => 'smtp', 'mail.from.address' => '', 'mail.from.name' => '']);
+
+        $reponse = $this->postJson('/api/register', [
+            'username' => 'sansexpediteur',
+            'fullname' => 'Sans Expediteur',
+            'email' => 'sans-expediteur@exemple.fr',
+            'password' => 'Password@990',
+            'password_confirmation' => 'Password@990',
+            'birthdate' => now()->subYears(20)->format('Y-m-d'),
+        ]);
+
+        $reponse->assertStatus(202)
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('delivered', false);
+
+        // Le compte existe, et la réponse le dit : sans cela, la personne ne
+        // sait pas si elle doit se réinscrire ou se connecter.
+        $this->assertDatabaseHas('users', ['email' => 'sans-expediteur@exemple.fr']);
+        $this->assertStringContainsString('compte est créé', $reponse->json('message'));
+    }
+
+    /**
+     * Un relais qui absorbe sans répondre ne doit pas suspendre la requête.
+     *
+     * Sans délai déclaré, Symfony s'en remet à default_socket_timeout, soit
+     * soixante secondes : mesuré, l'envoi restait bloqué tout ce temps, le
+     * serveur web renonçait avant et répondait 504. L'inscription se terminait
+     * sur une passerelle expirée, le compte déjà créé, et le filet de
+     * MailDelivery n'avait jamais l'occasion de servir.
+     */
+    public function test_the_relay_is_given_a_deadline(): void
+    {
+        $delai = config('mail.mailers.smtp.timeout');
+
+        $this->assertNotNull($delai, 'un délai nul rend la main au socket, soit soixante secondes');
+        $this->assertIsInt($delai);
+        $this->assertGreaterThan(0, $delai);
+        // Au-delà, l'hébergeur coupe avant nous et le 504 revient.
+        $this->assertLessThanOrEqual(30, $delai);
+    }
 }
