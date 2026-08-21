@@ -4,17 +4,168 @@
 <head>
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" href="/src/assets/logo.png">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- viewport-fit=cover : sans lui, l'encoche et la barre gestuelle des
+         telephones recents reservent des bandes que la page ne peut pas
+         peindre. Les retraits reels sont repris par env(safe-area-inset-*). -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
     <meta name="description" content="YOWL est une communauté où les 13-35 ans s'expriment librement sur les contenus découverts sur internet">
     <meta name="keywords" content="yowl, communauté, review, avis, commentaire, internet">
     <meta name="author" content="LONG Corp">
     <title>YOWL Community</title>
+
+    <!-- Couleur de la barre d'etat une fois l'application lancee. Le manifeste
+         en declare une autre, plus sombre : elle sert a l'ecran de demarrage,
+         ou elle prolonge le fond sans couture. Ici on suit l'en-tete reel. -->
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#1e2a38" media="(prefers-color-scheme: dark)">
+
+    <!-- iOS ignore le manifeste pour ces trois reglages. -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="YOWL">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- ===================================================================
+         ECRAN DE DEMARRAGE
+         ===================================================================
+         L'ecran que dessine le systeme au lancement d'une application
+         installee est une image fixe : Android le compose a partir du
+         manifeste, iOS a partir d'une image de demarrage, et ni l'un ni
+         l'autre n'accepte d'animation. Ce qui suit prend le relais juste
+         apres, pendant que le JavaScript demarre, et c'est la seule surface
+         ou une animation est possible.
+
+         Le fond reprend background_color du manifeste : la transition entre
+         l'ecran du systeme et celui-ci ne se voit pas.
+
+         Le balisage et le style vivent dans cette page plutot que dans un
+         composant : un composant n'existe qu'une fois Vue demarre, c'est a
+         dire precisement apres le moment que cet ecran doit couvrir. Le logo
+         est integre en base64 pour la meme raison, aucun aller-retour reseau
+         ne s'intercale avant le premier rendu. -->
+    <style>
+        #yowl-demarrage {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: grid;
+            place-content: center;
+            justify-items: center;
+            gap: 1.75rem;
+            background: #1e2a38;
+            font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+            transition: opacity 420ms ease, visibility 420ms ease;
+        }
+
+        #yowl-demarrage[hidden] {
+            display: none;
+        }
+
+        /* Retire par le script une fois l'application montee. La visibilite
+           accompagne l'opacite, sinon l'ecran continue d'intercepter les
+           touchers pendant toute la duree du fondu. */
+        #yowl-demarrage.parti {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .yowl-demarrage-marque {
+            width: 88px;
+            height: 88px;
+            border-radius: 26px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(140deg, #ff8552, #cc4a15);
+            box-shadow: 0 18px 45px -12px rgba(255, 107, 53, .55);
+            animation: yowl-apparition 620ms cubic-bezier(.22, 1, .36, 1) both,
+                       yowl-respiration 2.8s ease-in-out 620ms infinite;
+        }
+
+        .yowl-demarrage-marque img {
+            width: 56px;
+            height: 56px;
+            object-fit: contain;
+        }
+
+        .yowl-demarrage-nom {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: .34em;
+            /* La chasse s'ajoute apres chaque lettre, la derniere comprise :
+               le bloc est plus large que les glyphes d'un espacement, et le
+               mot parait decale a gauche. On rend la moitie de cet ecart. */
+            text-indent: .17em;
+            color: #ffffff;
+            animation: yowl-montee 620ms cubic-bezier(.22, 1, .36, 1) 140ms both;
+        }
+
+        .yowl-demarrage-piste {
+            width: 132px;
+            height: 3px;
+            border-radius: 999px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, .14);
+            animation: yowl-montee 620ms cubic-bezier(.22, 1, .36, 1) 260ms both;
+        }
+
+        .yowl-demarrage-piste::after {
+            content: '';
+            display: block;
+            width: 45%;
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #ff8552, #ffb38a);
+            animation: yowl-navette 1.25s cubic-bezier(.65, 0, .35, 1) infinite;
+        }
+
+        @keyframes yowl-apparition {
+            from { opacity: 0; transform: scale(.82); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes yowl-respiration {
+            0%, 100% { transform: scale(1); }
+            50%      { transform: scale(1.045); }
+        }
+
+        @keyframes yowl-montee {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: none; }
+        }
+
+        @keyframes yowl-navette {
+            0%   { transform: translateX(-100%); }
+            100% { transform: translateX(322%); }
+        }
+
+        /* Un demarrage anime n'a pas a s'imposer a qui a demande le contraire
+           dans les reglages de son systeme. L'ecran reste, immobile. */
+        @media (prefers-reduced-motion: reduce) {
+            #yowl-demarrage *,
+            #yowl-demarrage *::after {
+                animation: none !important;
+            }
+            #yowl-demarrage { transition: none; }
+        }
+    </style>
 </head>
 
 <body>
+    <div id="yowl-demarrage" role="status" aria-live="polite" aria-label="Chargement de YOWL">
+        <span class="yowl-demarrage-marque">
+            <img src="data:image/png;base64,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" alt="">
+        </span>
+        <span class="yowl-demarrage-nom">YOWL</span>
+        <span class="yowl-demarrage-piste"></span>
+    </div>
+
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
 </body>

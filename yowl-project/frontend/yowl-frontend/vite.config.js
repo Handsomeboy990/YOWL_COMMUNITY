@@ -26,6 +26,11 @@ export default defineConfig({
       manifest: {
         name: 'YOWL Community',
         short_name: 'YOWL',
+        // Identifiant stable de l'application installee. Sans lui, le
+        // navigateur derive l'identite de start_url : changer cette derniere
+        // ferait apparaitre une seconde application au lieu de mettre a jour
+        // celle qui est deja sur l'ecran d'accueil.
+        id: '/',
         description:
           "La communauté où les 13-35 ans partagent leurs avis sur les contenus du web.",
         lang: 'fr',
@@ -33,18 +38,24 @@ export default defineConfig({
         scope: '/',
         display: 'standalone',
         orientation: 'portrait',
-        theme_color: '#ff6b35',
+        // La couleur du manifeste habille l'ecran de demarrage dessine par
+        // le systeme. En reprenant le fond, la barre d'etat et l'ecran ne
+        // font plus qu'une seule surface. L'application lancee, la balise
+        // theme-color de index.html prend le relais et suit l'en-tete.
+        theme_color: '#1e2a38',
         background_color: '#1e2a38',
         icons: [
           {
             src: '/pwa-192x192.png',
             sizes: '192x192',
             type: 'image/png',
+            purpose: 'any',
           },
           {
             src: '/pwa-512x512.png',
             sizes: '512x512',
             type: 'image/png',
+            purpose: 'any',
           },
           {
             src: '/pwa-maskable-512x512.png',
@@ -65,7 +76,7 @@ export default defineConfig({
         },
         shortcuts: [
           {
-            name: 'Publier une review',
+            name: 'Publier un avis',
             url: '/share',
             icons: [{ src: '/pwa-192x192.png', sizes: '192x192' }],
           },
